@@ -1,0 +1,10 @@
+package com.yagout.defense.biz;
+
+import java.util.List;
+
+import com.yagout.defense.dal.model.Station;
+import com.yagout.defense.dal.model.StationAdapter;
+
+public interface StationBiz {
+	boolean update(List<Station> stationList,StationAdapter stationAdapter);
+}

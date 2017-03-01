@@ -1,0 +1,232 @@
+<link rel="stylesheet" href="${link.contextPath}/resources/ztree/zTreeStyle.css" type="text/css">
+<script type="text/javascript" src="${link.contextPath}/resources/ztree/js/jquery.ztree.core.js"></script>
+
+
+<SCRIPT type="text/javascript">
+
+    var addNodeMap = {};
+    var setting = {
+        view: {
+            addHoverDom: addHoverDom,
+            removeHoverDom: removeHoverDom,
+            selectedMulti: false
+        },
+        edit: {
+            enable: true
+        },
+        data: {
+            key: {
+                name: "dictionaryValue"
+            },
+            simpleData: {
+                enable: true,
+                idKey: "dictionaryKey",
+                pIdKey: "parentKey",
+                rootPId: ""
+            }
+        },
+        callback: {
+            beforeRemove: beforeRemove,
+            beforeRename: beforeRename,
+            beforeDrop: zTreeBeforeDrop
+        }
+    };
+
+    function zTreeBeforeDrop(treeId, treeNodes, targetNode, moveType) {
+        var treeNode=treeNodes[0];
+        var targeParent;
+        if(moveType != "inner"){
+            targeParent=targetNode.parentKey;
+        }else {
+            targeParent=targetNode.dictionaryKey;
+        }
+         if(moveType != "inner"&&treeNode.parentKey==targetNode.parentKey){
+             return false;
+         }
+        var formParam = {};
+        formParam.dictionaryKey = treeNode.dictionaryKey;
+        formParam.parentKey =targeParent;
+        var result = false;
+        $.ajax({
+            url: "${link.contextPath}/dictionary/save.json",
+            data: formParam,
+            type: 'post',
+            dataType: 'json',
+            async: true,
+            success: function (data) {
+                if (data) {
+                    result = true;
+                    loadTreeData();
+                }
+                return result;
+            }
+        });
+
+
+    }
+
+
+
+    //    function filter(treeId, parentNode, childNodes) {
+    //        if (!childNodes) return null;
+    //        for (var i = 0, l = childNodes.length; i < l; i++) {
+    //            childNodes[i].dictionaryValue = childNodes[i].dictionaryValue.replace(/\.n/g, '.');
+    //        }
+    //        return childNodes;
+    //    }
+    function beforeRemove(treeId, treeNode) {
+        if (!treeNode.removeAble) {
+            alert("该节点不能删除");
+            return false;
+        }
+        var zTree = $.fn.zTree.getZTreeObj(treeId);
+        zTree.selectNode(treeNode);
+        var result = false;
+        if (confirm("确认删除 节点 -- " + treeNode.dictionaryValue + "和他的子节点吗？")) {
+            $.ajax({
+                type: "post",
+                dataType: 'json',
+                async: true,
+                url: "${link.contextPath}/dictionary/delete.json",
+                data: {"id": treeNode.dictionaryKey},
+                success: function (data) {
+                    if (data) {
+                        loadTreeData();
+                    }
+                }
+            });
+            return result;
+        } else {
+            return result;
+        }
+
+    }
+    function beforeRename(treeId, treeNode, newName) {
+        if (newName.length == 0) {
+            setTimeout(function () {
+                var zTree = $.fn.zTree.getZTreeObj(treeId);
+                zTree.cancelEditName();
+                alert("节点名称不能为空.");
+            }, 0);
+            return false;
+        }
+        if (treeNode.dictionaryValue == newName) {
+            return true;
+        }
+        var formParam = {};
+        var newNode = false;
+        if (addNodeMap[treeNode.dictionaryKey]) {
+            newNode = true;
+        } else {
+            formParam.dictionaryKey = treeNode.dictionaryKey;
+        }
+        formParam.dictionaryValue = newName;
+        formParam.parentKey = treeNode.parentKey;
+        var result = false;
+        $.ajax({
+            url: "${link.contextPath}/dictionary/save.json",
+            data: formParam,
+            type: 'post',
+            dataType: 'json',
+            async: true,
+            success: function (data) {
+                if (data) {
+                    result = true;
+                    if (newNode) {
+                        delete addNodeMap[treeNode.dictionaryKey];
+                    }
+                    loadTreeData();
+                }
+                return result;
+            }
+        });
+
+    }
+
+    var newCount = 1;
+    function addHoverDom(treeId, treeNode) {
+        var sObj = $("#" + treeNode.tId + "_span");
+        if (treeNode.editNameFlag || $("#addBtn_" + treeNode.tId).length > 0) return;
+        var addStr = "<span class='button add' id='addBtn_" + treeNode.tId
+                + "' title='add node' onfocus='this.blur();'></span>";
+        sObj.after(addStr);
+        var btn = $("#addBtn_" + treeNode.tId);
+        if (btn) btn.bind("click", function () {
+            var zTree = $.fn.zTree.getZTreeObj(treeId);
+            var newTtreeNode = zTree.addNodes(treeNode, {
+                dictionaryKey: ("addNode" + newCount),
+                parentKey: treeNode.dictionaryKey,
+                removeAble: true,
+                dictionaryValue: "new node"
+            });
+            addNodeMap["addNode" + newCount] = "addNode" + newCount;
+            newCount++;
+            zTree.editName(newTtreeNode[0]);
+            return false;
+        });
+    }
+    ;
+    function removeHoverDom(treeId, treeNode) {
+
+        $("#addBtn_" + treeNode.tId).unbind().remove();
+    }
+    ;
+
+    function loadTreeData() {
+        $.fn.zTree.destroy("treeDemo");
+        var params = {};
+        $.ajax({
+            type: "post",
+            dataType: "json",
+            traditional: true,
+            async: false,
+            data: params,
+            url: "${link.contextPath}/dictionary/treeData.json",
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            success: function (data, textStatus) {
+                if (data) {
+                    $.fn.zTree.init($("#treeDemo"), setting, data);
+                    //   var zTree = $.fn.zTree.getZTreeObj("treeDemo");
+                    // zTree.setting.callback.onClick =func;
+//                    if(selectNode){
+//                        var node = zTree.getNodeByParam(nodeKey,selectNode);
+//                        zTree.selectNode(node,true);//指定选中ID的节点
+//                        zTree.expandNode(node, true, false);//指定选中ID节点展开
+//
+//                    }
+                }
+            }
+        });
+    }
+    $(document).ready(function () {
+        loadTreeData();
+    });
+
+
+</SCRIPT>
+<div class="page-content">
+    <div class="row">
+        <!-- PAGE CONTENT BEGINS -->
+
+
+        <div class="col-sm-6">
+            <div class="widget-box">
+                <div class="widget-header header-color-blue2">
+                    <h4 class="lighter smaller">字典管理</h4>
+                </div>
+
+                <div class="widget-body">
+                    <div class="widget-main padding-8">
+                        <div class="tree">
+                            <ul id="treeDemo" class="ztree"></ul>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

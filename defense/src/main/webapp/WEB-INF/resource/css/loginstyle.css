@@ -1,0 +1,122 @@
+@charset "utf-8";
+* {
+	margin: 0px;
+}
+body {
+	overflow-x:hidden;
+}
+img {
+}
+/*main*/
+.logo {
+	width: auto;
+	height: 69px;
+}
+/*
+.logo .logopic {
+	position: relative;
+	right: -56px;
+	top: 36px;
+}
+*/
+.loginMain {
+	background: url(../imgs/login-bg.jpg);
+	background-repeat:no-repeat;
+	background-position:top center;
+	height:600px;
+}
+
+/*login*/
+.denglu {
+	border: 486px;
+	border-radius: 10px;
+	background: #000;
+	width: 486px;
+	height: 486px;
+	position: relative;
+	top: 87px;
+	right: -846px;
+}
+.logintext {
+    width: 314px;
+	height: 336px;
+	background-color: #FFFFFF;
+    position: absolute;
+	padding: 36px 30px;
+	border-radius: 10px;
+	right: 100px;
+	top: 148px;
+}
+.title {
+	width: 480px;
+	font-size: 22px;
+	font-family:"黑体";
+	color:#55adef;
+	float: left;
+}
+
+#vc {
+	width: 112px;
+	height: 46px;
+	float: left;
+	line-height: 38px;
+	font-family: 黑体;
+	color: #616161;
+}
+#mcode {
+	width: 120px;
+	height: 30px;
+	border: solid 2px;
+	border-color: #e7e7e7;
+	margin-left:10px;
+	float:right;
+	position: absolute;
+}
+#vcp {
+	width: 108px;
+	height: 38px;
+	border: solid 2px;
+	border-color: #e7e7e7;
+	margin-left: 11px;
+	float:right;
+	cursor:pointer;
+}
+
+.logint {
+    width: 314px;
+	height: 36px;
+	background-color: #55adef;
+	border-radius: 2px;
+	text-align: center;
+	line-height: 36px;
+	font-size: 22px;
+	margin-top: 100px;
+	text-decoration:none; 
+	color: #FFFFFF;
+}
+a{
+	text-decoration:none;
+}
+
+#userName {
+	width: 300px;
+	height: 30px;
+	margin-top: 36px;
+	background-image: url(../imgs/User-_.PNG.png);
+	background-repeat: no-repeat;
+	border: solid 2px;
+	border-color: #e7e7e7;
+	text-indent: 34px;
+	font-size: 14px;
+}
+#password {
+	width: 300px;
+	height: 30px;
+	background-image: url(../imgs/Lock_.PNG.png);
+	background-repeat: no-repeat;
+	border: solid 2px;
+	border-color: #e7e7e7;
+	margin-top: 4px;
+	text-indent: 34px;
+	font-size: 14px;
+}

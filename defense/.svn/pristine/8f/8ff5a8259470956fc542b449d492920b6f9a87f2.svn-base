@@ -1,0 +1,157 @@
+#parse("base/gridList.vm")
+#parse("base/listEdit.vm")
+<div class="main-container ace-save-state" id="main-container">
+	<div class="main-content-inner">
+		<div class="page-content">
+			<div class="page-header">
+				<h1>
+			        	用户管理
+				</h1>
+			</div>
+			<form class=" dataTables_filter" style="margin:0px 0px 15px 0px;">
+	                <input type="text" class="input-small" id="userNameLike" placeholder="用户名称">
+	                <button type="button" class="btn btn-info btn-sm" onclick="getTableData()">
+	                    <i class="icon-search  bigger-110"></i>
+	                    查询
+	                </button>
+	        </form>
+			<div class="row">
+				<div class="col-xs-18">
+					<table id="grid-table"></table>
+					<div id="grid-pager"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<a href="#" id="btn-scroll-up" class="btn-scroll-up btn btn-sm btn-inverse">
+		<i class="ace-icon fa fa-angle-double-up icon-only bigger-110"></i>
+	</a>
+</div>
+
+<!--<script src="${link.contextPath}/resources/assets/js/bootstrap-datepicker.min.js"></script>-->
+<script type="text/javascript">
+function clearSearch() {
+    $("#userRoleId").val('');
+    $("#userNameLike").val('');
+}
+var grid_selector = "#grid-table";
+var pager_selector = "#grid-pager";
+var parent_column = $(grid_selector).closest('[class*="col-"]');
+var userListTable;
+function getTableData(){
+	var params = {};
+	params.userRoleId = $("#userRoleId").val();
+	params.userNameLike = $("#userNameLike").val();
+	//表格的表头及数据
+	var colums = ['序号', '用户名称','角色名称','创建时间', '备注','操作']
+	var models = [
+		{name:'userId',index:'userId',width:30,editable:false,key:true,align:'center'},
+		{name:'userName',index:'userName',editable: false,editoptions:{size:"20",maxlength:"30"},align:'center'},
+		{name:'roleName',index:'roleName',editable: true,edittype:"select",align:'center',
+			editoptions:{
+				value:gettypes()
+			}},
+		{name:'createTime',index:'createTime',editable: false,sorttype:"date",align:'center',
+			formatter : function(cellvalue, options, rowObject) {
+                        return $.hd_jqGrid.dateTimeFormatter(cellvalue);
+            }},
+		{name:'remarks',index:'remarks',editable:true, editoptions:{size:"20",maxlength:"30"},align:'center'},
+		{name : 'userId',
+                align : "center",
+                formatter: function (value, grid, rows, state) {
+                return '<button id="'+ rows.id+ '" class="btn btn-info btn-sm" type="button" name="Submit" onclick="add('+rows.userId+')"><i class="icon-cogs bigger-110"></i>重置密码</button>'
+         }}
+	]
+	
+	var gridParams = {};
+	gridParams.id = "grid-table";
+	gridParams.pager = "grid-pager";
+	gridParams.url = "${link.contextPath}/user/userListData.json";//表格访问路径
+	gridParams.colums = colums;//表格表头
+	gridParams.models = models;//表格数据
+	gridParams.param = JSON.stringify(params);//查询参数
+	gridParams.title = "用户列表";//表格名称
+	gridParams.updateUrl = "${link.contextPath}/user/edit.json";//修改、添加路径
+	//gridParams.showUrl = "${link.contextPath}/user/show.json";//展示详情是否还要执行其他操作
+	gridParams.addFunction = "true";
+	gridParams.delfunc = false;
+	gridParams.edit = true;//修改
+	gridParams.add = true;//添加
+	gridParams.del = true;//删除
+	gridParams.search = false;//搜索
+	gridParams.view = false;//详情
+	gridParams.refresh = true;//刷新
+
+	if (userListTable) {
+	    userListTable.jqGrid("clearGridData");
+	    userListTable = getjqGridTable(gridParams,false).jqGrid('setGridParam',{  // 重新加载数据
+			"postData" : {
+				'params': gridParams.param
+			}
+		}).trigger("reloadGrid");//重新加载当前表格，也会向服务器发起新的请求
+	}
+	userListTable = getjqGridTable(gridParams,false);//如果不需要展开就再传入一个属性为false
+}
+
+function addFunction(){
+	$.ajax({
+        url : "${link.contextPath}/user/userEdit.json",//这个就是请求地址对应sAjaxSource
+        type : 'post',
+        async : false,
+        success : function(result) {
+          	bootBoxShow(result,"用户添加");
+        },
+        error : function(msg) {
+            alert("查询异常" + msg);
+        }
+    });
+    return false;
+}
+
+function add(userId){
+$.ajax({
+        url : "${link.contextPath}/user/reset.json",//这个就是请求地址对应sAjaxSource
+       data :{ "userId":userId},
+        type : 'post',
+        dataType : 'json',
+        async : false,
+        success : function(result) {
+           if(result.isSuccess){
+              $(".bootbox-close-button").click();
+              alert("操作成功");
+              getTableData();
+           }
+        },
+        error : function(msg) {
+        }
+    });
+    return false;
+}
+
+
+function gettypes(){
+	//动态生成select内容
+	var str="";
+	$.ajax({
+		type:"post",
+		async:false,
+		url:"${link.contextPath}/user/getRoleList.json",
+		success:function(data){
+			if (data != null) {
+        		var jsonobj=eval(data);
+        		var length=jsonobj.length;
+        		for(var i=0;i<length;i++){
+           			if(i!=length-1){
+            			str+=jsonobj[i].roleId+":"+jsonobj[i].roleName+";";
+            		}else{
+              			str+=jsonobj[i].roleId+":"+jsonobj[i].roleName;
+            		}
+         		}   
+     		}
+     	}
+	});	
+	return str;
+}
+
+getTableData();
+</script>

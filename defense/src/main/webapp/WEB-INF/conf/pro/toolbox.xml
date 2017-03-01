@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<tools>
+<toolbox scope="application">
+	<tool class="com.yagout.defense.util.Permission"/>
+</toolbox>
+	<tool>
+		<key>link</key>
+		<scope>request</scope>
+		<class>org.apache.velocity.tools.view.LinkTool</class>
+	</tool>
+	<tool>
+		<key>params</key>
+		<scope>request</scope>
+		<class>org.apache.velocity.tools.view.ParameterTool</class>
+	</tool>
+	<tool>
+		<key>dateTool</key>
+		<scope>application</scope>
+		<class>org.apache.velocity.tools.generic.DateTool</class>
+	</tool>
+</tools>

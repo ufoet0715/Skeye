@@ -1,0 +1,166 @@
+﻿<script src='${link.contextPath}/resources/assets/js/jquery-2.0.3.min.js'></script>
+
+#parse("base/baseList.vm")
+#parse("base/bootBox.vm")
+
+<body class="login-layout" onkeydown='onEnterDown();'>
+	<div class="main-container">
+		<div class="main-content">
+			<div class="row">
+				<div class="col-sm-10 col-sm-offset-1">
+					<div class="login-container">
+						<div class="center">
+							<h1>
+								<i class="icon-leaf green"></i> <span class="white">WIFI防御信息系统</span>
+							</h1>
+							<h4 class="blue">&copy; 亚古科技</h4>
+						</div>
+						<div class="space-6"></div>
+						<div class="position-relative">
+							<div id="login-box"
+								class="login-box visible widget-box no-border">
+								<div class="widget-body">
+									<div class="widget-main">
+										<h4 class="header blue lighter bigger">
+											<i class="icon-coffee green"></i> 登录
+										</h4>
+										<div class="space-6"></div>
+										<form id="loginForm" action="#" method="post">
+											<fieldset style="border: 0px;">
+												<label class="block clearfix"> <span
+													class="block input-icon input-icon-right"> <input
+														type="text" class="col-xs-10 col-sm-5" id="userName"
+														name="userName" required placeholder="请输入账户名" /> 
+													<font id="userNameValide" size="1" color="red"></font>
+														<i class="icon-user"></i>
+												</span>
+												
+												</label> <label class="block clearfix"> <span
+													class="block input-icon input-icon-right"> <input
+														type="password" class="ol-xs-10 col-sm-5" id="password"
+														name="password" placeholder="请输入密码" required />
+                                                                                                        <font id="passwordValide" size="1" color="red"></font>
+														<i class="icon-lock"></i>
+												</span>
+                                                                                                
+												</label>
+												<div class="space"></div>
+												<div class="clearfix">
+                                                    <img id="vcp" height="50"
+														 onclick="this.src='${link.contextPath}/kaptchaImageController/getKaptchaImage.html?codeType=login&e='+new Date()" 
+														 src="${link.contextPath}/kaptchaImageController/getKaptchaImage.html?codeType=login">
+													<div class="clearfix">
+													 <label class="inline"> 
+													  <input class="input-small" name="mcode" id="mcode"
+														type="text" onblur="checkCode()" placeholder="请输入验证码" required />
+													  
+													 </label>
+													 
+													 <button type="button" id="loginBtn"
+														class="width-35 pull-right btn btn-sm btn-primary" onclick="doLogin()">
+														<i class="icon-key"></i> 登录
+													 </button>
+												    </div>
+												    <font id="valide" size="1" color="red"></font>
+												</div>
+												<div class="space-4"></div>
+											</fieldset>
+										</form>
+										
+									</div>
+									
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+<script>
+    document.onkeydown=function(event)
+    {
+        e = event ? event : (window.event ? window.event : null);
+        if(e.keyCode==13){
+            $('#loginBtn').click();//执行的方法
+        }
+    }
+
+        function checkCode() {
+		var checkResult = true;
+		var mCode = $("#mcode").val();
+		if (!mCode || mCode == '') {
+		    valide.innerHTML= "验证码不能为空！";
+			return false;
+		}
+		$.ajax({
+					async : false,
+					cache : false,
+					type : 'POST',
+					url : '${link.contextPath}/kaptchaImageController/checkBody.html?codeType=login',// 请求的action路径
+					data : {
+						"mCode" : mCode
+					},//参数
+					error : function() {// 请求失败处理函数
+						valide.innerHTML="验证码验证异常！"
+					},
+					success : function(data) {
+						var result = eval('(' + data + ')');
+						var mCodeElement = document.getElementById("mCode");
+						if (!result.isSuccess) {
+						    valide.innerHTML="验证码不正确！";
+							checkResult = false;
+						} else {
+						
+						}
+
+					}
+				});
+		return checkResult;
+	}
+
+	function doLogin() {
+	        userNameValide.innerHTML="";
+		passwordValide.innerHTML="";	
+	        valide.innerHTML="";
+		var userName = $('#userName').val();
+		var password = $('#password').val();
+		if(!userName||userName =='')
+		{
+		     userNameValide.innerHTML="请输入账户名！";		
+		}
+		else if(!password||password =='')
+		{
+		     passwordValide.innerHTML="请输入密码！";		
+		}
+		else
+		{
+                   var checkResult = checkCode();
+		   if (checkResult) 
+		   {
+	               $.ajax({
+				url : '${link.contextPath}/user/checkUser/' + userName+ '/' + password + '.json',
+				success : function(result) {
+						if (result.isSuccess) {
+						   window.location.href="${link.contextPath}/loginController/login.json";
+						} else {
+						        if (result) {
+							      //userNameValide.innerHTML=result.resultMsg;
+                                                              valide.innerHTML=result.resultMsg;
+							} else {
+							      valide.innerHTML="登录异常！";
+							}
+						        //$('#loginBtn').click();
+						}
+					},
+					error : function() {
+
+					}
+			});
+		  }
+	      } 	
+	}
+
+        
+</script>

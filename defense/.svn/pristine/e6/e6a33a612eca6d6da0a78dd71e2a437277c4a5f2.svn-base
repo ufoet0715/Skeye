@@ -1,0 +1,191 @@
+#parse("base/gridList.vm") 
+#parse("base/listEdit.vm")
+<script>
+	var identityMap=eval('('+'$!{identity}'+')');
+	var privacyMap=eval('('+'$!{privacy}'+')');
+	var encryptWayMap=eval('('+'$!{encryptWay}'+')');
+	var authWayMap=eval('('+'$!{authWay}'+')');
+	var wpsMap=eval('('+'$!{wps}'+')');
+	var broadcastSsidMap=eval('('+'$!{broadcastSsid}'+')');
+	var identityNum=eval('('+'$!{identityNum}'+')');
+	var privacyNum=eval('('+'$!{privacyNum}'+')');
+	var encryptWayNum=eval('('+'$!{encryptWayNum}'+')');
+	var authWayNum=eval('('+'$!{authWayNum}'+')');
+	var wpsNum=eval('('+'$!{wpsNum}'+')');
+	var broadcastSsidNum=eval('('+'$!{broadcastSsidNum}'+')');
+</script>
+<div class="main-container ace-save-state" id="main-container">
+	<div class="main-content-inner">
+		<div class="page-content">
+			<div class="page-header">
+				<h1>
+			        	AP/终端管理
+				</h1>
+			</div>
+			<div class="row">
+				<div class="col-xs-18">
+					<form class=" dataTables_filter" style="margin:0px 12px 15px 0px;">
+							<span style="margin-right:10px;font-size:15px;" id="submitNum">当前未操作数据</span>
+			                <button type="button" id="editSave" class="btn btn-info btn-sm" onclick="save()">
+			                    <i class="icon-check  bigger-110"></i>
+			                    提交
+			                </button>
+			        </form>
+					<table id="grid-table"></table>
+					<div id="grid-pager"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<a href="#" id="btn-scroll-up" class="btn-scroll-up btn btn-sm btn-inverse">
+		<i class="ace-icon fa fa-angle-double-up icon-only bigger-110"></i>
+	</a>
+</div>
+<script src="${link.contextPath}/resources/assets/js/bootstrap-datepicker.min.js"></script>
+<script src="${link.contextPath}/resources/assets/js/jquery.jqGrid.min.js"></script>
+<script src="${link.contextPath}/resources/assets/js/grid.locale-en.js"></script>
+<script type="text/javascript">
+var grid_selector = "#grid-table";
+var pager_selector = "#grid-pager";
+var parent_column = $(grid_selector).closest('[class*="col-"]');
+var ApListable;
+
+/*setInterval ("showTime()", 5000);
+var stopFresh=false;
+
+function showTime(){
+	if(!stopFresh){
+		location.reload();
+	} 	 
+}*/
+
+function getTableData(){
+	var params = {};
+	//表格的表头及数据
+	var colums = ['mac地址','SSID',  '信道','信号强度','保护方式', '加密算法',/*'认证方式', */'WPS状态','是否开启SSID广播','硬件制造商','终端数量','操作']
+	var models = [
+		{name:'mac',index:'mac' ,width:120,   align : "center",editable: true,editoptions:{size:"20",maxlength:"30"},key:true
+            ,
+            formatter:function(value,row,index){
+				if(value.indexOf("-")>=0){
+                   return value.replace(new RegExp("-","gm"),":");
+				}else {
+					return value;
+				}
+            }},
+		{name:'ssid',index:'ssid',align : "center",width:90, editable:true, editoptions:{size:"20",maxlength:"30"}},
+		{name:'channel',index:'channel' ,width:90, align : "center",editable:true, editoptions:{size:"20",maxlength:"30"}},
+		{name:'signal',index:'signal' ,width:90, align : "center",editable:true, editoptions:{size:"20",maxlength:"30"}},
+		{name:'privacy',index:'privacy' ,align : "center",width:90, editable:true, editoptions:{size:"20",maxlength:"30"},
+			formatter:function(value,row,index){
+				return dictionaryMap(privacyMap,privacyNum+""+value);
+				}},
+		{name:'encryptWay',index:'encryptWay',align : "center",width:90, editable:true, editoptions:{size:"20",maxlength:"30"},
+			formatter:function(value,row,index){
+				return dictionaryMap(encryptWayMap,encryptWayNum+""+value);
+				}},
+
+		{name:'wps',index:'wps',width:90, align : "center",editable:true, editoptions:{size:"20",maxlength:"30"},
+			formatter:function(value,row,index){
+				return dictionaryMap(wpsMap,wpsNum+""+value);
+				}},
+		{name:'broadcastSsid',index:'broadcastSsid',width:120,align : "center", editable:true, editoptions:{size:"20",maxlength:"30"},
+			formatter:function(value,row,index){
+				return dictionaryMap(broadcastSsidMap,broadcastSsidNum+""+value);
+				}},
+		{name:'maker',index:'maker',width:90, editable:true,align : "center", editoptions:{size:"20",maxlength:"30"}},
+        {name:'stationCount',index:'stationCount',width:90,align : "center", editable:false, editoptions:{size:"20",maxlength:"30"}},
+		{name : 'ssid',
+            width : 150,
+            align : "center",
+            formatter: function (value, grid, rows, state) {
+            	if(rows.mac=="未连接AP的终端"){
+            		return "";
+            	}else{
+					var macShow;
+                    if(rows.mac.indexOf("-")>=0){
+                        macShow=rows.mac.replace(new RegExp("-","gm"),":");
+                    }else {
+                        macShow=rows.mac;
+                    }
+
+
+            	return '<button id="rowsId" type="button" class="btn btn-info btn-sm" onclick="editType(\''+macShow+'\',\'编辑AP类型\',\'syap\')"><i class="icon-edit  bigger-110"></i>设置AP类型</button>'
+            	}
+     		}
+		}
+	]
+	if (ApListable) {
+	    ApListable.jqGrid("clearGridData");
+	    ApListable.trigger("reloadGrid");
+	}
+	var expandColNames = ['mac地址' ,'信道','信号','硬件制造商' ,'操作'];
+	var expandColModel =  [  
+	    {name:"mac",index:"mac",align:'center',key:true,
+	    formatter: function (value, grid, rows, state) {
+            	if(value != undefined){
+            		return value;
+     			}else{
+     				grid.colModel.hidden = true;
+     			}
+            }},  
+
+	    {name:"channel",index:"channel",width:75,align:'center',
+	    formatter: function (value, grid, rows, state) {
+            	if(value != undefined){
+            		return value;
+     			}else{
+     				grid.colModel.hidden = true;
+     			}
+            }},  
+	    {name:"signal",index:"signal",width:75,align:'center',
+	    formatter: function (value, grid, rows, state) {
+            	if(value != undefined){
+            		return value;
+     			}else{
+     				grid.colModel.hidden = true;
+     			}
+            }},
+	    {name:"maker",index:"maker",width:90,align:'center',
+	    formatter: function (value, grid, rows, state) {
+            	if(value != undefined){
+            		return value;
+     			}else{
+     				grid.colModel.hidden = true;
+     			}
+            }},
+
+	    {name : 'mac',
+
+            align : "center",
+            formatter: function (value, grid, rows, state) {
+            	if(value != undefined){
+            		return '<button id="rowsId" type="button" class="btn btn-info btn-sm" onclick="editType(\''+rows.mac+'\',\'编辑终端类型\',\'syzd\')"><i class="icon-edit  bigger-110"></i>设置终端类型</button>'
+     			}else{
+     				grid.colModel.hidden = true;
+     			}
+            }
+		}
+	];
+	var gridParams = {};
+	gridParams.id = "grid-table";
+	gridParams.pager = "grid-pager";
+	gridParams.url = "${link.contextPath}/ap/scanApListData.json";//表格访问路径
+	gridParams.colums = colums;//表格表头
+	gridParams.models = models;//表格数据
+	gridParams.param = JSON.stringify(params);//查询参数
+	gridParams.title = "AP信息列表";//表格名称
+	gridParams.subGridUrl = "${link.contextPath}/station/scanStationlistData.json";//展开列表数据获取路径,如果没有需要展开就不写
+	gridParams.updateUrl = "${link.contextPath}/user/update.json";//修改、添加路径
+	gridParams.expandColNames = expandColNames;//展开列表表头
+	gridParams.expandColModel = expandColModel;//展开列表数据
+	gridParams.edit = false;//修改
+	gridParams.add = false;//添加
+	gridParams.del = false;//删除
+	gridParams.search = false;//搜索
+	gridParams.view = false;//详情
+	gridParams.refresh = false;//刷新
+	ApListable = getjqGridTable(gridParams);
+}
+getTableData();
+</script>

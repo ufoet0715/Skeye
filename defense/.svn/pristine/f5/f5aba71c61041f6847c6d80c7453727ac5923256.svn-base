@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <script>
+
+        function isInclude(name){
+            var js= /js$/i.test(name);
+            var es=document.getElementsByTagName(js?'script':'link');
+            for(var i=0;i<es.length;i++)
+                if(es[i][js?'src':'href'].indexOf(name)!=-1)return true;
+            return false;
+        }
+        
+        function dictionaryMap(map,key){
+        	if(map[key]){
+        		return map[key];
+        	}else{
+        		return "";
+        	}
+        }
+    </script>
+</head>
+    $screen_content
+</html>

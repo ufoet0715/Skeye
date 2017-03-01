@@ -1,0 +1,229 @@
+#parse("base/gridList.vm")
+
+<script>
+    var invadeFlagNum=eval('('+'$!{invadeNum}'+')');
+	var invadeFlagMap=eval('('+'$!{invadeFlag}'+')');
+	var map={};//批量保存的按钮
+    var num = 0;
+    var changeFlagMap={};
+	function saveAlarm(key,list) {
+        if(!map[key]&&!changeFlagMap[key]){
+            num=num+1;
+            $("#submitNum").html("您已过修改数据，请提交");
+            $("#saveBtn").removeClass("disabled");
+        }
+		if(list==''){
+            list=[];
+		}
+        map[key]=list;
+        $('#my-modal').modal('hide');
+        $(".modal-backdrop").remove();
+    }
+
+    function changeFlag(invadeId,obj) {
+        if(!map[invadeId]&&!changeFlagMap[invadeId]){
+            num=num+1;
+            $("#submitNum").html("您已过修改数据，请提交");
+            $("#saveBtn").removeClass("disabled");
+        }
+        var flag=$(obj).attr("alarmFlg");
+        changeFlagMap[invadeId]=flag;
+        if(flag!=1){
+            $(obj).attr("alarmFlg",1);
+            $(obj).html("激活");
+            $(obj).next("a").addClass("disabled");
+            $(obj).next("a").removeAttr("href");
+        }else {
+            $(obj).attr("alarmFlg",0);
+            $(obj).next("a").removeClass("disabled");
+            $(obj).html("禁用");
+            $(obj).next("a").attr("href",'#my-modal');
+        }
+
+    }
+    function saveSubmit() {
+        var submitMap={};
+        submitMap.selectChange=map;
+        submitMap.changFlag=changeFlagMap;
+        $.ajax({
+            type: "post", url: "${link.contextPath}/alarm/strategyUpdate",
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            }, data: JSON.stringify(submitMap), success : function (result) {
+                $("#submitNum").html("当前未操作数据");
+                map={};
+                changeFlagMap={};
+                num = 0;
+                getTableData();
+                alert("操作成功");
+            }
+        });
+    }
+
+
+</script>
+<div class="main-container ace-save-state" id="main-container">
+	<div class="main-content-inner">
+		<div class="page-header">
+			<h1>
+		       威胁类型管理
+			</h1>
+		</div>
+		<div class="page-content">
+		<form class=" dataTables_filter" style="margin:0px 0px 15px 0px;">
+                <input type="text" class="input-small" id="alarmNameLike" placeholder="威胁名称">
+                <button type="button" class="btn btn-info btn-sm" onclick="getTableData()">
+                    <i class="icon-search  bigger-110"></i>
+                    	查询
+                </button>
+            <span  id="submitNum" style="margin-right:10px;font-size:15px;">当前未操作数据</span>
+            <button type="button" id="saveBtn" class="btn btn-info btn-sm disabled" onclick="saveSubmit()">
+                <i class="icon-edit  bigger-110"></i>
+                提交
+            </button>
+
+        </form>
+			<div class="row">
+				<div class="col-xs-18">
+					<table id="grid-table"></table>
+					<div id="grid-pager"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<a href="#" id="btn-scroll-up" class="btn-scroll-up btn btn-sm btn-inverse">
+		<i class="ace-icon fa fa-angle-double-up icon-only bigger-110"></i>
+	</a>
+	<div id="my-modal" class="modal fade" tabindex="-1">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+					<h3 class="smaller lighter blue no-margin">策略修改</h3>
+				</div>
+
+				<div class="modal-body">
+					<input id="alarmId" name="alarmId" type="hidden"/>  
+                    #parse("alarm/strategyList.vm")
+            		<br/><br/><br/><br/><br/>
+            		<br/><br/><br/><br/><br/>
+				</div>
+
+				<div class="modal-footer">
+					<button class="btn btn-sm btn-primary" onclick="save()">保存</button>
+					<button class="btn btn-sm btn-danger pull-right" data-dismiss="modal">
+						<i class="ace-icon fa fa-times"></i>关闭
+					</button>
+				</div>
+			</div><!-- /.modal-content -->
+		</div><!-- /.modal-dialog -->
+	</div>
+	
+</div>
+
+<script type="text/javascript">
+	function clearSearch() {
+	   // $("#alarmId").val('');
+	    $("#alarmNameLike").val('');
+	}
+	var grid_selector = "#grid-table";
+	var pager_selector = "#grid-pager";
+	var parent_column = $(grid_selector).closest('[class*="col-"]');
+	var alarmListTable;
+	function getTableData(){
+		var params = {};
+		//params.alarmRoleId = $("#alarmRoleId").val();
+		 params.alarmNameLike = $("#alarmNameLike").val();
+		//表格的表头及数据
+		var colums = ['ud','威胁名称','描述信息', '危害等级','激活状态','建议解决方案','操作']
+		var models = [
+            {name:'invadeId',index:'invadeId',hidden:true, width:60,key:true},
+			{name:'itName',index:'itName', width:65},
+			{name:'des',index:'des',width:190},
+			{name:'invadeId',index:'invadeId',align:'center',width:25
+                ,
+                formatter:function(cellvalue, options, rowObject){
+					var cellInt=Number(cellvalue);
+                    if(cellInt < 4800 ) {
+                        return "低";
+                    }else if( 4800<= cellInt&&cellInt<=5000){
+                        return "较低";
+                    }else if( 5000< cellInt&&cellInt<=10000){
+                        return "中等";
+                    }else if( 10000< cellInt&&cellInt<=15000){
+                        return "高";
+                    }else{
+                        return "极高";
+                    }
+                }
+
+
+			},
+			{name:'flag',index:'flag', width:30,align:'center',editable:true,
+                unformat: function (cellvalue) {
+                    for(var key in invadeFlagMap){
+                        if(cellvalue==invadeFlagMap[key])
+                        	return key;
+                	}
+                },
+                edittype: "checkbox", editoptions: { value: "1:0" },
+
+
+				formatter:function(value,row,index){
+					return dictionaryMap(invadeFlagMap,invadeFlagNum+""+value);
+					}},
+            {name:'dtName',index:'dtName',width:60},
+			{name:'flag',index:'flag',width:180,  fixed:true, sortable:false,resize:false,
+				formatter:function(cellvalue, options, rowObject){
+					if(cellvalue==1){
+						return "<a class='btn btn-sm btn-primary' onclick='changeFlag("+rowObject.invadeId+",this)' alarmFlg=0  >禁用</a> &nbsp;&nbsp;&nbsp;" +
+								"<a class='btn btn-sm btn-primary'  data-id='"+rowObject.invadeId+"' href='#my-modal' data-toggle='modal'>修改策略</a>";
+					}else{
+						return "<a class='btn btn-sm btn-primary' onclick='changeFlag("+rowObject.invadeId+",this)'   alarmFlg=1 >激活</a> &nbsp;&nbsp;&nbsp;" +
+						"<a class='btn btn-sm btn-primary disabled'  data-id='"+rowObject.invadeId+"'   data-toggle='modal'  >修改策略</button>";
+					}
+				}
+			}
+		]
+
+		var expandColNames = ['编号','策略名称','策略描述'];
+		var expandColModel =  [  
+		    {name:"defenseId",index:"defenseId",width:60,key:true},
+		    {name:"defenseName",index:"defenseName",width:160},
+		    {name:"defenseDes",index:"defenseDes",width:600}
+		];
+		var gridParams = {};
+		gridParams.id = "grid-table";
+		gridParams.pager = "grid-pager";
+		gridParams.url = "${link.contextPath}/alarm/alarmListData";//表格访问路径
+		gridParams.colums = colums;//表格表头
+		gridParams.models = models;//表格数据
+		gridParams.param = JSON.stringify(params);//查询参数
+		gridParams.title = "威胁列表";//表格名称
+		gridParams.subGridUrl = "${link.contextPath}/alarm/strategyListData";//展开列表数据获取路径,如果没有需要展开就不写
+		gridParams.updateUrl = "${link.contextPath}/alarm/alarmChangeState";//修改、添加路径
+        gridParams.showUrl = "show.json";//展示详情是否还要执行其他操作
+		gridParams.expandColNames = expandColNames;//展开列表表头
+		gridParams.expandColModel = expandColModel;//展开列表数据
+        gridParams.add = false;//添加
+        gridParams.del = false;//删除
+        gridParams.refresh=true;
+        gridParams.search = false;//搜索
+        gridParams.edit=false;
+
+
+        if (alarmListTable) {
+            alarmListTable.jqGrid("clearGridData");
+            alarmListTable = getjqGridTable(gridParams).jqGrid('setGridParam',{  // 重新加载数据
+                "postData" : {
+                    'params': gridParams.param
+                }
+            }).trigger("reloadGrid");//重新加载当前表格，也会向服务器发起新的请求
+        }
+        alarmListTable = getjqGridTable(gridParams);
+	}
+				
+	getTableData();
+	
+</script>

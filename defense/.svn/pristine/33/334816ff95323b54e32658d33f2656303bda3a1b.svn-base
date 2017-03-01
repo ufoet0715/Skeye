@@ -1,0 +1,106 @@
+#parse("base/MyGridList.vm")
+#parse("base/listEdit.vm")
+<div class="main-container ace-save-state" id="main-container">
+	<div class="main-content-inner">
+		<div class="page-content">
+
+		<form class=" dataTables_filter" style="margin:20px 0px 20px 0px;">
+                部门名称： <select name="stationTrustDept" class="input-small" id="stationTrustDept">
+                <option value="">请选择</option>
+            </select>
+                ##<input type="text" class="input-small" id="userNameLike" placeholder="用户名称">
+                <button type="button" class="btn btn-info btn-sm" onclick="getTableData()">
+                    <i class="icon-search  bigger-110"></i>
+                    查询
+                </button>
+        </form>
+			<div class="row">
+				<div class="col-xs-18">
+					<table id="grid-table"></table>
+					<div id="grid-pager"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<a href="#" id="btn-scroll-up" class="btn-scroll-up btn btn-sm btn-inverse">
+		<i class="ace-icon fa fa-angle-double-up icon-only bigger-110"></i>
+	</a>
+</div>
+
+<script type="text/javascript">
+function clearSearch() {
+    $("#stationTrustDept").val('');
+}
+var grid_selector = "#grid-table";
+var pager_selector = "#grid-pager";
+var parent_column = $(grid_selector).closest('[class*="col-"]');
+var stationTrustListTable;
+function getTableData(){
+	var params = {};
+	params.stationTrustDept = $("#stationTrustDept").val();
+	//表格的表头及数据
+	var colums = [' ','mac地址','姓名','电话号码','证件号','部门','备注']
+	var models = [
+		{name:' ',index:' ',width:30,formatter:'actions'},
+		{name:'mac',index:'mac', width:80, fixed:true, sortable:false, resize:false,
+			formatoptions:{ 
+				keys:true,
+			}
+		},
+		{name:'name',index:'name', width:60,editable: true,editoptions:{size:"20",maxlength:"30"}},
+		{name:'phoneNumber',index:'phoneNumber', width:60,editable: true,editoptions:{size:"20",maxlength:"30"}},
+		{name:'idNumber',index:'idNumber', width:60,editable: true,editoptions:{size:"20",maxlength:"30"}},
+		{name:'department',index:'department', width:60,editable: true,editoptions:{size:"20",maxlength:"30"}},
+		{name:'remarks',index:'remarks',width:90, editable:true, editoptions:{size:"20",maxlength:"30"}}
+	]
+	if (stationTrustListTable) {
+	    stationTrustListTable.jqGrid("clearGridData");
+	    stationTrustListTable.trigger("reloadGrid");
+	}
+	var gridParams = {};
+	gridParams.id = "grid-table";
+	gridParams.pager = "grid-pager";
+	gridParams.url = "${link.contextPath}/stationTrust/stationTrustListData.json";//表格访问路径
+	gridParams.editUrl = "${link.contextPath}/stationTrust/stationTrustEdit.html";//表格访问路径
+	gridParams.updateUrl = "${link.contextPath}/stationTrust/stationTrustSave.json";
+	gridParams.colums = colums;//表格表头
+	gridParams.models = models;//表格数据
+	gridParams.param = JSON.stringify(params);//查询参数
+	gridParams.title = "保护终端列表";//表格名称
+	stationTrustListTable = getjqGridTable(gridParams,false);
+}
+getTableData();
+function clearDialog(form){
+	var d = {};
+    var t = form.serializeArray();
+    $.each(t, function() {
+      d[this.name] = this.value;
+    });
+}
+
+function addStation() {
+    $.ajax({
+        url : "${link.contextPath}/stationTrust/bhzd/add.html",//这个就是请求地址对应sAjaxSource
+        type : 'post',
+        success : function(result) {
+          	bootBoxShow(result,"添加Ap信息");
+        },
+        error : function(msg) {
+            alert("查询异常");
+        }
+    });
+ }
+ function editStation(mac){
+ 	$.ajax({
+        url : "${link.contextPath}/stationTrust/bhzd/edit.html",//这个就是请求地址对应sAjaxSource
+        data:{"mac":mac},
+        type : 'post',
+        success : function(result) {
+          	bootBoxShow(result,"编辑Ap信息");
+        },
+        error : function(msg) {
+            alert("查询异常");
+        }
+    });
+ }
+</script>

@@ -1,0 +1,209 @@
+<link rel="stylesheet" href="${link.contextPath}/resources/assets/css/font-awesome.min.css" />
+<link rel="stylesheet" href="${link.contextPath}/resources/assets/css/select2.css" />
+<link rel="stylesheet" href="${link.contextPath}/resources/assets/css/ace.min.css" />
+<link rel="stylesheet" href="${link.contextPath}/resources/assets/css/ace-rtl.min.css" />
+<link rel="stylesheet" href="${link.contextPath}/resources/assets/css/ace-skins.min.css" />
+
+<link rel="stylesheet" href="${link.contextPath}/resources/assets/css/chosen.css" />
+
+<script src="${link.contextPath}/resources/assets/js/fuelux/fuelux.wizard.min.js"></script>
+<script src="${link.contextPath}/resources/assets/js/jquery.validate.min.js"></script>
+<script src="${link.contextPath}/resources/assets/js/additional-methods.min.js"></script>
+<script src="${link.contextPath}/resources/assets/js/jquery.maskedinput.min.js"></script>
+<script src="${link.contextPath}/resources/assets/js/select2.min.js"></script>
+<script src="${link.contextPath}/resources/assets/js/jquery.dataTables.min.js"></script>
+<script src="${link.contextPath}/resources/assets/js/jquery.dataTables.bootstrap.js"></script>
+#if(!$demt)
+<div class="widget-body">
+        <div class="widget-main">
+    找不到设备！请联系管理员！点击关闭
+    </div>
+    </div>
+    <!-- <script>
+    jQuery(function ($) {
+    $(".bootbox-close-button").click();
+    }
+    </script> -->
+    #else
+
+<div class="widget-box">
+    <div class="widget-header widget-header-blue widget-header-flat">
+        <h4 class="lighter">修改设备备注
+    </h4>
+    </div>
+    #if($demt.online==1)
+    <div class="widget-body">
+        <div class="widget-main">
+            <form class="form-horizontal  " action="index.html" id="validation-form" method="post">
+                <input type="hidden" name="deviceSerial" value="$!demt.deviceSerial"/>
+                 <div class="form-group">
+                    <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="name">设备名称:</label>
+                    <div class="col-xs-12 col-sm-9">
+                        <div class="clearfix">
+                           <h5> $!demt.name</h5>
+                        </div>
+                    </div>
+                </div>
+                 <div class="form-group">
+                    <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="version">当前版本:</label>
+                    <div class="col-xs-12 col-sm-9">
+                        <div class="clearfix">
+                           <h5> $demt.version</h5>
+                        </div>
+                    </div>
+                </div>
+              <!--    <div class="form-group">
+                    <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="name">安装时间:</label>
+                    <div class="col-xs-12 col-sm-9">
+                        <div class="clearfix">
+                           <h5> $date.format('yyyy-MM-dd hh:mm:ss',$demt.installTime)</h5>
+                        </div>
+                    </div>
+                </div> -->
+                <div class="form-group">
+                    <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="online">当前在线状态:</label>
+                    <div class="col-xs-12 col-sm-9">
+                        <div class="clearfix">
+                           <h5> #if($demt.online==1) 在线  #else 下线  #end</h5>
+                        </div>
+                    </div>
+                </div>
+                 <div class="form-group">
+                    <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="online">当前功能:</label>
+                    <div class="col-xs-12 col-sm-9">
+                        <div class="clearfix">
+                           <h5> $demt.function</h5>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="remarks">设备备注:</label>
+                    <div class="col-xs-12 col-sm-9">
+                        <div class="clearfix">
+                            <input type="text" name="remarks" id="remarks" value="$!demt.remarks" class="col-xs-12 col-sm-6" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="hr hr-dotted"></div>
+
+                <div class="form-group">
+                    <div class="col-xs-12 col-sm-4 col-sm-offset-3">
+                        <a href="javascript:void(0)" onclick="$('#validation-form').submit()"><span
+                                class="label label-xlg label-primary arrowed arrowed-right">
+          保存
+            </span></a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    #else
+    <div class="widget-body">
+        <div class="widget-main">
+            <form class="form-horizontal  " action="index.html" id="validation-form" method="post">
+                <input type="hidden" name="deviceSerial" value="$!demt.deviceSerial"/>
+                 <div class="form-group">
+                    <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="name">设备名称:</label>
+                    <div class="col-xs-12 col-sm-9">
+                        <div class="clearfix">
+                           <h5> $!demt.name</h5>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="remarks">设备备注:</label>
+                    <div class="col-xs-12 col-sm-9">
+                        <div class="clearfix">
+                            <input type="text" name="remarks" id="remarks" value="$!demt.remarks" class="col-xs-12 col-sm-6" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="hr hr-dotted"></div>
+
+                <div class="form-group">
+                    <div class="col-xs-12 col-sm-4 col-sm-offset-3">
+                        <a href="javascript:void(0)" onclick="$('#validation-form').submit()"><span
+                                class="label label-xlg label-primary arrowed arrowed-right">
+          保存
+            </span></a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    #end
+</div>
+
+
+<script>
+    jQuery(function ($) {
+    
+        $('#validation-form').validate({
+            errorElement: 'div',
+            errorClass: 'help-block',
+            focusInvalid: false,
+            rules: {
+            	remarks: {
+                    required: true
+                },
+            },
+
+            messages: {
+            	remarks: {
+                    required: "请填写备注"
+                },
+            },
+
+            invalidHandler: function (event, validator) { //display error alert on form submit
+                $('.alert-danger', $('.login-form')).show();
+            },
+
+            highlight: function (e) {
+                $(e).closest('.form-group').removeClass('has-info').addClass('has-error');
+            },
+
+            success: function (e) {
+                $(e).closest('.form-group').removeClass('has-error').addClass('has-info');
+                $(e).remove();
+            },
+
+            errorPlacement: function (error, element) {
+                if (element.is(':checkbox') || element.is(':radio')) {
+                    var controls = element.closest('div[class*="col-"]');
+                    if (controls.find(':checkbox,:radio').length > 1) controls.append(error);
+                    else error.insertAfter(element.nextAll('.lbl:eq(0)').eq(0));
+                }
+                else if (element.is('.select2')) {
+                    error.insertAfter(element.siblings('[class*="select2-container"]:eq(0)'));
+                }
+                else if (element.is('.chosen-select')) {
+                    error.insertAfter(element.siblings('[class*="chosen-container"]:eq(0)'));
+                }
+                else error.insertAfter(element.parent());
+            },
+
+            submitHandler: function (form) {
+                $.ajax({
+                    url : "${link.contextPath}/demt/save.json",//这个就是请求地址对应sAjaxSource
+                    data :$(form).serialize(),
+                    type : 'post',
+                    dataType : 'json',
+                    async : false,
+                    success : function(result) {
+                       if(result.isSuccess){
+                          $(".bootbox-close-button").click();
+                           alert("操作成功");
+                           selectLi("${link.contextPath}/demt/list.html");
+                       }
+                    },
+                    error : function(msg) {
+                    }
+                });
+                return false;
+            }
+        });
+    })
+</script>
+#end

@@ -1,0 +1,144 @@
+﻿#parse("base/gridList.vm")
+#parse("base/bootBox.vm")
+
+<script>
+	var eventResultMap=eval('('+'$!{eventResult}'+')');
+	var eventResultNum=eval('('+'$!{eventResultNum}'+')');
+</script>
+<link rel="stylesheet" href="${link.contextPath}/resources/assets/css/jquery.datetimepicker.css"/>
+<script type="text/javascript" src="${link.contextPath}/resources/assets/js/jquery.datetimepicker.full.js"></script>
+
+
+
+
+<div class="main-container ace-save-state" id="main-container">
+ <div class="main-content-inner">
+  <div class="page-content">
+   <h3 class="header smaller lighter blue">日志列表</h3>
+    <form class=" dataTables_filter" style="margin:20px 0px 20px 0px;">
+    事件的类型：
+    <select id="eventTypeSelector">
+     <option value="">请选择</option>
+     #foreach($type in $typeList)
+     <option value="$type.eventType">$type.typeName</option>
+     #end
+    </select>
+    &nbsp;&nbsp;
+    <span style="margin-right:0px;">起始时间</span>
+    <input type="text" name="beginEventTime" id="beginEventTime" data-date-format="yyyy-mm-dd"
+	style="width:185px;display:inline;font-size:12px;"
+	class="form-control date-picker"/>
+    <span style="margin-right:0px;">结束时间</span>
+     <input type="text" name="endEventTime" id="endEventTime" data-date-format="yyyy-mm-dd"
+	style="width:185px;display:inline;font-size:12px;"
+	class="form-control date-picker"/> 
+	<input type="hidden"/>
+    <!-- <input type="text" class="input-small dateTime" id="endEventTime" name="endEventTime" value="$date.get('yyyy-MM-dd ')23:59" style="width: 150px;font-family:'微软雅黑'"/> 
+    &nbsp;&nbsp;-->
+    <button type="button" class="btn btn-info btn-sm" onclick="queryLogList()">
+      <i class="icon-search  bigger-110"></i>查询
+    </button>
+    <button type="button" class="btn btn-sm" onclick="clearSearch()">
+      <i class="icon-reply-all  bigger-110"></i>重置
+    </button>
+    </form>
+    <div class="col-xs-18">
+      <table id="grid-table"></table>
+      <div id="grid-pager"></div>
+    </div>
+  </div>
+ </div>
+</div>
+
+<script type="text/javascript">
+  
+  var grid_selector = "#grid-table";
+  var pager_selector = "#grid-pager";
+  var parent_column = $(grid_selector).closest('[class*="col-"]');
+  var logListTable;
+
+  function checkDate(){
+     
+  }
+
+  function queryLogList() {
+        var beginTime=$("#beginEventTime").val();
+        var endTime=$("#endEventTime").val();
+
+        var params = {};
+        params.eventType = $("#eventTypeSelector").val();
+        if(beginTime)
+       {
+           params.beginEventTime=beginTime+" 00:00:00";
+        }
+
+        if(endTime)
+        {
+           params.endEventTime=endTime+" 23:59:59";
+        }
+
+	var colums=['操作者','事件类型','事件时间','操作结果']
+	var models=[
+	         {name:'userName',index:'userName',width:60,align:'center', editable:false},
+		 {name:'typeName',index:'typeName',width:60,align:'center', editable:false},
+		 {name:'eventTime',index:'eventTime',width:60,align:'center', editable:false},
+		 {name:'eventResult',index:'eventResult',width:60,align:'center', editable:false,
+			 formatter:function(value,row,index){
+					return dictionaryMap(eventResultMap,eventResultNum+""+value);
+				}}
+		 	
+        ];
+
+        var gridParams = {};
+	gridParams.id = "grid-table";
+	gridParams.pager = "grid-pager";
+	gridParams.url = "${link.contextPath}/userLogAndTypeController/getList.json";//表格访问路径
+	gridParams.colums = colums;//表格表头
+	gridParams.models = models;//表格数据
+	gridParams.sortname = "event_time";
+	gridParams.param = JSON.stringify(params);//查询参数
+	gridParams.title = "日志列表";//表格名称
+        //gridParams.isMultiSelect = false;
+        gridParams.edit = false;//修改
+	gridParams.add = false;//添加
+	gridParams.del = false;//删除
+	gridParams.search = false;//搜索
+	gridParams.view = false;//详情
+	gridParams.refresh = true;//刷新
+
+        logListTable = getjqGridTable(gridParams,false);
+
+	if (logListTable) {
+	    logListTable.jqGrid("clearGridData");
+	    logListTable.pgbuttons=true;
+	    logListTable = getjqGridTable(gridParams,false).jqGrid('setGridParam',{  // 重新加载数据
+			"postData" : {
+				'params': gridParams.param
+			}
+		}).trigger("reloadGrid");
+	}
+    }
+
+    function clearSearch(){
+       document.getElementById("eventTypeSelector").selectedIndex=0;
+        $("#beginEventTime").val('');
+        $("#endEventTime").val('');
+    }
+    
+    	$('.date-picker').datepicker({autoclose:true,dateFormat:"yy-MM-dd hh:mm:ss"}).next().on("click", function(){
+			$(this).prev().focus();
+		});
+
+       $('#dataTables_filter').submit(function(){
+          if(!beginTime)
+          {
+           bootBoxAlert("请输入起始时间！");
+          }
+          if(!endTime)
+          {
+            bootBoxAlert("请输入结束时间！");
+           }
+       });
+
+    queryLogList();
+</script>

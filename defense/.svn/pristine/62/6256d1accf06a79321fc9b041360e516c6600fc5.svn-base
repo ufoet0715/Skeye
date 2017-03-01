@@ -1,0 +1,46 @@
+package com.yagout.defense.controller;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.yagout.defense.util.DictionaryEnums;
+import com.yagout.defense.biz.DictionaryBiz;
+import com.yagout.defense.biz.ScanStationBiz;
+
+@Controller
+@RequestMapping("/station")
+public class ScanStationController {
+	@Autowired
+	private ScanStationBiz stationBiz;
+	@Autowired
+	private DictionaryBiz dictionaryBiz;
+	
+	@RequestMapping("/scanStationlistData")
+	@ResponseBody
+    public List<Map<String, Object>> listData(String id) {
+		List<Map<String, Object>> stations=null;
+		Map<String,Object> map = new HashMap<String,Object>();
+		if(id.equals("未连接AP的终端")){
+			stations=stationBiz.getmacApisNullByMap();
+		}else{
+			stations = stationBiz.queryStationByPage(map);
+			if(stations.size()>0){
+				map.put("macAp", id);
+			}
+		}
+		map.put("encryptWayMap", dictionaryBiz.queryDictionaryByParent(DictionaryEnums.ENCRYPT_WAY.getCode()));
+		map.put("identityMap", dictionaryBiz.queryDictionaryByParent(DictionaryEnums.IDENTITY.getCode()));
+		map.put("authWayMap", dictionaryBiz.queryDictionaryByParent(DictionaryEnums.AUTH_WAY.getCode()));
+		map.put("privacy", dictionaryBiz.queryDictionaryByParent(DictionaryEnums.PRIVACY.getCode()));
+		map.put("WPS", dictionaryBiz.queryDictionaryByParent(DictionaryEnums.WPS.getCode()));
+		map.put("boradcastSSID", dictionaryBiz.queryDictionaryByParent(DictionaryEnums.BROADCAST_SSID.getCode()));
+		stations.add(map);
+		return stations;
+    }
+}

@@ -1,0 +1,134 @@
+<script type="text/javascript" src="${link.contextPath}/resources/js/ajaxfileupload.js"></script>
+
+<script type="text/javascript">
+    $(document).ready(function(e) {
+        $('body').on('change',$('#ImportPicInput'),function(){
+            $( "#filename").val($( "#ImportPicInput").val());
+             var strs = new Array(); //定义一数组
+        var filename= $("#filename").val();
+        strs = filename.split('.');
+        var suffix = strs [strs .length - 1];
+
+        if (suffix != 'zip' ) {
+        	document.getElementById("btnDel").style="display:none;";
+            document.getElementById("aaa").innerHTML="请提交正确类型的文件";
+            document.getElementById("aaa").style="color:red;font-size:14px;";
+            var obj = document.getElementById('filename');
+            obj.outerHTML = obj.outerHTML; //这样清空，在IE8下也能执行成功
+             //obj.select(); document.selection.clear(); 好像这种方法也可以清空 input file 的value值，不过我没测试
+        }else{
+        document.getElementById("aaa").innerHTML="提交成功";
+        document.getElementById("aaa").style="color:green;font-size:14px;";
+            $.ajaxFileUpload({
+                type: "POST",
+                url: "${link.contextPath}/update/fileUpload",
+
+                secureuri : false,//是否启用安全提交，默认为false
+                fileElementId:'ImportPicInput',//文件选择框的id属性
+                dataType: 'json',//服务器返回的格式
+                
+                async : false,
+               success :callback
+                  
+            });
+            }
+        });
+
+    });
+    
+    function callback(data){
+    var name;
+    //alert("操作成功");
+    
+   document.getElementById("btnDel").style="display:block;";
+    var a=window.document .getElementById ("iniText");
+    var b=window.document .getElementById ("name");
+    for(var i=0;i<data.length;i++){ 
+		 name=data[i].name
+		a.innerHTML = data[i].remark;
+		b.innerHTML=name;
+		   } 
+  
+    
+    
+    }
+    
+    function upload(){
+    var name=  $("#name").html();
+     $.ajax({
+                    url : "${link.contextPath}/update/save",//这个就是请求地址对应sAjaxSource
+                    data :{ "name":name},
+                    type : 'post',
+                    dataType : 'json',
+                    async : false,
+                    success : function(result) {
+                       if(result.isSuccess){
+                          $(".bootbox-close-button").click();
+                           alert("操作成功");
+                            selectLi("${link.contextPath}/index");
+                           
+
+                       }
+                    },
+                    error : function(msg) {
+                    alert("更新错误");
+                    }
+                });
+                return false;
+    }
+</script>
+
+<div class="page-content">
+	<div class="page-header">
+		<h1>
+            系统升级
+		</h1>
+	</div><!-- /.page-header -->
+	
+	<div class="row">
+		<div class="col-xs-12">
+			<!-- PAGE CONTENT BEGINS -->
+
+			
+				<div class="form-group">
+					<div class="col-sm-10">
+						
+                        &nbsp; &nbsp; &nbsp;
+						<span class="input-icon">
+						<label class="col-sm-4 control-label no-padding-right" for ="filename" >上传升级文件</label>
+							 <input type ="file" id="ImportPicInput" name= "myfile" id= "myfile" style=" display: none" />
+							
+							<input type ="text" class="input-large" id= "filename" />
+							<br><br>
+							<span id="aaa"></span>
+							<br><br>
+							<button class="btn btn-info"    onclick= "$('#ImportPicInput').click();" >打开
+							<i class=" bigger-100"></i>
+
+							</button>
+						</span>
+						<br><br>
+						
+						<span style="display:none" id="name"></span><span id="iniText"></span>
+						<br><br>  &nbsp; &nbsp; 
+                        <span class="input-icon">
+						<button id="btnDel" style="display:none;" type="button" class="btn btn-info"  onclick="upload()">
+            						<i class="icon-cloud-upload  "></i>确认
+            						</span>
+					</div>
+				</div>
+				
+                
+
+                <div class="form-group" style="margin-top:40px;">
+                    <div class="col-md-offset-3">
+                        
+                    </div>
+                
+
+
+			
+		
+	</div>
+</div>
+

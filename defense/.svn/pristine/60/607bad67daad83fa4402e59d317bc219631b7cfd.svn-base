@@ -1,0 +1,186 @@
+﻿<script src="${link.contextPath}/resources/assets/js/jquery-ui-1.10.3.custom.min.js"></script>
+<script src="${link.contextPath}/resources/assets/js/jquery.ui.touch-punch.min.js"></script>
+<script src="${link.contextPath}/resources/assets/js/date-time/bootstrap-datepicker.min.js"></script>
+<script src="${link.contextPath}/resources/assets/js/date-time/bootstrap-timepicker.min.js"></script>
+<script src="${link.contextPath}/resources/assets/js/date-time/moment.min.js"></script>
+<script src="${link.contextPath}/resources/assets/js/date-time/daterangepicker.min.js"></script>
+<script src="${link.contextPath}/resources/assets/js/bootstrap-colorpicker.min.js"></script>
+<script src="${link.contextPath}/resources/assets/js/jquery.knob.min.js"></script>
+<script src="${link.contextPath}/resources/assets/js/jquery.autosize.min.js"></script>
+<script src="${link.contextPath}/resources/assets/js/jquery.inputlimiter.1.3.1.min.js"></script>
+
+<!-- 终端div -->
+<div id="selectStation" style="display:none;">
+	<div class="form-group">
+        <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="mac">mac地址:</label>
+		<div class="col-xs-12 col-sm-9">
+			<div class="clearfix">
+				<input type="text" name="mac" id="zdmac" value="$!{dataBean.mac}" class="col-xs-12 col-sm-7"
+				#if($oper == "'edit'")
+					readonly="readonly"
+				#end onChange="getMacAddress('zdmac')"/>
+			</div>
+		</div>
+	</div>
+    <div class="space-2"></div>
+    
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-3 no-padding-right"
+			for="roleName">姓名:</label>
+		<div class="col-xs-12 col-sm-9">
+			<div class="clearfix">
+				<input type="text" name="name" id="name"
+					value="$!{dataBean.name}" class="col-xs-12 col-sm-7"/>
+			</div>
+		</div>
+    </div>
+    
+    <div class="space-2"></div>
+    
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-3 no-padding-right"
+			for="remark">备注:</label>
+		<div class="col-xs-12 col-sm-9">
+			<div class="clearfix">
+				<input type="text" name="remarks" id="remarks"
+					value="$!{dataBean.remarks}" class="col-xs-12 col-sm-7"/>
+			</div>
+		</div>
+    </div>
+    <div class="space-2"></div>
+    
+    <div class="form-group" id="zdphoneNumber">
+        <label class="control-label col-xs-12 col-sm-3 no-padding-right"
+			for="remark">联系方式:</label>
+		<div class="col-xs-12 col-sm-9">
+			<div class="clearfix">
+				<input type="text" name="phoneNumber" id="phoneNumber"
+					value="$!{dataBean.phone_number}" class="col-xs-12 col-sm-7"
+					pattern="^1([3578]\d|4[57])\d{8}$" title="请正确手机号码" />
+			</div>
+		</div>
+    </div>
+    <div class="space-2"></div>
+
+    <div class="form-group" id="zddepartment">
+		<label class="control-label col-xs-12 col-sm-3 no-padding-right"
+			for="roleName">部门名称:</label>
+		<div class="col-xs-12 col-sm-9">
+			<div class="clearfix">
+				<input type="text" name="department" id="department"
+					value="$!{dataBean.department}" class="col-xs-12 col-sm-7"/>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+<!-- APdiv -->
+<div id="selectAp">
+	<input type="hidden" name="maker" value="$!{dataBean.maker}"/>
+	<input type="hidden" name="privacy" value="$!{dataBean.privacy}"/>
+	<div class="form-group">
+        <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="mac">mac地址:</label>
+		<div class="col-xs-12 col-sm-9">
+			<div class="clearfix">
+				<input type="text" name="mac" id="apmac" value="$!{dataBean.mac}" class="col-xs-12 col-sm-7"
+				#if($oper == "'edit'")
+					readonly="readonly"
+				#end onChange="getMacAddress('apmac')"/>
+			</div>
+		</div>
+	</div>
+	
+    <div class="space-2"></div>
+    
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="roleName">SSID:</label>
+		<div class="col-xs-12 col-sm-9">
+			<div class="clearfix">
+				<input type="text" name="ssid" id="ssid" class="col-xs-12 col-sm-7" value="$!{dataBean.ssid}"/>
+			</div>
+		</div>
+    </div>
+    
+    <div class="space-2"></div>
+    
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-3 no-padding-right"
+			for="remark">备注:</label>
+		<div class="col-xs-12 col-sm-9">
+			<div class="clearfix">
+				<input type="text" name="remarks" id="remarks" class="col-xs-12 col-sm-7" value="$!{dataBean.remarks}"/>
+			</div>
+		</div>
+    </div>
+    <div class="space-2"></div>
+    <input type="hidden" name="privacy" value="$!{dataBean.privacy}"/>
+</div>
+
+
+<!-- 忽略div -->
+<div id="selectMac" style="display:none;">
+	<div class="form-group">
+        <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="mac">mac地址:</label>
+		<div class="col-xs-12 col-sm-9">
+			<div class="clearfix">
+				<input type="text" name="mac" id="macmac" value="$!{dataBean.mac}" class="col-xs-12 col-sm-7"
+				#if($oper == "'edit'")
+					readonly="readonly"
+				#end onChange="getMacAddress('macmac')"/>
+			</div>
+		</div>
+	</div>
+	
+    <div class="space-2"></div>
+    
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="name">名称:</label>
+		<div class="col-xs-12 col-sm-9">
+			<div class="clearfix">
+				<input type="text" name="name" id="name"
+					value="$!{dataBean.name}" class="col-xs-12 col-sm-7"/>
+			</div>
+		</div>
+    </div>
+    
+    <div class="space-2"></div>
+    
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-3 no-padding-right"
+			for="remarks">备注:</label>
+		<div class="col-xs-12 col-sm-9">
+			<div class="clearfix">
+				<input type="text" name="remarks" id="remarks"
+					value="$!{dataBean.remark}" class="col-xs-12 col-sm-7"/>
+			</div>
+		</div>
+    </div>
+    <div class="space-2"></div>
+    
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-3 no-padding-right"
+			for="cnvalidTime">失效时间:</label>
+		<div class="col-xs-12 col-sm-9">
+			<div class="clearfix">
+				<div class="input-group" style="z-index:1040;">
+					<input type="text" name="cnvalidTimeBean" id="cnvalidTimeBean" data-date-format="yyyy-mm-dd"
+		         	style="width:185px;" value="$!{dataBean.cnvalidTime}"
+		         	class="form-control date-picker"/>
+					<span style="background-color:#ccc;padding:6px 10px 10px 8px;">
+						<i class="icon-calendar bigger-110"></i>
+					</span>
+				</div>
+			</div>
+		</div>
+    </div>
+</div>
+
+<script>
+	jQuery(function($){
+	
+		$('.date-picker').datepicker({autoclose:true}).next().on("click", function(){
+			$(this).prev().focus();
+		});
+	});
+</script>

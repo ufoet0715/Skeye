@@ -1,0 +1,87 @@
+<link rel="stylesheet" href="${link.contextPath}/resources/css/vrstyle.css">
+<link rel="stylesheet" href="${link.contextPath}/resources/css/formEdit.css">
+<script src="${link.contextPath}/resources/js/jquery.min.js"></script>
+<div class="right-bottom-first">
+    <div class="one"><img style="margin-top:10px;"
+                          src="${link.contextPath}/resources/imgs/Settings_pre_.png.png"/><span
+            style="color:#5fbdff;border-bottom:6px solid #62bafd;"> 密码修改</span></div>
+</div>
+<div class="wrap">
+    <form class="main form-horizontal" id="changePasswordF"
+    >
+        <fieldset>
+            <div class="control-group">
+                <label class="control-label">
+                    原密码</label>
+                <div class="controls">
+                    <input id="lastpwd" name="userPwd" onkeyup="clearError()" type="password" placeholder="必填项"
+                           class="input-xlarge"
+                           required>
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label">
+                    新密码</label>
+                <div class="controls">
+                    <input id="pwd" name="newPassword" type="password" placeholder="必填项" class="input-xlarge"
+                           required onchange="checkPasswords()">
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label">
+                    确认密码</label>
+                <div class="controls">
+                    <input id="pwd1" name="rePeatPassword" type="password" placeholder="必填项" class="input-xlarge"
+                           required onchange="checkPasswords()">
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label">
+                </label>
+                <div class="controls">
+                    <input type="submit" id="chPWBtn" style="display: none;" :/>
+                    <a href="javascript:void(0)" onclick="$('#chPWBtn').click();"><input type="button" id="cx"
+                                                                                         value="修改" style="cursor:pointer;color:#FFF;
+font-family:'微软雅黑';font-size:12px;float:left;"/></a>
+                </div>
+            </div>
+        </fieldset>
+    </form>
+</div>
+<script>
+    function checkPasswords() {
+        var passl = document.getElementById("pwd");
+        var pass2 = document.getElementById("pwd1");
+        if (passl.value != pass2.value)
+            passl.setCustomValidity("两次密码必须输入一致！");
+        else
+            passl.setCustomValidity('');
+    }
+    function clearError() {
+        var lastpwd = document.getElementById("lastpwd");
+        lastpwd.setCustomValidity('');
+    }
+
+    $('#changePasswordF').submit(function () {
+        var form = $('#changePasswordF');
+        $.ajax({
+            url: '${link.contextPath}/updatePwd.html', data: form.serialize(), success: function (data) {
+                var reslut = eval("(" + data + ")");
+                if (reslut.isSuccess) {
+                    alert("修改成功");
+                    window.location.reload();
+                } else {
+                    var passl = document.getElementById("lastpwd");
+                    passl.setCustomValidity(reslut.resultMsg);
+                    $('#chPWBtn').click();
+                }
+            }, error: function () {
+
+            }
+        });
+
+        return false;
+    })
+
+
+</script>

@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <script src='${link.contextPath}/resources/assets/js/jquery-2.0.3.min.js'></script>
+    #parse("common/baseList.vm")
+    <meta charset="utf-8"/>
+    <title>控制台</title>
+    <link href="${link.contextPath}/resources/assets/css/bootstrap.min.css" rel="stylesheet"/>
+    <link rel="stylesheet" href="${link.contextPath}/resources/assets/css/font-awesome.min.css"/>
+    <link rel="stylesheet" href="${link.contextPath}/resources/assets/css/ace.min.css"/>
+    <link rel="stylesheet" href="${link.contextPath}/resources/assets/css/ace-rtl.min.css"/>
+    <link rel="stylesheet" href="${link.contextPath}/resources/assets/css/ace-skins.min.css"/>
+    <script src="${link.contextPath}/resources/assets/js/ace-extra.min.js"></script>
+    <script src="${link.contextPath}/resources/assets/js/bootstrap.min.js"></script>
+    <script src="${link.contextPath}/resources/assets/js/ace-elements.min.js"></script>
+    <script src="${link.contextPath}/resources/assets/js/ace.min.js"></script>
+    <script type="text/javascript" src="${link.contextPath}/resources/js/ajaxfileupload.js"></script>
+    
+
+
+
+
+</head>
+
+<body>
+<div class="navbar navbar-default" id="navbar">
+      
+   
+	
+    <script type="text/javascript">
+        try {
+            ace.settings.check('navbar', 'fixed')
+        } catch (e) {
+        }
+
+        function selectLi(url) {
+        	if(window.map != undefined){
+        		if(num != 0){
+        			var success = confirm("您还有数据未保存，是否离开?")
+	        		if(!success){
+	        			return ;
+	        		}
+        		}
+        	}
+            if (url) {
+                $.get(url, function (data) { //初始將a.html include div#iframe
+                    if(data.indexOf("loginForm") >= 0){
+                        window.location.reload();
+                    }else{
+                        $("#main_content").html(data);
+                        if($("#alertmod_grid-table")){
+                            $("#alertmod_grid-table").hide();
+                        }
+
+
+                    }
+
+                });
+            } else {
+                $("#main_content").html('');
+            }
+        }
+    </script>
+    
+    <div class="navbar-container" id="navbar-container">
+    
+             
+        <div class="navbar-header pull-left">
+            <a href="javascript:void(0)" class="navbar-brand">
+                <small>
+                    <i class="icon-leaf"></i>
+                    WIFI防御信息系统
+                </small>
+                
+            </a><!-- /.brand -->
+           		
+        </div><!-- /.navbar-header -->
+		
+     	
+     	
+     	
+			
+        <div class="navbar-header pull-right" role="navigation">
+
+            	<ul class="nav ace-nav">
+                <li class="purple">
+                    <a data-toggle="dropdown" class="dropdown-toggle" href="#">
+                        <i class="icon-bell-alt icon-animated-bell"></i>
+                        <span class="badge badge-important" id="num1" name="num1">0</span>
+                    </a>
+
+                    <ul class="pull-right dropdown-navbar navbar-pink dropdown-menu dropdown-caret dropdown-close">
+                        <li class="dropdown-header">
+                            <i class="icon-warning-sign"></i>
+                            <span class="badge badge-important" id="num2" name="num2">没有新通知</span>
+                        </li>
+
+                        <li url="${link.contextPath}/alarm/alarmrecordList">
+                            <a href="javascript:void(0)">
+                                <div class="clearfix">
+											<span class="pull-left">
+												<i class="btn btn-xs no-hover btn-pink icon-comment"></i>
+												警告中心
+											</span>
+                                    <span class="pull-right badge badge-info" id="num3"></span>
+                                </div>
+                            </a>
+                        </li>
+                        
+
+                    </ul>
+                </li>
+		
+
+                <li class="light-blue">
+                    <a data-toggle="dropdown" href="javascript:void(0)" class="dropdown-toggle">
+                        <!-- <img class="nav-user-photo" src="${link.contextPath}/resources/assets/avatars/user.jpg"
+                             alt="Jason's Photo"/> -->
+                        <span class="user-info">
+			 <small>欢迎光临,</small>
+                            $userName
+			</span>
+
+                        <i class="icon-caret-down"></i>
+                    </a>
+
+                    <ul class="user-menu pull-right dropdown-menu dropdown-yellow dropdown-caret dropdown-close">
+
+                        <li>
+                            <input type="text" id="userName" name="userName" value="$userName" style="display:none"/>
+                            <a href="javascript:void(0)" onclick="passwordEdit()">
+                                <i class="icon-edit "></i>
+                                修改密码
+                            </a>
+                        </li>
+
+                        
+
+                       
+
+
+                     
+
+                        <li>
+                            <a href="${link.contextPath}/loginController/loginOut.html">
+                                <i class="icon-off"></i>
+                                退出
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+            </ul><!-- /.ace-nav -->
+            
+        </div><!-- /.navbar-header -->
+       
+    </div><!-- /.container -->
+   <div class="navbar-header pull-right" >
+     	      
+              <span class="navbar-brand" id="getSpace" name="getSpace"></span>
+  
+     	</div>  
+</div>
+
+<div class="main-container" id="main-container">
+    <script type="text/javascript">
+        try {
+            ace.settings.check('main-container', 'fixed')
+        } catch (e) {
+        }
+    </script>
+
+    <div class="main-container-inner">
+        <a class="menu-toggler" id="menu-toggler" href="javascript:void(0)">
+            <span class="menu-text"></span>
+        </a>
+
+        <div class="sidebar" id="sidebar">
+            <script type="text/javascript">
+                try {
+                    ace.settings.check('sidebar', 'fixed')
+                } catch (e) {
+                }
+            </script>
+
+            <ul class="nav nav-list">
+                #foreach($login in $loginList)
+                    #if($login.Menu.parentId==0)
+                        <li #if($login.Menu.Url&&$login.Menu.Url!='')
+                       url="${link.contextPath}${login.Menu.Url}.html"   #end >
+                            #set($parentId=$login.Menu.menuId)
+                            #set($menuIndex=0)
+
+                            <a href="#" class="dropdown-toggle">
+                                <i class="$!{login.Menu.ImageUrl}"></i>
+                                <span class="menu-text"> $!{login.Menu.Name} </span>
+                            </a>
+
+
+                            #foreach($submenu in $loginList)
+                                #if($submenu.Menu.parentId==$parentId)
+                                    #if($menuIndex==0)
+
+                                    <ul class="submenu">
+                                    #end
+
+                                     <li url="${link.contextPath}${submenu.Menu.Url}.html">
+                                        <a href="#">
+                                            <!--<i class="icon-double-angle-right"></i>-->
+                                            <i class="icon-list"></i>
+                                            $!{submenu.Menu.Name}
+                                        </a>
+                                     </li>
+
+                                    #set($menuIndex=$menuIndex+1)
+                                #end
+
+                            #end
+                            #if($menuIndex>0)
+                            </ul>
+                            #end
+                        </li>
+                    #end
+                #end
+            </ul>
+
+
+            <div class="sidebar-collapse" id="sidebar-collapse">
+                <i class="icon-double-angle-left" data-icon1="icon-double-angle-left"
+                   data-icon2="icon-double-angle-right"></i>
+            </div>
+
+            <script type="text/javascript">
+                try {
+                    ace.settings.check('sidebar', 'collapsed')
+                } catch (e) {
+                }
+            </script>
+        </div>
+        <div class="main-content" id="main_content">
+
+
+        </div>
+
+    </div>
+
+    <a href="javascript:void(0)" id="btn-scroll-up" class="btn-scroll-up btn btn-sm btn-inverse">
+        <i class="icon-double-angle-up icon-only bigger-110"></i>
+    </a>
+</div>
+
+</body>
+<script>
+    $(document).ready(function () {
+        $(".nav-list li").click(function () {
+            var tmpUrl = $(this).attr("url");
+            if (tmpUrl && tmpUrl != '') {
+                $(".nav-list li").removeClass("active");
+                $(".nav-list li").removeClass("open");
+                selectLi(tmpUrl);
+            }
+        });
+
+
+    
+    
+     $(".ace-nav li").click(function () {
+                    var tmpUrl = $(this).attr("url");
+                    if (tmpUrl && tmpUrl != '') {
+                        $(this).addClass("active");
+                        selectLi(tmpUrl);
+                    }
+
+                }
+        );
+    });
+    
+    
+
+    function passwordEdit() {
+
+        var userName = document.getElementById("userName").value;
+
+        $.ajax({
+            url: "${link.contextPath}/user/userpasswordEdit.html",
+            data: {"userName": userName},
+            type: 'post',
+            success: function (result) {
+                bootBoxShow(result, "修改密码");
+            },
+            error: function (msg) {
+                bootBoxAlert("查询异常");
+            }
+        });
+    }
+
+
+
+
+
+
+function reLoadDivContent(){
+	var num1=document.getElementById("num1");
+	var num2=document.getElementById("num2");
+	var num3=document.getElementById("num3");
+            $.ajax({
+				url:"${link.contextPath}/alarm/getreadstate",
+				dataType:'json',
+				type:'get',
+				error:function(data){
+
+					var data = JSON.stringify(data);
+					if(data.indexOf("loginForm") >= 0){
+                        alert("登陆信息过期，请重新登录!")
+                       selectLi("${link.contextPath}/login");
+                       
+                    }
+					
+				},
+				success:function(data){		
+					if(data.num!=0){			
+						num1.innerHTML="<span id='"+num1+"' name='"+num1+"'>"+data.num+"</span>";
+						num2.innerHTML="<span id='"+num2+"' name='"+num2+"'>"+data.num+"条通知"+"</span>";
+						num3.innerHTML="<span id='"+num3+"' >"+data.num+"</span>";
+					}else{
+						num1.innerHTML="<span id='"+num1+"' name='"+num1+"'>"+"0"+"</span>";
+						num2.innerHTML="<span id='"+num2+"' name='"+num2+"'>"+"没有新通知"+"</span>";
+						num3.innerHTML="<span id='"+num3+"' name='"+num3+"'>"+"0"+"</span>";
+					}				
+				}
+			});
+        setTimeout(reLoadDivContent,10000);//设置为5秒
+	}
+	
+	function getSpace(){
+		var space=window.document .getElementById ("getSpace");
+		 $.ajax({
+				url:"${link.contextPath}/windows/getSpace",
+				dataType:'json',
+				type:'get',	
+				success:function(data){		
+					
+				for(var i=0;i<data.length;i++){ 
+				
+					space.innerHTML="日志存储空间:"+""+data[i].total+"，"+data[i].free+"，"+data[i].percent;
+					document.getElementById("getSpace").style="color:white;font-size:18px;";
+					 } 
+				}
+			});
+	setTimeout(getSpace,5000);//设置为5秒
+	}
+
+	setTimeout(reLoadDivContent,10000);
+	setTimeout(getSpace,5000);
+
+
+       selectLi("${link.contextPath}/demt/list.html");
+</script>
+</body>
+
+</html>

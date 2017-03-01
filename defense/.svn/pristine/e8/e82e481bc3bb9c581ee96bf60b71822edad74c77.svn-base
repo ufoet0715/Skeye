@@ -1,0 +1,153 @@
+#parse("base/gridList.vm") 
+#parse("base/listEdit.vm")
+<div class="main-container ace-save-state" id="main-container">
+	<div class="main-content-inner">
+		<div class="page-content">
+			<div class="page-header">
+				<h1>
+			        	所有终端管理
+				</h1>
+			</div>
+			
+			
+			
+			<form class=" dataTables_filter" style="margin:0px 12px 15px 0px;">
+			<span style="margin-right:10px;font-size:18px;float:left">终端类型:</span>
+				<select name="apType" class="input-small" id="apType" onChange="apTypeChange(this.value);" style="float:left;margin-left:10px;">
+	                
+	                <option value="1" selected = "selected">保护终端</option>
+	                <option value="2">邻居终端</option>
+	                <option value="3">访客终端</option>
+	                <option value="4">自组网终端</option>
+	    		</select>
+				
+				
+					<span style="margin-right:10px;font-size:15px;" id="submitNum">当前未操作数据</span>
+	                <button type="button" class="btn btn-info btn-sm" id="editSave" onclick="save()">
+	                    <i class="icon-check  bigger-110"></i>提交</button>
+		        </form>
+					<table id="grid-table"></table>
+					<div id="grid-pager"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<a href="#" id="btn-scroll-up" class="btn-scroll-up btn btn-sm btn-inverse">
+		<i class="ace-icon fa fa-angle-double-up icon-only bigger-110"></i>
+	</a>
+</div>
+<script type="text/javascript">
+var grid_selector = "#grid-table";
+var pager_selector = "#grid-pager";
+var parent_column = $(grid_selector).closest('[class*="col-"]');
+var ApListable;
+
+/*setInterval ("showTime()", 5000);
+var stopFresh=false;
+function showTime(){
+	if(!stopFresh){
+		location.reload();
+	} 	 
+}*/
+var urlName = "";
+function apTypeChange(){
+	getTableData(true);
+}
+	
+function getTableData(change){
+	var params = {};
+	
+	//表格的表头及数据
+	var colums = ['mac地址','硬件制造商', '姓名','联系方式','备注','操作']
+	var models = [
+		{name:'mac',index:'mac', width:60,editable: true,editoptions:{size:"20",maxlength:"30"},key:true},
+		{name:'maker',index:'maker',width:90, editable:true, editoptions:{size:"20",maxlength:"30"}},
+		{name:'name',index:'name',width:90, editable:true, editoptions:{size:"20",maxlength:"30"}},
+		{name:'phoneNumber',index:'phoneNumber',width:90, editable:true, editoptions:{size:"20",maxlength:"30"},defval:""},
+		{name:'remarks',index:'remarks',width:90, editable:true, editoptions:{size:"20",maxlength:"30"}},
+		{name : 'mac',
+            width : 50,
+            align : "center",
+            formatter: function (value, grid, rows, state) {
+           		return '<button id="rowsId" type="button" class="btn btn-info btn-sm" onclick="editType(\''+rows.mac+'\',\'编辑终端类型\',\''+urlName+'\')"><i class="icon-edit  bigger-110"></i>修改</button>';
+     		}
+		}
+	]
+	if(ApListable){
+        if(change){
+            ApListable.jqGrid("GridUnload");
+        }else {
+            ApListable.jqGrid("clearGridData");
+            ApListable.trigger("reloadGrid");
+        }
+
+    }
+	var aptype;
+	var urlName = "";
+	var value=$('#apType option:selected').val();//选中的值
+	if(value=="1"){
+		aptype="statinTrust";
+		urlName="bhzd";
+	}else if(value=="2"){
+		aptype="stationNeighbor";
+		urlName="ljzd";
+	}else if(value=="3"){
+		aptype="stationVisitor";
+		urlName="fkzd";
+	}else if(value=="4"){
+		aptype="stationAdHoc";
+		urlName="zzwzd";
+	}else{
+	
+	}
+
+	var gridParams = {};
+	gridParams.id = "grid-table";
+	gridParams.pager = "grid-pager";
+	gridParams.url = "${link.contextPath}/allstation/"+aptype+"/allstationListData.json";//表格访问路径
+	gridParams.colums = colums;//表格表头
+	gridParams.models = models;//表格数据
+	gridParams.param = JSON.stringify(params);//查询参数
+	gridParams.title = "终端信息列表";//表格名称
+	gridParams.updateUrl = "${link.contextPath}/user/update.json";//修改、添加路径
+	gridParams.multiselect = true;//多选框是否显示，不写默认显示
+	gridParams.addFunction = "true";
+	gridParams.delfunc =function (){
+		var data=$('#grid-table').jqGrid('getGridParam','selarrrow');	
+		var newNum = data.length;
+		var success = confirm("你确定删除这"+newNum+"条数据吗？");
+		if(success){
+			for(var i=0;i<data.length;i++){
+				window.parent.map[data[i]]="";
+			}
+			window.parent.num = window.parent.num + newNum;
+			$("#num").text(num);
+			$("#editSave").addClass("btn-info");
+			$("#editSave").removeClass("disabled");
+		  	$(".bootbox-close-button").click();	
+		}
+	};
+	gridParams.edit = false;//修改
+	gridParams.add = true;//添加
+	gridParams.del = true;//删除
+	gridParams.search = false;//搜索
+	gridParams.view = false;//详情
+	gridParams.refresh = false;//刷新
+	ApListable = getjqGridTable(gridParams,false);
+}
+function addFunction(){
+	var urlName = "";
+	var value=$('#apType option:selected') .val();//选中的值
+	if(value=="1"){
+		urlName="bhzd";
+	}else if(value=="2"){
+		urlName="ljzd";
+	}else if(value=="3"){
+		urlName="fkzd";
+	}else if(value=="4"){
+		urlName="zzwzd";
+	}
+	add(urlName);
+}
+getTableData();
+</script>

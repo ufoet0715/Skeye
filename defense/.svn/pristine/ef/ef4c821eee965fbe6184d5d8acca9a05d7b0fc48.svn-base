@@ -1,0 +1,108 @@
+<script>
+var map = {};
+var num = 0;
+if(num == 0){
+	$("#editSave").removeClass("btn-info");
+	$("#editSave").addClass("disabled");
+}
+
+function add(urlName,all) {
+	var title;
+	if(urlName == "xzap" || urlName == "ljap" || urlName == "fkap" || urlName == "zzwap"){
+		title = "添加AP信息";
+	}else if(urlName == "bhzd" || urlName == "ljzd" || urlName == "fkzd" || urlName == "zzwzd"){
+		title = "添加终端信息";
+	}else{
+		title = "添加MAC信息";
+	}
+    $.ajax({
+        url : "${link.contextPath}/stationTrust/"+urlName+"/add.html",//这个就是请求地址对应sAjaxSource
+        type : 'post',
+        success : function(result) {
+          	bootBoxShow(result,title);
+        },
+        error : function(msg) {
+            alert("查询异常");
+        }
+    });
+ }
+ 
+function editType(data,title,urlName,all){
+	if(all != undefined){
+		urlName = all;
+	}
+	$.ajax({
+        url : "${link.contextPath}/stationTrust/"+urlName+"/edit.html",//这个就是请求地址对应sAjaxSource
+        data:{"mac":data},
+        type : 'post',
+        success : function(result) {
+          	bootBoxShow(result,title);
+        },
+        error : function(msg) {
+            alert("查询异常");
+        }
+    });
+}
+
+window.onbeforeunload = onbeforeunload_handler;
+window.onunload = onunload_handler;
+function onbeforeunload_handler() {
+	if(num > 0){
+		var warning = "确认退出?";
+      	return warning;
+	}
+}
+ 
+function onunload_handler() {
+      var warning = "谢谢光临";
+} 
+
+function save(){
+	$.ajax({
+        url : "${link.contextPath}/stationTrust/addsave.json",//这个就是请求地址对应sAjaxSource
+        data :JSON.stringify(map),
+        type : 'post',
+        dataType : 'json',
+        headers : {
+            'Accept' : 'application/json',
+            'Content-Type' : 'application/json'
+        },
+        async : false,
+        success : function(result) {
+           if(result.isSuccess){
+               alert("操作成功");
+               map = {};
+               num = 0;
+               $("#submitNum").html("当前未操作数据");
+               $("#editSave").removeClass("btn-info");
+               $("#editSave").addClass("disabled");
+               getTableData();
+           }else{
+           		alert("操作失败");
+           }
+        },
+        error : function(msg) {
+        	alert("操作失败"+msg);
+        }
+    });
+    return false;
+}
+
+function getMacAddress(id){
+	var mac = $("#"+id).val();
+	$.ajax({
+        url : "${link.contextPath}/stationTrust/getMacAddress.html",//这个就是请求地址对应sAjaxSource
+        data:{"mac":mac},
+        type : 'post',
+        success : function(result) {
+        	if(result != null && result != ""){
+        		alert("此mac地址已经被设置为"+result+"! 继续执行操作会删除原来的数据!");
+        	}
+        },
+        error : function(msg) {
+            alert("查询异常");
+        }
+    });
+}
+$("#num").text(num);
+</script>

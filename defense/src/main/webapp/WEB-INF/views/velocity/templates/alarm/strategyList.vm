@@ -1,0 +1,65 @@
+<div class="form-group">
+    <div class="col-sm-8">
+        <form id="demoform" method="post">
+            <select multiple="multiple" size="10" name="duallistbox_demo1[]" id="duallist">
+            </select>
+        </form>
+    </div>
+</div>
+
+<script type="text/javascript">
+    var demo1 = $('select[name="duallistbox_demo1[]"]').bootstrapDualListbox({
+        nonSelectedListLabel: '默认策略',
+        selectedListLabel: '已经选择的策略',
+    });
+
+    $('#my-modal').on('shown.bs.modal', function (e) {
+        var btn = $(e.relatedTarget);
+            var    invadeId = $(btn).data("id");
+        $('select[name="duallistbox_demo1[]_helper1"]').empty();
+        $('select[name="duallistbox_demo1[]_helper2"]').empty();
+        $("#duallist").empty();
+        $("#alarmId").val(invadeId);
+        var data = {"invadeId":invadeId};
+        $.post("${link.contextPath}/alarm/toShowStrategy", data, function (objs) {
+            var strs = objs['strs'];
+            var defs = objs['defs'];
+            $(defs).each(function () {
+                if(this['defenseId']) {
+                    var flag = false;
+                    var dId = this['defenseId'];
+                    var dName = this['defenseName'];
+                    $(strs).each(function () {
+                        if (this['defenseId']) {
+                            if (dId == this['defenseId']) {
+                                demo1.append('<option value="' + dId + '" selected>' + dName + '</option>');
+                                demo1.bootstrapDualListbox('refresh');
+                                flag = true;
+                                return false;
+                            }
+                        }
+
+                    });
+                    if (flag == false) {
+                        demo1.append('<option value="' + dId + '">' + dName + '</option>');
+                        demo1.bootstrapDualListbox('refresh');
+                    }
+                }
+            });
+        });
+    })
+
+    function save() {
+        var selected = $('[name="duallistbox_demo1[]"]').val();
+        var ids = "";
+        if (selected && selected != '') {
+            ids = selected;
+        }
+        var alarmId = $("#alarmId").val();
+         parent.saveAlarm(alarmId,ids);
+
+    }
+</script>
+                
+                
+        

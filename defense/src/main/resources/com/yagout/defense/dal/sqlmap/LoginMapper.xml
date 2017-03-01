@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yagout.defense.dal.service.LoginMapper">
+
+	<resultMap type="com.yagout.defense.dal.model.Login" id="BaseResultMap">
+	    <id column="row_id" property="rowId" jdbcType="INTEGER" />
+		<association property="user" javaType="com.yagout.defense.dal.model.User">
+			<id column="user_id" property="userId" jdbcType="INTEGER" />
+			<result column="user_name" property="userName" jdbcType="VARCHAR" />
+			<result column="user_pwd" property="userPwd" jdbcType="VARCHAR" />
+			<result column="remarks" property="remarks" jdbcType="VARCHAR" />
+			<result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+		</association>
+		<association property="role" javaType="com.yagout.defense.dal.model.Role">
+			<id column="role_id" property="roleId" jdbcType="INTEGER" />
+			<result column="role_name" property="roleName" jdbcType="VARCHAR" />
+			<result column="remark" property="remark" jdbcType="VARCHAR" />
+			<result column="create_time1" property="createTime" jdbcType="TIMESTAMP" />
+		</association>
+		<association property="menu" javaType="com.yagout.defense.dal.model.Menu">
+			<id column="menu_id" property="menuId" jdbcType="INTEGER" />
+			<result column="parent_id" property="parentId" jdbcType="INTEGER" />
+			<result column="name" property="name" jdbcType="VARCHAR" />
+			<result column="url" property="url" jdbcType="VARCHAR" />
+			<result column="perms" property="perms" jdbcType="VARCHAR" />
+			<result column="menu_level" property="menuLevel" jdbcType="INTEGER" />
+			<result column="order_num" property="orderNum" jdbcType="INTEGER" />
+			<result column="image_url" property="imageUrl" jdbcType="VARCHAR" />
+		</association>
+	</resultMap>
+
+	<select id="getLoginByMap" parameterType="java.util.Map"
+		resultMap="BaseResultMap">
+		SELECT m.menu_id row_id,u.*,r.*,m.*
+		FROM role_menu rm
+		LEFT JOIN menu m ON rm.menu_id=m.menu_id
+		LEFT JOIN role r ON rm.role_id=r.role_id
+		LEFT JOIN user_role ur ON ur.role_id=r.role_id
+		LEFT JOIN user u ON ur.user_id=u.user_id
+		WHERE 1=1
+		<if test="userName!=null">
+			AND u.user_name= #{userName,jdbcType=VARCHAR}
+		</if>
+		<if test="password!=null">
+			AND u.user_pwd= #{password,jdbcType=VARCHAR}
+		</if>
+		ORDER BY m.parent_id,m.menu_level
+	</select>
+</mapper>

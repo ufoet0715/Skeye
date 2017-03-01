@@ -1,0 +1,18 @@
+<link rel="stylesheet" href="${link.contextPath}/resources/assets/css/font-awesome.min.css" />
+<link rel="stylesheet" href="${link.contextPath}/resources/assets/css/select2.css" />
+<link rel="stylesheet" href="${link.contextPath}/resources/assets/css/ace.min.css" />
+<link rel="stylesheet" href="${link.contextPath}/resources/assets/css/ace-rtl.min.css" />
+<link rel="stylesheet" href="${link.contextPath}/resources/assets/css/ace-skins.min.css" />
+<link rel="stylesheet" href="${link.contextPath}/resources/assets/css/chosen.css" />
+
+<script src="${link.contextPath}/resources/assets/js/fuelux/fuelux.wizard.min.js"></script>
+<script src="${link.contextPath}/resources/assets/js/jquery.validate.min.js"></script>
+<script src="${link.contextPath}/resources/assets/js/additional-methods.min.js"></script>
+<script src="${link.contextPath}/resources/assets/js/jquery.maskedinput.min.js"></script>
+<script src="${link.contextPath}/resources/assets/js/select2.min.js"></script>
+<script src="${link.contextPath}/resources/assets/js/jquery.dataTables.min.js"></script>
+<script src="${link.contextPath}/resources/assets/js/jquery.dataTables.bootstrap.js"></script>
+
+<script src="${link.contextPath}/resources/assets/js/chosen.jquery.min.js"></script>
+
+

@@ -1,0 +1,197 @@
+#parse("common/baseEdit.vm")
+<div class="widget-box">
+    <div class="widget-body" style="margin-top:-20px;">
+    <hr/>
+        <div class="widget-main">
+            <form class="form-horizontal" id="validation-form" method="post">
+                <div class="form-group">
+                    <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="macType">mac类型:</label>
+					<div class="col-xs-12 col-sm-8">
+						<div class="clearfix">
+							<select class="col-xs-12 col-sm-8" id="macType" name="macType" onChange="selectOnChange()"> 
+								#if($oper != "'edit'" || $urlName == 'xzap' || $urlName == 'ljap' || $urlName == 'fkap' || $urlName == 'zzwap')
+									<option value="xzap" #if($urlName == 'xzap') selected="selected" #end>信任AP</option>
+									<option value="ljap" #if($urlName == 'ljap') selected="selected" #end>邻居AP</option>
+									<option value="fkap" #if($urlName == 'fkap') selected="selected" #end>访客AP</option>
+									<option value="zzwap" #if($urlName == 'zzwap') selected="selected" #end>自组网AP</option>
+								#end
+								#if($oper != "'edit'" || $urlName == 'bhzd' || $urlName == 'ljzd' || $urlName == 'fkzd' || $urlName == 'zzwzd')
+									<option value="bhzd" #if($urlName == 'bhzd') selected="selected" #end>保护终端</option>
+									<option value="ljzd" #if($urlName == 'ljzd') selected="selected" #end>邻居终端</option>
+									<option value="fkzd" #if($urlName == 'fkzd') selected="selected" #end>访客终端</option>
+									<option value="zzwzd" #if($urlName == 'zzwzd') selected="selected" #end>自助网终端</option>
+								#end
+							</select>
+						</div>
+					</div>
+                </div>
+                
+                <div class="space-2"></div>
+                
+                #parse("stationTrust/stationTrustSelect.vm")
+                
+                <div class="hr hr-dotted"></div>
+
+                <div class="form-group">
+                    <div class="col-xs-12 col-sm-4 col-sm-offset-3">
+                        <a href="javascript:void(0)" onclick="$('#validation-form').submit()">
+                        <span class="label label-xlg label-primary arrowed arrowed-right">
+                        	保存</span></a>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<script>
+	function selectOnChange(){
+		var macType = $("#macType").val();
+		var oper = ''+$!oper+'';
+		if(macType == 'mac'){
+			$("#selectMac").css('display','block');
+			$("#selectAp").css('display','none');
+			$("#selectStation").css('display','none');
+			if(oper == 'edit'){
+				$("#"+macType+"mac").html("<option value=\"${dataBean.mac}\" selected=\"selected\">$!{dataBean.mac}</option>");
+			}else{
+				$("#"+macType+"mac").html("<option value=\"\" selected=\"selected\">请选择要添加的mac地址</option>");
+			}
+			getMacData(macType);
+		}else if(macType == 'bhzd'){
+			$("#selectMac").css('display','none');
+			$("#selectAp").css('display','none');
+			$("#selectStation").css('display','block');
+			$("#zdphoneNumber").css('display','block');
+			$("#zddepartment").css('display','block');
+			if(oper == 'edit'){
+				$("#zdmac").html("<option value=\"${dataBean.mac}\" selected=\"selected\">$!{dataBean.mac}</option>");
+			}else{
+				$("#zdmac").html("<option value=\"\" selected=\"selected\">请选择要添加的mac地址</option>");
+			}
+			getMacData(macType);
+		}else if(macType == 'ljzd' || macType == 'fkzd'){
+			$("#selectMac").css('display','none');
+			$("#selectAp").css('display','none');
+			$("#selectStation").css('display','block');
+			$("#zdphoneNumber").css('display','block');
+			$("#zddepartment").css('display','none');
+			if(oper == 'edit'){
+				$("#zdmac").html("<option value=\"${dataBean.mac}\" selected=\"selected\">$!{dataBean.mac}</option>");
+			}else{
+				$("#zdmac").html("<option value=\"\" selected=\"selected\">请选择要添加的mac地址</option>");
+			}
+			getMacData(macType);
+		}else if(macType == 'zzwzd'){
+			$("#selectMac").css('display','none');
+			$("#selectAp").css('display','none');
+			$("#selectStation").css('display','block');
+			$("#zdphoneNumber").css('display','none');
+			$("#zddepartment").css('display','none');
+			if(oper == 'edit'){
+				$("#zdmac").html("<option value=\"${dataBean.mac}\" selected=\"selected\">$!{dataBean.mac}</option>");
+			}else{
+				$("#zdmac").html("<option value=\"\" selected=\"selected\">请选择要添加的mac地址</option>");
+			}
+			getMacData(macType);
+		}else{
+			$("#selectMac").css('display','none');
+			$("#selectAp").css('display','block');
+			$("#selectStation").css('display','none');
+			if(oper == 'edit'){
+				$("#apmac").html("<option value=\"${dataBean.mac}\" selected=\"selected\">$!{dataBean.mac}</option>");
+			}else{
+				$("#apmac").html("<option value=\"\" selected=\"selected\">请选择要添加的mac地址</option>");
+			}
+			getMacData("ap");
+		}
+	}
+	
+	function getMacData(urlName){
+		$.ajax({
+            url : "${link.contextPath}/stationTrust/getMacData.json",//这个就是请求地址对应sAjaxSource
+            data :{"urlName":urlName},
+            type : 'post',
+            dataType : 'json',
+            async : false,
+            success : function(result) {
+             var url = "";
+            	if(urlName == 'mac'){
+           			url = "mac";
+				}else if(urlName == 'ljzd' || macType == 'fkzd' || urlName == 'zzwzd' || urlName == 'bhzd'){
+					url = "zd";
+				}else{
+					url = "ap";
+				}
+               for(var i = 0; i < result.length; i++){
+               		var select = document.getElementById(url+"mac");
+	                var optionElement = document.createElement("option");//创建option节点
+	                optionElement.setAttribute("value",result[i].mac);//设置option节点的value属性值
+	                optionElement.innerText = result[i].mac;//设置option标签的内部文本
+	                select.appendChild(optionElement);//加到select节点下
+	            }
+            }
+         });
+	}
+	
+    jQuery(function ($) {
+        $('#validation-form').validate({
+            errorElement: 'div',
+            errorClass: 'help-block',
+            focusInvalid: false,
+            rules: {
+                mac: {
+                    required: true
+                }
+            },
+            messages: {
+                mac: {
+                    required: "请填写mac地址"
+                }
+            },
+
+            invalidHandler: function (event, validator) { //display error alert on form submit
+                $('.alert-danger', $('.login-form')).show();
+            },
+
+            highlight: function (e) {
+                $(e).closest('.form-group').removeClass('has-info').addClass('has-error');
+            },
+
+            success: function (e) {
+                $(e).closest('.form-group').removeClass('has-error').addClass('has-info');
+                $(e).remove();
+            },
+
+            errorPlacement: function (error, element) {
+                if (element.is(':checkbox') || element.is(':radio')) {
+                    var controls = element.closest('div[class*="col-"]');
+                    if (controls.find(':checkbox,:radio').length > 1) controls.append(error);
+                    else error.insertAfter(element.nextAll('.lbl:eq(0)').eq(0));
+                }
+                else if (element.is('.select2')) {
+                    error.insertAfter(element.siblings('[class*="select2-container"]:eq(0)'));
+                }
+                else if (element.is('.chosen-select')) {
+                    error.insertAfter(element.siblings('[class*="chosen-container"]:eq(0)'));
+                }
+                else error.insertAfter(element.parent());
+            },
+
+            submitHandler: function (form) {
+            	var data = decodeURIComponent($(form).serialize(),true);
+             	window.parent.map[form.mac[0].value]=data;
+             	window.parent.num = window.parent.num + 1;
+             	$("#num").text(num);
+             	$("#editSave").addClass("btn-info");
+             	$("#editSave").removeClass("disabled");
+            	$(".bootbox-close-button").click();
+            }
+        });
+        selectOnChange();
+    })
+    
+    
+</script>

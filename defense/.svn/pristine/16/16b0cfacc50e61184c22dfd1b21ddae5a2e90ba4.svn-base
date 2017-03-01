@@ -1,0 +1,179 @@
+#parse("base/gridList.vm")
+<script>
+	var readStateMap=eval('('+'$!{readState}'+')');
+	var alarmStateMap=eval('('+'$!{alarmState}'+')');
+	var readStateNum=eval('('+'$!{readStateNum}'+')');
+	var alarmStateNum=eval('('+'$!{alarmStateNum}'+')');
+</script>
+<link rel="stylesheet" href="${link.contextPath}/resources/assets/css/jquery.datetimepicker.css"/>
+<script type="text/javascript" src="${link.contextPath}/resources/assets/js/jquery.datetimepicker.full.js"></script>
+
+
+
+
+<div class="main-container ace-save-state" id="main-container">
+	<div class="main-content-inner">
+		<div class="page-content">
+		<form class=" dataTables_filter" style="margin:20px 0px 20px 0px;">
+
+            <input type="text"  class="input-small" id="itName" placeholder="攻击类型" />
+            &nbsp;
+            <input type="text"  class="input-small" id="mac" placeholder="攻击者 " />
+            &nbsp;&nbsp;
+            
+            
+            <span style="margin-right:0px;">起始时间</span>
+            <input type="text" name="start" id="start" data-date-format="yyyy-mm-dd"
+                   style="width:185px;display:inline;font-size:12px;"
+                   class="form-control date-picker" onchange="getStartTime();"/>
+            <input type="text" name="startTime" id="startTime"  style="width:185px;display:inline;font-size:12px;display:none;" />
+           
+           
+            <span style="margin-right:0px;">结束时间</span>
+            <input type="text" name="End" id="End" data-date-format="yyyy-mm-dd"
+                   style="width:185px;display:inline;font-size:12px;"
+                   class="form-control date-picker" onchange="getEndTime();" />
+				<input type="text" name="endTime" id="endTime"  style="width:185px;display:inline;font-size:12px;display:none;" />
+
+
+
+            <button type="button" class="btn btn-info btn-sm" onclick="getTableData()">
+                <i class="icon-search  bigger-110"></i>查询
+            </button>
+            <button type="button" class="btn btn-sm" onclick="clearSearch()">
+                <i class="icon-reply-all  bigger-110"></i>重置
+            </button>
+        </form>
+			<div class="row">
+				<div class="col-xs-18">
+					<table id="grid-table"></table>
+					<div id="grid-pager"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<a href="#" id="btn-scroll-up" class="btn-scroll-up btn btn-sm btn-inverse">
+		<i class="ace-icon fa fa-angle-double-up icon-only bigger-110"></i>
+	</a>
+</div>
+
+<script type="text/javascript">
+function clearSearch() {
+ $("#End").val('');
+    $("#itName").val('');
+    $("#mac").val('');
+    $("#startTime").val('');
+    $("#endTime").val('');
+    $("#start").val('');
+     
+     
+
+}
+var grid_selector = "#grid-table";
+var pager_selector = "#grid-pager";
+var parent_column = $(grid_selector).closest('[class*="col-"]');
+var userListTable;
+function getTableData(){
+	var params = {};
+	params.itName = $("#itName").val();
+	params.mac = $("#mac").val();
+    params.startTime=$("#startTime").val();
+    params.endTime=$("#endTime").val();
+	//表格的表头及数据
+	var colums = ['事件发生时间','攻击者','受攻击目标','攻击类型','危害等级','事件描述', '解决方案']
+	var models = [
+		{name:'createTime',index:'createTime',width:19, editable:true, editoptions:{size:"10",maxlength:"15"},
+			formatter : function(cellvalue, options, rowObject) {
+                return $.hd_jqGrid.dateTimeFormatter(cellvalue);
+    }},
+		{name:'mac',index:'mac',width:18,editable:true, editoptions:{size:"10",maxlength:"15"}},
+		{name:'macInvaded',index:'macInvaded',width:18,editable:true, editoptions:{size:"10",maxlength:"15"}},
+		{name:'itName',index:'itName',width:22, editable:true, editoptions:{size:"10",maxlength:"15"}},
+        {name:'invadeId',index:'invadeId' ,align:'center',width:9
+            ,
+            formatter:function(cellvalue, options, rowObject){
+                var cellInt=Number(cellvalue);
+                if(cellInt < 4800 ) {
+                    return "低";
+                }else if( 4800<= cellInt&&cellInt<=5000){
+                    return "较低";
+                }else if( 5000< cellInt&&cellInt<=10000){
+                    return "中等";
+                }else if( 10000< cellInt&&cellInt<=15000){
+                    return "高";
+                }else{
+                    return "极高";
+                }
+            }
+
+
+        },
+
+
+
+
+		{name:'des',index:'des',width:65, editable:true, editoptions:{size:"10",maxlength:"15"}},
+		{name:'dtName',index:'dtName',width:15, editable:true, editoptions:{size:"10",maxlength:"15"}},
+
+	]
+
+
+	var gridParams = {};
+	gridParams.id = "grid-table";
+	gridParams.pager = "grid-pager";
+	gridParams.url = "${link.contextPath}/alarm/hitory_alarmListData.json";//表格访问路径
+	gridParams.colums = colums;//表格表头
+	gridParams.models = models;//表格数据
+	gridParams.param = JSON.stringify(params);//查询参数
+	gridParams.title = "历史告警信息列表";//表格名称
+
+	gridParams.updateUrl = "${link.contextPath}/alarm/update.json";//修改、添加路径
+
+	//导航按钮是否显示
+	gridParams.edit = false;//修改
+	gridParams.add = false;//添加
+	gridParams.del = false;//删除
+	gridParams.search = false;//搜索
+	gridParams.view = false;//详情
+	gridParams.refresh = false;//刷新
+    gridParams.multiselect=false;
+    if (userListTable) {
+        userListTable.jqGrid("clearGridData");
+        userListTable = getjqGridTable(gridParams,false).jqGrid('setGridParam',{  // 重新加载数据
+            "postData" : {
+                'params': gridParams.param
+            }
+        }).trigger("reloadGrid");//重新加载当前表格，也会向服务器发起新的请求
+    }
+    userListTable = getjqGridTable(gridParams,false);
+
+}
+$('.date-picker').datepicker({autoclose:true,dateFormat:"yy-MM-dd hh:mm:ss"});
+getTableData();
+
+
+function getStartTime(){
+var starttime=document.getElementById("start").value;
+if(starttime)
+       {
+          time=starttime+" 00:00:00";
+        }
+var count = (new Date(time)).getTime();
+
+ document.getElementById("startTime").value=count;
+}
+
+
+function getEndTime(){
+var endTime=document.getElementById("End").value;
+ if(endTime)
+        {
+          time=endTime+" 23:59:59";
+        }
+var count = (new Date(time)).getTime();
+
+ document.getElementById("endTime").value=count;
+}
+
+
+</script>

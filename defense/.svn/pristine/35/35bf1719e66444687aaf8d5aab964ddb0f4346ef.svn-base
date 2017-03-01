@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+
+#parse("base/gridList.vm")
+<script>
+	var readStateMap=eval('('+'$!{readState}'+')');
+	var alarmStateMap=eval('('+'$!{alarmState}'+')');
+	var readStateNum=eval('('+'$!{readStateNum}'+')');
+	var alarmStateNum=eval('('+'$!{alarmStateNum}'+')');
+</script>
+	</head>
+<div class="main-container ace-save-state" id="main-container">
+	<div class="main-content-inner">
+		<div class="page-header">
+			<h1>
+		        	警告信息列表
+			</h1>
+		</div>
+		<div class="page-content">
+		<form class=" dataTables_filter" style="margin:0px 0px 15px 0px;">
+               
+        </form>
+			<div class="row">
+				<div class="col-xs-18">
+					<table id="grid-table"></table>
+					<div id="grid-pager"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<a href="#" id="btn-scroll-up" class="btn-scroll-up btn btn-sm btn-inverse">
+		<i class="ace-icon fa fa-angle-double-up icon-only bigger-110"></i>
+	</a>
+</div>
+
+<script type="text/javascript">
+var grid_selector = "#grid-table";
+var pager_selector = "#grid-pager";
+var parent_column = $(grid_selector).closest('[class*="col-"]');
+var alarmrecordTable;
+function getTableData(){
+	var params = {};
+	params.userRoleId = $("#userRoleId").val();
+	params.userNameLike = $("#userNameLike").val();
+	//表格的表头及数据
+	var colums = ['','事件发生时间','攻击者','受攻击目标','攻击类型','危害等级','事件描述', '解决方案']
+	var models = [
+		{name:'id',index:'id',width:10,editable: true,editoptions:{size:"20",maxlength:"30"},key:true,hidden:true},
+		{name:'createTime',index:'createTime',width:20, editable:true, editoptions:{size:"10",maxlength:"15"},
+			formatter : function(cellvalue, options, rowObject) {
+                return $.hd_jqGrid.dateTimeFormatter(cellvalue);
+    }},
+		{name:'mac',index:'mac',width:15,editable:true, editoptions:{size:"10",maxlength:"15"}},
+		{name:'macInvaded',index:'macInvaded',width:15,editable:true, editoptions:{size:"10",maxlength:"15"}},
+		{name:'itName',index:'itName',width:20, editable:true, editoptions:{size:"10",maxlength:"15"}},
+        {name:'invadeId',index:'invadeId' ,width:20
+            ,
+            formatter:function(cellvalue, options, rowObject){
+                var cellInt=Number(cellvalue);
+                if(cellInt < 4800 ) {
+                    return "低";
+                }else if( 4800<= cellInt&&cellInt<=5000){
+                    return "较低";
+                }else if( 5000< cellInt&&cellInt<=10000){
+                    return "中等";
+                }else if( 10000< cellInt&&cellInt<=15000){
+                    return "高";
+                }else{
+                    return "极高";
+                }
+            }
+
+        },
+
+		{name:'des',index:'des',width:20, editable:true, editoptions:{size:"10",maxlength:"15"}},
+		{name:'dtName',index:'dtName',width:20, editable:true, editoptions:{size:"10",maxlength:"15"}},
+    
+	]
+	if (alarmrecordTable) {
+	    alarmrecordTable.jqGrid("clearGridData");
+	    alarmrecordTable.trigger("reloadGrid");
+	}
+	
+	var id=$("#alarmrecordTable").jqGrid("getGridParam","selrow");
+	var rowData = $("#alarmrecordTable").jqGrid("getRowData",id);
+	var gridParams = {};
+	gridParams.id = "grid-table";
+	gridParams.pager = "grid-pager";
+	gridParams.url = "${link.contextPath}/alarm/alarmrecordListData.json";//表格访问路径
+	gridParams.colums = colums;//表格表头
+	gridParams.models = models;//表格数据
+	gridParams.param = JSON.stringify(params);//查询参数
+	gridParams.title = "警告信息列表";//表格名称
+	gridParams.updateUrl = "${link.contextPath}/alarm";//修改、添加路径
+	gridParams.edit = false;//修改
+	gridParams.add = false;//添加
+	gridParams.del = false;//删除
+	gridParams.search = false;//搜索
+	gridParams.view = true;//详情
+	gridParams.refresh = false;//刷新
+	
+	ApListable = getjqGridTable(gridParams,false);
+	}
+	function add(value){
+	$.ajax({
+				url:"${link.contextPath}/alarm/updatear/"+value,
+				dataType:'json',
+				type:'get',
+				success:function(data){
+				if(data.result>0){
+					
+					alarmrecordTable.trigger("reloadGrid");
+				}else{
+					alert("操作失败");
+					}
+				}
+			});
+}
+function showFunction(selectedIds){
+	$.ajax({ 
+		type: "POST",
+	    url: "${link.contextPath}/alarm/updatear.json",
+	    data:{"id":selectedIds},
+	    dataType: "json",
+	    async: false,
+	    success: function(result) {
+	    	if(result.isSuccess){
+	    		selectLi("${link.contextPath}/alarm/alarmrecordList");
+	           }
+	    }
+	})
+}
+getTableData();
+</script>
+
+</body>
+
+</html>

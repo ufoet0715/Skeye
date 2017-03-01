@@ -1,0 +1,183 @@
+#parse("base/gridList.vm")
+#parse("base/listEdit.vm")
+<script>
+	var excpStateMap=eval('('+'$!{excpState}'+')');
+	var excpStateNum=eval('('+'$!{excpStateNum}'+')');
+	window.onbeforeunload = onbeforeunload_handler;
+	window.onunload = onunload_handler;
+	function onbeforeunload_handler() {
+		if(num > 0){
+			var warning = "确认退出?";
+	      	return warning;
+		}
+	}
+	 
+	function onunload_handler() {
+	      var warning = "谢谢光临";
+	} 
+</script>
+<div class="main-container ace-save-state" id="main-container">
+	<div class="main-content-inner">
+		<div class="page-content">
+			<div class="row">
+				<div class="page-header">
+					<h1>
+				        	忽略MAC管理
+					</h1>
+				</div>
+				<div class="col-xs-18">
+					<form class=" dataTables_filter" style="margin:0px 12px 15px 0px;">
+						<span style="margin-right:10px;font-size:15px;" id="submitNum">当前未操作数据</span>
+		                <button type="button" class="btn btn-info btn-sm" id="editSave" onclick="save()">
+		                    <i class="icon-check  bigger-110"></i>提交</button>
+			        </form>
+					<table id="grid-table"></table>
+					<div id="grid-pager"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<a href="#" id="btn-scroll-up" class="btn-scroll-up btn btn-sm btn-inverse">
+		<i class="ace-icon fa fa-angle-double-up icon-only bigger-110"></i>
+	</a>
+</div>
+<script src="${link.contextPath}/resources/assets/js/bootstrap-datepicker.min.js"></script>
+<script type="text/javascript">
+var map = {};
+var num = 0;
+var grid_selector = "#grid-table";
+var pager_selector = "#grid-pager";
+var parent_column = $(grid_selector).closest('[class*="col-"]');
+var ApListable;
+
+/*setInterval ("showTime()", 5000);
+var stopFresh=false;
+
+function showTime(){
+	if(!stopFresh){
+		location.reload();
+	} 	 
+}*/
+
+function getTableData(){
+	var params = {};
+	
+	//表格的表头及数据
+	var colums = ['mac地址','名称', '例外状态', '备注','记录创建时间','记录失效时间' ,'操作']
+	var models = [
+		{name:'mac',index:'mac', width:90,editable: true,editoptions:{size:"20",maxlength:"30"},key:true},
+		{name:'name',index:'name',width:90, editable:true, editoptions:{size:"20",maxlength:"30"}},
+        {name:'excpState',index:'excpState',width:90, editable:true, editoptions:{size:"20",maxlength:"30"},
+            formatter:function(value,row,index){
+                return dictionaryMap(excpStateMap,excpStateNum+""+value);
+            }},
+		{name:'remarks',index:'remarks',width:90, editable:true, editoptions:{size:"20",maxlength:"30"}},
+		{name:'createTime',index:'createTime',width:90, editable:true, editoptions:{size:"20",maxlength:"30"},
+					formatter : function(cellvalue, options, rowObject) {
+                        return $.hd_jqGrid.dateTimeFormatter(cellvalue);
+            }},
+            
+		{name:'cnvalidTime',index:'cnvalidTime',width:90, editable:true, editoptions:{size:"20",maxlength:"30"},
+					formatter : function(cellvalue, options, rowObject) {
+                        return $.hd_jqGrid.dateTimeFormatter(cellvalue);
+            }},
+		{name : 'mac',
+            width : 50,
+            align : "center",
+            formatter: function (value, grid, rows, state) {
+           		if(rows.ssid!=null ){
+                    return '<button id="rowsId" type="button" class="btn btn-info btn-sm" onclick="editType(\''+rows.mac+'\',\'编辑AP类型\',\'mac\')"><i class="icon-edit  bigger-110"></i>修改</button>';
+           		}else{
+                    return '<button id="rowsId" type="button" class="btn btn-info btn-sm" onclick="editType(\''+rows.mac+'\',\'编辑终端类型\',\'mac\')"><i class="icon-edit  bigger-110"></i>修改</button>';
+           		}
+     		}
+		}
+	]
+	if (ApListable) {
+	    ApListable.jqGrid("clearGridData");
+	    ApListable.trigger("reloadGrid");
+	}
+	var gridParams = {};
+	gridParams.id = "grid-table";
+	gridParams.pager = "grid-pager";
+	gridParams.url = "${link.contextPath}/exception/exceptionListData.json";//表格访问路径
+	gridParams.colums = colums;//表格表头
+	gridParams.models = models;//表格数据
+	gridParams.param = JSON.stringify(params);//查询参数
+	gridParams.title = "忽略Mac信息列表";//表格名称
+	gridParams.updateUrl = "${link.contextPath}/user/update.json";//修改、添加路径
+	gridParams.addFunction = "true";
+	gridParams.edit = false;//修改
+	gridParams.add = true;//添加
+	gridParams.del = true;//删除
+    gridParams.delfunc =function (){
+        var data=$('#grid-table').jqGrid('getGridParam','selarrrow');
+        var newNum = data.length;
+		var success = confirm("你确定删除这"+newNum+"条数据吗？");
+		if(success){
+			for(var i=0;i<data.length;i++){
+				window.parent.map[data[i]]="";
+			}
+			window.parent.num = window.parent.num + newNum;
+			$("#submitNum").html("您已过修改数据，请提交");
+			$("#editSave").addClass("btn-info");
+			$("#editSave").removeClass("disabled");
+		  	$(".bootbox-close-button").click();	
+		}
+    };
+	gridParams.search = false;//搜索
+	gridParams.view = false;//详情
+	gridParams.refresh = false;//刷新
+	ApListable = getjqGridTable(gridParams,false);
+	if(num == 0){
+		$("#editSave").removeClass("btn-info");
+		$("#editSave").addClass("disabled");
+	}
+}
+
+function save(){
+	$.ajax({
+        url : "${link.contextPath}/stationTrust/addsave.json",//这个就是请求地址对应sAjaxSource
+        data :JSON.stringify(map),
+        type : 'post',
+        dataType : 'json',
+        headers : {
+            'Accept' : 'application/json',
+            'Content-Type' : 'application/json'
+        },
+        async : false,
+        success : function(result) {
+           if(result.isSuccess){
+               alert("操作成功");
+               map = {};
+               num = 0;
+               $("#submitNum").html("当前未操作数据");
+               $("#editSave").removeClass("btn-info");
+               $("#editSave").addClass("disabled");
+               getTableData();
+           }else{
+           		alert("操作失败");
+           }
+        },
+        error : function(msg) {
+        	alert("操作失败"+msg);
+        }
+    });
+    return false;
+}
+function addFunction(urlName,all) {
+	var title = "添加忽略MAC信息";
+    $.ajax({
+        url : "${link.contextPath}/stationTrust/mac/add.html",//这个就是请求地址对应sAjaxSource
+        type : 'post',
+        success : function(result) {
+          	bootBoxShow(result,title);
+        },
+        error : function(msg) {
+            alert("查询异常");
+        }
+    });
+ }
+getTableData();
+
+</script>

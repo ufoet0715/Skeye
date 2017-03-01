@@ -1,0 +1,43 @@
+<script>
+    jQuery(document).ready(function($) {
+        $('.theme-poptit .close').click(function(){
+            $('.theme-popover-mask').fadeOut(100);
+            $('.theme-popover').slideUp(200);
+            $('.alert-warning').slideUp(200);
+        })
+    })
+    function hideCommon(){
+        $('.theme-poptit .close').click();
+    }
+    function showCommon(){
+        $('.theme-popover-mask').fadeIn(100);
+        $('.theme-popover').slideDown(200);
+    }
+    function  editDataCommon(data,width,height,title,table) {
+        $("#editDivTitleMsg").html(title);
+        $("#editDivParent").height(height);
+        $("#editDivParent").width(width);
+        $("#editDataDiv").html(data);
+        $("#editDataTbDiv").html(table);
+        showCommon();
+    }
+</script>
+
+##弹出框
+<div id="editDivParent"  class="theme-popover" style="display: none;clear: both;">
+    <div class="theme-poptit">
+        <a href="javascript:;" title="关闭" class="close">×</a>
+        <h4 id="editDivTitleMsg"></h4>
+    </div>
+
+    <div id="editDataTbDiv">
+       	<table width="100%" border="0" style="color:#626262;font-size:12px;">
+			<tr style="color:#f7fafa;font-size:14px;height: 10px;">
+      		</tr>
+        </table>
+    </div>
+    <div id="editDataDiv" style="min-height:250px;overflow-y:auto;max-height:295px;" >
+   	</div>
+    
+</div>
+

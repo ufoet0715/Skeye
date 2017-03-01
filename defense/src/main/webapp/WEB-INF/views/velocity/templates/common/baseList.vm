@@ -1,0 +1,19 @@
+<link rel="stylesheet" href="${link.contextPath}/resources/assets/css/font-awesome.min.css"/>
+<link rel="stylesheet" href="${link.contextPath}/resources/assets/css/ace.min.css"/>
+<link rel="stylesheet" href="${link.contextPath}/resources/assets/css/ace-rtl.min.css"/>
+<link rel="stylesheet" href="${link.contextPath}/resources/assets/css/ace-skins.min.css"/>
+<link rel="stylesheet" href="${link.contextPath}/resources/assets/css/datepicker.css"/>
+<script>
+    jQuery(function($) {
+        $('table th input:checkbox').on('click' , function(){
+            var that = this;
+            $(this).closest('table').find('tr > td:first-child input:checkbox')
+                    .each(function(){
+                        this.checked = that.checked;
+                        $(this).closest('tr').toggleClass('selected');
+                    });
+
+        });
+    })
+
+</script>

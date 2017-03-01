@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yagout.defense.dal.service.ScanApMapper">
+    <resultMap id="BaseResultMap" type="com.yagout.defense.dal.model.ScanAp">
+        <id column="mac" jdbcType="VARCHAR" property="mac"/>
+        <result column="identity" jdbcType="INTEGER" property="identity"/>
+        <result column="channel" jdbcType="INTEGER" property="channel"/>
+        <result column="signal" jdbcType="INTEGER" property="signal"/>
+        <result column="privacy" jdbcType="INTEGER" property="privacy"/>
+        <result column="encrypt_way" jdbcType="INTEGER" property="encryptWay"/>
+        <result column="auth_way" jdbcType="INTEGER" property="authWay"/>
+        <result column="wps" jdbcType="INTEGER" property="wps"/>
+        <result column="ssid" jdbcType="VARCHAR" property="ssid"/>
+        <result column="broadcast_ssid" jdbcType="INTEGER" property="broadcastSsid"/>
+        <result column="maker" jdbcType="VARCHAR" property="maker"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+    mac, identity, channel, `signal`, privacy, encrypt_way, auth_way, wps, ssid, broadcast_ssid, 
+    maker
+  </sql>
+
+    <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from scan_ap
+        where mac = #{mac,jdbcType=VARCHAR}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from scan_ap
+    where mac = #{mac,jdbcType=VARCHAR}
+  </delete>
+    <insert id="insert" parameterType="com.yagout.defense.dal.model.ScanAp">
+    insert into scan_ap (mac, identity, channel, 
+      signal, privacy, encrypt_way, 
+      auth_way, wps, ssid, 
+      broadcast_ssid, maker)
+    values (#{mac,jdbcType=VARCHAR}, #{identity,jdbcType=INTEGER}, #{channel,jdbcType=INTEGER}, 
+      #{signal,jdbcType=INTEGER}, #{privacy,jdbcType=INTEGER}, #{encryptWay,jdbcType=INTEGER}, 
+      #{authWay,jdbcType=INTEGER}, #{wps,jdbcType=INTEGER}, #{ssid,jdbcType=VARCHAR}, 
+      #{broadcastSsid,jdbcType=INTEGER}, #{maker,jdbcType=VARCHAR})
+  </insert>
+    <insert id="insertSelective" parameterType="com.yagout.defense.dal.model.ScanAp">
+        insert into scan_ap
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="mac != null">
+                mac,
+            </if>
+            <if test="identity != null">
+                identity,
+            </if>
+            <if test="channel != null">
+                channel,
+            </if>
+            <if test="signal != null">
+                signal,
+            </if>
+            <if test="privacy != null">
+                privacy,
+            </if>
+            <if test="encryptWay != null">
+                encrypt_way,
+            </if>
+            <if test="authWay != null">
+                auth_way,
+            </if>
+            <if test="wps != null">
+                wps,
+            </if>
+            <if test="ssid != null">
+                ssid,
+            </if>
+            <if test="broadcastSsid != null">
+                broadcast_ssid,
+            </if>
+            <if test="maker != null">
+                maker,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="mac != null">
+                #{mac,jdbcType=VARCHAR},
+            </if>
+            <if test="identity != null">
+                #{identity,jdbcType=INTEGER},
+            </if>
+            <if test="channel != null">
+                #{channel,jdbcType=INTEGER},
+            </if>
+            <if test="signal != null">
+                #{signal,jdbcType=INTEGER},
+            </if>
+            <if test="privacy != null">
+                #{privacy,jdbcType=INTEGER},
+            </if>
+            <if test="encryptWay != null">
+                #{encryptWay,jdbcType=INTEGER},
+            </if>
+            <if test="authWay != null">
+                #{authWay,jdbcType=INTEGER},
+            </if>
+            <if test="wps != null">
+                #{wps,jdbcType=INTEGER},
+            </if>
+            <if test="ssid != null">
+                #{ssid,jdbcType=VARCHAR},
+            </if>
+            <if test="broadcastSsid != null">
+                #{broadcastSsid,jdbcType=INTEGER},
+            </if>
+            <if test="maker != null">
+                #{maker,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.yagout.defense.dal.model.ScanAp">
+        update scan_ap
+        <set>
+            <if test="identity != null">
+                identity = #{identity,jdbcType=INTEGER},
+            </if>
+            <if test="channel != null">
+                channel = #{channel,jdbcType=INTEGER},
+            </if>
+            <if test="signal != null">
+                signal = #{signal,jdbcType=INTEGER},
+            </if>
+            <if test="privacy != null">
+                privacy = #{privacy,jdbcType=INTEGER},
+            </if>
+            <if test="encryptWay != null">
+                encrypt_way = #{encryptWay,jdbcType=INTEGER},
+            </if>
+            <if test="authWay != null">
+                auth_way = #{authWay,jdbcType=INTEGER},
+            </if>
+            <if test="wps != null">
+                wps = #{wps,jdbcType=INTEGER},
+            </if>
+            <if test="ssid != null">
+                ssid = #{ssid,jdbcType=VARCHAR},
+            </if>
+            <if test="broadcastSsid != null">
+                broadcast_ssid = #{broadcastSsid,jdbcType=INTEGER},
+            </if>
+            <if test="maker != null">
+                maker = #{maker,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where mac = #{mac,jdbcType=VARCHAR}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.yagout.defense.dal.model.ScanAp">
+    update scan_ap
+    set identity = #{identity,jdbcType=INTEGER},
+      channel = #{channel,jdbcType=INTEGER},
+      signal = #{signal,jdbcType=INTEGER},
+      privacy = #{privacy,jdbcType=INTEGER},
+      encrypt_way = #{encryptWay,jdbcType=INTEGER},
+      auth_way = #{authWay,jdbcType=INTEGER},
+      wps = #{wps,jdbcType=INTEGER},
+      ssid = #{ssid,jdbcType=VARCHAR},
+      broadcast_ssid = #{broadcastSsid,jdbcType=INTEGER},
+      maker = #{maker,jdbcType=VARCHAR}
+    where mac = #{mac,jdbcType=VARCHAR}
+  </update>
+    <select id="getApByMap" parameterType="map" resultType="java.util.HashMap">
+        SELECT
+            ap.mac,
+            ap.identity,
+            ap.channel,
+            ap.`signal`,
+            ap.privacy,
+            ap.encrypt_way AS encryptWay,
+            ap.auth_way AS authWay,
+            ap.wps,
+            ap.ssid,
+            ap.broadcast_ssid AS broadcastSsid,
+            ap.maker,COUNT(ra.mac) stationCount
+        FROM
+            scan_ap   ap  LEFT JOIN  scan_station  ra on  ap.mac=ra.mac_ap  GROUP BY ap.mac
+    
+  </select>
+
+    <select id="selectApList" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from scan_ap
+    </select>
+</mapper>

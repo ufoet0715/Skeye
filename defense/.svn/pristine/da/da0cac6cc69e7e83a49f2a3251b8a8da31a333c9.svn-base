@@ -1,0 +1,172 @@
+#parse("common/baseEdit.vm")
+<div class="widget-box">
+    <div class="widget-body" style="margin-top:-20px;">
+    <hr/>
+        <div class="widget-main">
+            <form class="form-horizontal" id="validation-form" method="post">
+                <div class="form-group">
+			        <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="userName">用户名称:</label>
+					<div class="col-xs-12 col-sm-9">
+						<div class="clearfix">
+							<input type="text" name="userName" id="userName" class="col-xs-12 col-sm-7"/>
+						</div>
+					</div>
+			    </div>
+			    <div class="space-2"></div>
+			    
+			    <div class="form-group">
+			        <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="isDefaultPwd">默认密码:</label>
+					<div class="col-xs-12 col-sm-9">
+						<div class="clearfix">&nbsp;&nbsp;
+							<label>
+								<input name="isDefaultPwd" type="radio" onClick="selectOnChange(true)" class="ace" value="true" checked="checked">
+								<span class="lbl">是</span>
+							</label>&nbsp;&nbsp;
+							<label>
+								<input name="isDefaultPwd" type="radio" onClick="selectOnChange(false)" class="ace" value="false">
+								<span class="lbl">否</span>
+							</label>
+						</div>
+					</div>
+				</div>
+                <div class="space-2"></div>
+                
+                <div class="form-group" style="display:none;" id="psw">
+			        <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="userPwd">密码:</label>
+					<div class="col-xs-12 col-sm-9">
+						<div class="clearfix">
+							<input type="password" name="userPwd" id="userPwd" class="col-xs-12 col-sm-7"
+							 title="请输入数字"/>
+						</div>
+					</div>
+			    </div>
+			    <div class="space-2"></div>
+                
+                <div class="form-group">
+			        <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="roleName">用户类型:</label>
+					<div class="col-xs-12 col-sm-9">
+						<div class="clearfix">
+							<select class="col-xs-12 col-sm-7" name="roleName"> 
+								<option value="" selected="selected">请选择用户类型</option>
+								#foreach($role in $roleList)
+									<option value="$!{role.roleId}">$!{role.roleName}</option>
+								#end
+							</select>
+						</div>
+					</div>
+				</div>
+				<div class="space-2"></div>
+				
+                <div class="form-group">
+			        <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="remarks">备注:</label>
+					<div class="col-xs-12 col-sm-9">
+						<div class="clearfix">
+							<input type="text" name="remarks" id="remarks" class="col-xs-12 col-sm-7"/>
+						</div>
+					</div>
+			    </div>
+                <div class="hr hr-dotted"></div>
+
+                <div class="form-group">
+                    <div class="col-xs-12 col-sm-4 col-sm-offset-3">
+                        <a href="javascript:void(0)" onclick="$('#validation-form').submit()">
+                        <span class="label label-xlg label-primary arrowed arrowed-right">
+                        	保存</span></a>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<script>
+	function selectOnChange(is){
+		if(is){
+			$("#psw").css('display','none'); 
+			$("#userPwd").val("");
+		}else{
+			$("#psw").css('display','block'); 
+		}
+	}
+    jQuery(function ($) {
+        $('#validation-form').validate({
+            errorElement: 'div',
+            errorClass: 'help-block',
+            focusInvalid: false,
+            rules: {
+                userName: {
+                    required: true
+                },
+                userPwd: {
+                    required: true
+                },
+                roleName: {
+                    required: true
+                }
+            },
+            messages: {
+                userName: {
+                    required: "请填写用户名"
+                },
+                userPwd: {
+                    required: "请填写密码"
+                },
+                roleName: {
+                    required: "请选择用户类型"
+                }
+            },
+
+            invalidHandler: function (event, validator) { //display error alert on form submit
+                $('.alert-danger', $('.login-form')).show();
+            },
+
+            highlight: function (e) {
+                $(e).closest('.form-group').removeClass('has-info').addClass('has-error');
+            },
+
+            success: function (e) {
+                $(e).closest('.form-group').removeClass('has-error').addClass('has-info');
+                $(e).remove();
+            },
+
+            errorPlacement: function (error, element) {
+                if (element.is(':checkbox') || element.is(':radio')) {
+                    var controls = element.closest('div[class*="col-"]');
+                    if (controls.find(':checkbox,:radio').length > 1) controls.append(error);
+                    else error.insertAfter(element.nextAll('.lbl:eq(0)').eq(0));
+                }
+                else if (element.is('.select2')) {
+                    error.insertAfter(element.siblings('[class*="select2-container"]:eq(0)'));
+                }
+                else if (element.is('.chosen-select')) {
+                    error.insertAfter(element.siblings('[class*="chosen-container"]:eq(0)'));
+                }
+                else error.insertAfter(element.parent());
+            },
+
+            submitHandler: function (form) {
+            	$.ajax({
+                    url : "${link.contextPath}/user/insert.json",//这个就是请求地址对应sAjaxSource
+                    data :$(form).serialize(),
+                    type : 'post',
+                    dataType : 'json',
+                    async : false,
+                    success : function(result) {
+                       if(result.isSuccess){
+                          $(".bootbox-close-button").click();
+                           alert("操作成功");
+                           selectLi("${link.contextPath}/user/userList.html");
+                       }else{
+                           alert(result.resultMsg);
+                       }
+                    },
+                    error : function(msg) {
+                    }
+                });
+                return false;
+            }
+        });
+    })
+</script>

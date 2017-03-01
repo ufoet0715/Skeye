@@ -1,0 +1,84 @@
+#macro(getDefault $par $default)
+    #if(!$par)
+        #if($default)#set($par = $default)$par#else#set($par = "")$par#end
+    #else$par#end
+#end
+
+#macro(pagebar $commonPage  $url $target $pageCss)
+
+<div #if($pageCss)
+        class="$pageCss"
+     #else
+             class="page"
+#end>
+    #set($parmStrr = "{}")
+    #if($commonPage.params)
+     #set($parmStrr = $commonPage.params.replace("'", "\'"))
+    #set($parmStrr = $parmStrr.replace('"', "\'"))
+    #end
+<span><span class="red">共#getDefault(${commonPage.total} 0)</span>条/每页<span class="red">
+    <select  onchange="searchPage(1,$(this).val(),'$url','$parmStrr','$target')"><option #if($commonPage.rows==10) selected  #end
+   value="10">10</option><option #if($commonPage.rows==15) selected  #end value="15">15</option><option  #if($commonPage.rows==20) selected  #end value="20">20</option><option  #if($commonPage.rows==25) selected  #end value="25">25</option></select>
+    </span>条</span>
+    #if(${commonPage.pageNo}!=1)
+    <a href="javascript:void(0);" onclick="searchPage(1,#getDefault(${commonPage.rows} 10),'$url','$parmStrr','$target' )">
+     <input type="button" value="首页" class="page1" /></a>
+    #end
+    #set($pageLast=$commonPage.pageNo - 1)
+    #set($pageNext=$commonPage.pageNo+1)
+
+    #if(${commonPage.pageNo}>1)
+    <a href="javascript:void(0);" onclick="searchPage(${pageLast},#getDefault(${commonPage.rows} 10),'$url','$parmStrr','$target' )">
+        <input type="button" value="上一页" class="page1" />
+    </a>
+    #end
+    #if($commonPage && ${commonPage.pageData} && ${commonPage.pageData.size()} > 0 )
+        #set($pageStart=$commonPage.pageNo - 5)
+        #set($pageEnd=$commonPage.pageNo+5)
+        #if($pageCss)
+         #set($pageStart=$commonPage.pageNo - 3)
+        #set($pageEnd=$commonPage.pageNo+3)
+        #end
+        #if($pageStart<=0)
+            #set($pageStart=1)
+            #set($pageEnd=8)
+        #end
+        #if($pageEnd>=$commonPage.totalPage)
+            #set($pageEnd=$commonPage.totalPage)
+            #if($pageEnd<8)
+                #set($pageStart=1)
+                #else
+                #set($pageStart=$pageEnd - 7)
+            #end
+            #if($pageStart<$pageEnd - 7)
+                #set($pageStart=$pageEnd - 7)
+            #end
+        #end
+        #foreach($page in   [$pageStart..$pageEnd])
+            #if($page == ${commonPage.pageNo})
+                <a href="javascript:void(0);" onclick="searchPage($page,#getDefault(${commonPage.rows} 10),'$url','$parmStrr' ,'$target')">
+                    <input type="button" value="$page" class="pagepre"
+                            />
+                </a>
+            #else
+
+                 <a href="javascript:void(0);" onclick="searchPage($page,#getDefault(${commonPage.rows} 10),'$url','$parmStrr' ,'$target')">
+                     <input type="button" value="$page" class="page1"
+                           />
+                 </a>
+            #end
+        #end
+    #end
+    #if(${commonPage.pageNo}<${commonPage.totalPage})
+    <a href="javascript:void(0);" onclick="searchPage($pageNext,#getDefault(${commonPage.rows} 10),'$url','$parmStrr','$target' )">
+        <input type="button" value="下一页" class="page1"
+               /></a>
+    #end
+    #if(${commonPage.pageNo}!=${commonPage.totalPage}&&${commonPage.totalPage}>1)
+    <a href="javascript:void(0);" onclick="searchPage($commonPage.totalPage,#getDefault(${commonPage.rows} 10),'$url','$parmStrr' ,'$target')">
+        <input type="button" value="尾页" class="page1"
+               /></a>
+    #end
+
+</div>
+#end

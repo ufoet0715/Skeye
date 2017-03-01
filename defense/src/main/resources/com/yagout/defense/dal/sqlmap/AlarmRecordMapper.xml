@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yagout.defense.dal.service.AlarmRecordMapper">
+  <resultMap id="BaseResultMap" type="com.yagout.defense.dal.model.AlarmRecord">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="account_id" jdbcType="INTEGER" property="accountId" />
+    <result column="mac" jdbcType="VARCHAR" property="mac" />
+    <result column="mac_invaded" jdbcType="VARCHAR" property="macInvaded" />
+    <result column="invade_id" jdbcType="INTEGER" property="invadeId" />
+    <result column="device_serial" jdbcType="VARCHAR" property="deviceSerial" />
+    <result column="create_time" jdbcType="BIGINT" property="createTime" />
+    <result column="alarm_state" jdbcType="INTEGER" property="alarmState" />
+    <result column="read_state" jdbcType="INTEGER" property="readState" />
+    <result column="alarm_msg" jdbcType="VARCHAR" property="alarmMsg" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, account_id, mac, mac_invaded, invade_id, device_serial, create_time, alarm_state, 
+    read_state, alarm_msg
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from alarm_record
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+    <select id="getAlarmRecordByMap" resultType="java.util.HashMap" parameterType="map" >
+      select ar.id, ar.create_time as createTime,ar.invade_id invadeId ,   ar.mac,  ar.mac_invaded as macInvaded, it.`name` as itName,  al.`name` as alName, it.des, GROUP_CONCAT(dt.`name`)  as dtName FROM alarm_record ar
+       left JOIN invade_type it ON  ar.invade_id=it.invade_id
+ 	   left JOIN relation_alarm_invade rai  on it.invade_id=rai.invade_id 
+ 	   left JOIN alarm_level al on rai.level_id=al.level_id 
+	   left JOIN strategy sy on it.invade_id=sy.invade_id  
+	   left JOIN defense_type dt on sy.defense_id=dt.defense_id  
+	   
+	   	 where read_state=0		GROUP BY  ar.invade_id
+  </select>  
+    <select id="getReadState" parameterType="map" resultType="int" >
+    select count(*) from alarm_record where read_state=0
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from alarm_record
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.yagout.defense.dal.model.AlarmRecord">
+    insert into alarm_record (id, account_id, mac, 
+      mac_invaded, invade_id, device_serial, 
+      create_time, alarm_state, read_state, 
+      alarm_msg)
+    values (#{id,jdbcType=INTEGER}, #{accountId,jdbcType=INTEGER}, #{mac,jdbcType=VARCHAR}, 
+      #{macInvaded,jdbcType=VARCHAR}, #{invadeId,jdbcType=INTEGER}, #{deviceSerial,jdbcType=VARCHAR}, 
+      #{createTime,jdbcType=BIGINT}, #{alarmState,jdbcType=INTEGER}, #{readState,jdbcType=INTEGER}, 
+      #{alarmMsg,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.yagout.defense.dal.model.AlarmRecord">
+    insert into alarm_record
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="accountId != null">
+        account_id,
+      </if>
+      <if test="mac != null">
+        mac,
+      </if>
+      <if test="macInvaded != null">
+        mac_invaded,
+      </if>
+      <if test="invadeId != null">
+        invade_id,
+      </if>
+      <if test="deviceSerial != null">
+        device_serial,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="alarmState != null">
+        alarm_state,
+      </if>
+      <if test="readState != null">
+        read_state,
+      </if>
+      <if test="alarmMsg != null">
+        alarm_msg,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="accountId != null">
+        #{accountId,jdbcType=INTEGER},
+      </if>
+      <if test="mac != null">
+        #{mac,jdbcType=VARCHAR},
+      </if>
+      <if test="macInvaded != null">
+        #{macInvaded,jdbcType=VARCHAR},
+      </if>
+      <if test="invadeId != null">
+        #{invadeId,jdbcType=INTEGER},
+      </if>
+      <if test="deviceSerial != null">
+        #{deviceSerial,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=BIGINT},
+      </if>
+      <if test="alarmState != null">
+        #{alarmState,jdbcType=INTEGER},
+      </if>
+      <if test="readState != null">
+        #{readState,jdbcType=INTEGER},
+      </if>
+      <if test="alarmMsg != null">
+        #{alarmMsg,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.yagout.defense.dal.model.AlarmRecord">
+    update alarm_record
+    <set>
+      <if test="accountId != null">
+        account_id = #{accountId,jdbcType=INTEGER},
+      </if>
+      <if test="mac != null">
+        mac = #{mac,jdbcType=VARCHAR},
+      </if>
+      <if test="macInvaded != null">
+        mac_invaded = #{macInvaded,jdbcType=VARCHAR},
+      </if>
+      <if test="invadeId != null">
+        invade_id = #{invadeId,jdbcType=INTEGER},
+      </if>
+      <if test="deviceSerial != null">
+        device_serial = #{deviceSerial,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=BIGINT},
+      </if>
+      <if test="alarmState != null">
+        alarm_state = #{alarmState,jdbcType=INTEGER},
+      </if>
+      <if test="readState != null">
+        read_state = #{readState,jdbcType=INTEGER},
+      </if>
+      <if test="alarmMsg != null">
+        alarm_msg = #{alarmMsg,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.yagout.defense.dal.model.AlarmRecord">
+    update alarm_record
+    set account_id = #{accountId,jdbcType=INTEGER},
+      mac = #{mac,jdbcType=VARCHAR},
+      mac_invaded = #{macInvaded,jdbcType=VARCHAR},
+      invade_id = #{invadeId,jdbcType=INTEGER},
+      device_serial = #{deviceSerial,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=BIGINT},
+      alarm_state = #{alarmState,jdbcType=INTEGER},
+      read_state = #{readState,jdbcType=INTEGER},
+      alarm_msg = #{alarmMsg,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+      <update id="updateReadState" parameterType="map">
+    update alarm_record
+    set  read_state = #{num,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

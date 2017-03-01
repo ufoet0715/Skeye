@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yagout.defense.dal.service.StationMapper" >
+  
+  
+   <update id="batchUpdate" parameterType="java.util.List">
+	<foreach collection="stationlist" item="station"
+			index="index"> 
+		<foreach collection="station.data"  item="data" >
+			delete from station_trust where mac = #{data.mac};
+			delete from station_neighbor where mac = #{data.mac};
+			delete from station_visitor where mac = #{data.mac};
+			delete from station_ad_hoc where mac = #{data.mac};
+			delete from ap_ad_hoc where mac = #{data.mac};
+			delete from ap_neighbor where mac = #{data.mac};
+			delete from ap_trust where mac = #{data.mac};
+			delete from ap_visitor where mac = #{data.mac};
+			delete from exception_mac where mac = #{data.mac};
+		</foreach>
+		<if test="station.tableName != null">
+			insert into 	${station.tableName} 
+				<foreach collection="station.dbData"  item="db" separator="," open="(" close=")">
+				<trim suffix="" suffixOverrides=",">
+				     ${db},
+				      </trim>
+				</foreach>
+				      values
+				<foreach collection="station.data"  item="data"  >
+					<foreach collection="data"  item="value" separator="," open="(" close=")" index="key">
+					     <trim suffix="" suffixOverrides=",">
+	
+					     <if test="value != null">
+					     	#{value}
+					     </if>
+	
+					      </trim>
+				    </foreach>;
+			    </foreach>
+			</if>
+		</foreach>
+			<!-- <foreach collection="station.data"  item="data" separator="," open="(" close=")">
+			<trim suffix="" suffixOverrides=",">
+			      <if test="data.mac != null" >
+			        mac,
+			      </if>
+			      <if test="data.maker != null" >
+			        maker,
+			      </if>
+			      <if test="data.name != null" >
+			        name,
+			      </if>
+			      <if test="data.phoneNumber != null" >
+			        phone_number,
+			      </if>
+			      <if test="data.idNumber != null" >
+			        id_number,
+			      </if>
+			      <if test="data.department != null" >
+			        department,
+			      </if>
+			      <if test="data.remarks != null" >
+			        remarks,
+			      </if>
+			      <if test="data.reserved1 != null" >
+			        reserved1,
+			      </if>
+			      <if test="data.reserved2 != null" >
+			        reserved2,
+			      </if>
+			      </trim>
+			      </foreach>
+			      values
+			     <foreach collection="station.data"  item="data" separator="," open="(" close=")">
+			     <trim suffix="" suffixOverrides=",">
+			      <if test="data.mac != null" >
+			        #{data.mac,jdbcType=VARCHAR},
+			      </if>
+			      <if test="data.maker != null" >
+			        #{data.maker,jdbcType=VARCHAR},
+			      </if>
+			      <if test="data.name != null" >
+			        #{data.name,jdbcType=VARCHAR},
+			      </if>
+			      <if test="data.phoneNumber != null" >
+			        #{data.phoneNumber,jdbcType=VARCHAR},
+			      </if>
+			      <if test="data.idNumber != null" >
+			        #{data.idNumber,jdbcType=VARCHAR},
+			      </if>
+			      <if test="data.department != null" >
+			        #{data.department,jdbcType=VARCHAR},
+			      </if>
+			      <if test="data.remarks != null" >
+			        #{data.remarks,jdbcType=VARCHAR},
+			      </if>
+			      <if test="data.reserved1 != null" >
+			        #{data.reserved1,jdbcType=INTEGER},
+			      </if>
+			      <if test="data.reserved2 != null" >
+			        #{data.reserved2,jdbcType=INTEGER},
+			      </if>
+			      </trim>
+		     </foreach> -->
+	</update>
+	
+	
+	<insert id="batchInsert" parameterType="java.util.List">
+		
+		<foreach collection="stationlist" item="station"
+			index="index" separator=","> 
+		insert into 	${station.tableName} 
+			<foreach collection="station.dbData"  item="db" separator="," open="(" close=")">
+			<trim suffix="" suffixOverrides=",">
+			     ${db},
+			      </trim>
+			</foreach>
+			      values
+			<foreach collection="station.data"  item="data"  >
+				<foreach collection="data"  item="value" separator="," open="(" close=")" index="key">
+				     <trim suffix="" suffixOverrides=",">
+				    ${value},
+				      </trim>
+			    </foreach>
+		    </foreach>
+		</foreach>	
+		
+	</insert>
+	
+	<!-- <select id="selectByMap" resultType="map" parameterType="map">
+		select <foreach collection="list" item="station"
+			index="index" separator=","> 
+			<trim suffix="" suffixOverrides=",">
+			${station}
+			</trim>
+			</foreach>
+		from
+			${tableName}
+			where mac=#{mac}
+	</select> -->
+	
+	<select id="selectByMap" resultType="map" parameterType="map">
+		select <foreach collection="alias" item="alia"
+			index="index" separator=","> 
+			<trim suffix="" suffixOverrides=",">
+			${alia} ${index}
+			</trim>
+			</foreach>
+		from
+			${tableName}
+			where mac=#{mac}
+	</select>
+	
+	
+	<select id="selectAll" resultType="map" parameterType="map">
+		select <foreach collection="alias" item="alia"
+			index="index" separator=","> 
+			<trim suffix="" suffixOverrides=",">
+			${alia} ${index}
+			</trim>
+			</foreach>
+		from
+			${tableName}
+	</select>
+	
+	
+	<delete id="deleteStations" parameterType="java.util.List">
+		delete from 
+		<foreach item="item" index="index" collection="list" open="("
+			separator="," close=")">
+			${item.tableName}
+		</foreach>
+		where mac in
+		<foreach item="item" index="index" collection="list" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+	</delete>
+  
+  	<select id="selectAllByMac" parameterType="string" resultType="map">
+		select mac, '保护终端' as tableName from station_trust WHERE mac=#{_parameter}
+		union all
+		select mac, '邻居终端' as tableName FROM station_neighbor WHERE mac=#{_parameter}
+		union all 
+		select mac,'访客终端' as tableName from station_visitor WHERE mac=#{_parameter}
+		union all 
+		select mac,'自组网终端' as tableName from station_ad_hoc WHERE mac=#{_parameter}
+		union all 
+		select mac,'自组网AP' as tableName from ap_ad_hoc WHERE mac=#{_parameter}
+		union all 
+		select mac,'邻居AP' as tableName from ap_neighbor WHERE mac=#{_parameter}
+		union all 
+		select mac,'信任AP' as tableName from ap_trust WHERE mac=#{_parameter}
+		union all 
+		select mac,'访客AP' as tableName from ap_visitor WHERE mac=#{_parameter}
+		union all 
+		select mac,'忽略MAC' as tableName from exception_mac WHERE mac=#{_parameter}
+  	</select>
+</mapper>

@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yagout.defense.dal.service.AlarmMapper">
+
+    <!-- 事件信息以及所属策略 -->
+    <select id="selectAlarms" parameterType="map" resultType="map">
+        SELECT invade_type.invade_id AS invadeId,
+        invade_type.`name` AS invadeName,
+        invade_type.flag AS invadeFlag,
+        invade_type.des AS invadeDes,
+        alarm_level.level_id AS alarmId,
+        alarm_level.`name` AS alarmName,
+        alarm_level.des AS alarmDes,
+        alarm_level.flag AS alarmFlag
+        FROM invade_type LEFT JOIN relation_alarm_invade
+        ON invade_type.invade_id=relation_alarm_invade.invade_id
+        LEFT JOIN alarm_level ON relation_alarm_invade.level_id=alarm_level.level_id
+        where 1=1
+        <if test="invadeName != null and invadeName!=''">
+            AND invade_name like
+            #{invadeName}
+        </if>
+    </select>
+    
+    
+    
+    <select id="selectAlarmsByMap" parameterType="map" resultType="map">
+       SELECT it.`name` as itName,it.des,it.invade_id as invadeId ,it.flag ,GROUP_CONCAT(dt.`name`) as dtName from invade_type it 
+       	LEFT JOIN strategy st ON it.invade_id=st.invade_id 
+		LEFT JOIN defense_type dt ON st.defense_id=dt.defense_id
+		 where  1=1
+
+        <if test="alarmNameLike!=null and alarmNameLike !=''">
+            and it.`name` like
+            CONCAT('%',#{alarmNameLike,jdbcType=VARCHAR},'%')
+        </if>
+
+
+
+		 GROUP BY it.invade_id order by invadeId desc
+    </select>
+
+    <!-- 当前事件所属策略 -->
+    <select id="selectStrategies" parameterType="int" resultType="map">
+    SELECT DISTINCT defense_type.defense_id AS defenseId, 
+    	defense_type.`name` AS defenseName, 
+		defense_type.des AS defenseDes 
+	FROM defense_type LEFT JOIN strategy ON defense_type.defense_id=strategy.defense_id
+	LEFT  JOIN invade_type ON strategy.invade_id=invade_type.invade_id
+	WHERE invade_type.invade_id=#{invadeId} and  strategy.defense_id is not null
+  </select>
+
+    <!-- 当前事件所有策略 -->
+    <select id="selectDefaultStrategies" parameterType="int" resultType="map">
+  	SELECT DISTINCT defense_type.defense_id AS defenseId, 
+    	defense_type.`name` AS defenseName, 
+		defense_type.des AS defenseDes 
+	FROM defense_type INNER JOIN strategy_default ON defense_type.defense_id=strategy_default.defense_id
+	RIGHT JOIN invade_type ON strategy_default.invade_id=invade_type.invade_id
+	WHERE invade_type.invade_id=#{invadeId}  and  strategy_default.defense_id is not null
+  </select>
+
+    <!-- 新增策略 -->
+    <insert id="insertStrategy" parameterType="com.yagout.defense.dal.model.StrategyKey">
+    insert into strategy (defense_id, invade_id)
+    values (#{defenseId}, #{invadeId})
+  </insert>
+
+    <!-- 更新事件激活状态 -->
+    <update id="updateFlagById" parameterType="map">
+        UPDATE invade_type SET
+        <if test="invadeFlag == 0">
+            flag = 1
+        </if>
+        <if test="invadeFlag == 1">
+            flag = 0
+        </if>
+        WHERE invade_id = #{invadeId}
+    </update>
+
+    <delete id="deleteStrategyByInvade" parameterType="int">
+  	DELETE FROM strategy WHERE invade_id=#{id}
+  </delete>
+
+    <!-- 事件的批量删除 -->
+    <sql id="Example_Where_Clause">
+        <where>
+            <foreach collection="oredCriteria" item="criteria" separator="or">
+                <if test="criteria.valid">
+                    <trim prefix="(" prefixOverrides="and" suffix=")">
+                        <foreach collection="criteria.criteria" item="criterion">
+                            <choose>
+                                <when test="criterion.noValue">
+                                    and ${criterion.condition}
+                                </when>
+                                <when test="criterion.singleValue">
+                                    and ${criterion.condition} #{criterion.value}
+                                </when>
+                                <when test="criterion.betweenValue">
+                                    and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                                </when>
+                                <when test="criterion.listValue">
+                                    and ${criterion.condition}
+                                    <foreach close=")" collection="criterion.value" item="listItem" open="("
+                                             separator=",">
+                                        #{listItem}
+                                    </foreach>
+                                </when>
+                            </choose>
+                        </foreach>
+                    </trim>
+                </if>
+            </foreach>
+        </where>
+    </sql>
+    <delete id="deleteByExample" parameterType="com.yagout.defense.dal.model.StrategyExample">
+        delete from strategy
+        <if test="_parameter != null">
+            <include refid="Example_Where_Clause"/>
+        </if>
+    </delete>
+
+    <!-- 更新事件关联策略 -->
+    <update id="updateStrategy" parameterType="map">
+        <if test="selectChange!=null and selectChange.keys!=null">
+            <foreach collection="selectChange.keys" item="item"  >
+                DELETE
+                FROM
+                strategy
+                WHERE
+                invade_id = cast(#{item} AS SIGNED INTEGER);
+
+                <if test="selectChange[item]!=null ">
+                    <foreach collection="selectChange[item]"   item="defenseId"  >
+
+                        INSERT INTO strategy (defense_id, invade_id)
+                        VALUES
+                        (
+                        cast( #{defenseId} AS SIGNED INTEGER),
+                        cast(#{item} AS SIGNED INTEGER)
+                        );
+
+                    </foreach>
+
+
+                </if>
+
+            </foreach>
+
+        </if>
+        <if test="changFlag!=null and changFlag.keys!=null">
+            <foreach collection="changFlag.keys" item="item"  >
+                <if test="changFlag[item]!=null ">
+                UPDATE invade_type SET
+                    flag =
+                    #{changFlag[${item}]}
+                    WHERE invade_id = #{item};
+                </if>
+            </foreach>
+         </if>
+
+    </update>
+</mapper>

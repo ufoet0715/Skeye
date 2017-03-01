@@ -1,0 +1,132 @@
+
+<script type="text/javascript">
+    $(document).ready(function(e) {
+        $('body').on('change',$('#ImportPicInput'),function(){
+            $( "#filename").val($( "#ImportPicInput").val());
+             var file = new Array(); //定义一数组
+        var filename= $("#filename").val();
+        file = filename.split('.');
+        var fileStr = file [file .length - 1];
+			document.getElementById("btnDel").style="display:none;";
+
+
+        if (fileStr != 'zip' ) {
+        	
+            document.getElementById("result").innerHTML="请提交正确类型的文件";
+            document.getElementById("result").style="color:red;font-size:14px;";
+            var obj = document.getElementById('filename');
+            obj.outerHTML = obj.outerHTML; //这样清空，在IE8下也能执行成功
+             //obj.select(); document.selection.clear(); 好像这种方法也可以清空 input file 的value值，不过我没测试
+             
+             return false;
+        }else{
+        document.getElementById("result").innerHTML="提交成功";
+        document.getElementById("result").style="color:green;font-size:14px;";
+         document.getElementById("btnDel").style="display:block;";
+            $.ajaxFileUpload({
+                type: "POST",
+                url: "${link.contextPath}/update/fileUpload",
+
+                secureuri : false,//是否启用安全提交，默认为false
+                fileElementId:'ImportPicInput',//文件选择框的id属性
+                dataType: 'json',//服务器返回的格式
+                
+                async : false,
+               success :callback
+                  
+            });
+            }
+        });
+
+    });
+    
+    function callback(data){
+    var name;
+    
+    
+ 
+    var a=window.document .getElementById ("iniText");
+    var b=window.document .getElementById ("name");
+    for(var i=0;i<data.length;i++){ 
+		 name=data[i].name
+		a.innerHTML = data[i].remark;
+		b.innerHTML=name;
+		   } 
+  		
+    
+    
+    }
+    
+    function upload(){
+    var name=  $("#name").html();
+     $.ajax({
+                    url : "${link.contextPath}/update/save",//这个就是请求地址对应sAjaxSource
+                    data :{ "name":name},
+                    type : 'post',
+                    dataType : 'json',
+                    async : false,
+                    success : function(result) {
+                       if(result.isSuccess){
+                          $(".bootbox-close-button").click();
+                           alert("操作成功");
+                            selectLi("${link.contextPath}/index");
+                           
+
+                       }
+                    },
+                    error : function(msg) {
+                    alert("更新错误");
+                    }
+                });
+                return false;
+    }
+</script>
+
+<div class="page-content">
+	<div class="page-header">
+		<h1>
+            系统升级
+		</h1>
+	</div><!-- /.page-header -->
+	
+	<div class="row">
+		<div class="col-xs-12">
+			<!-- PAGE CONTENT BEGINS -->
+
+			
+				<div class="form-group" >
+					<div class="col-sm-4" style="left:10%;">
+						
+                        &nbsp; &nbsp; &nbsp;
+						<span class="input-icon">
+						<label class="col-sm-4 control-label no-padding-right" for ="filename" >上传升级文件</label>
+							 <input type ="file" id="ImportPicInput" name= "myfile" id= "myfile" style=" display: none" />
+							
+							<input type ="text" class="input-large" id= "filename" />
+							<br><br>
+							
+							<span style="float:right;" id="iniText"></span>
+							
+							<span id="result"></span>
+							<br><br>
+							<button class="btn btn-info"    onclick= "$('#ImportPicInput').click();" >打开
+							<i class=" bigger-100"></i>
+							</button>
+							<div class="form-group" style="margin-top:40px;">
+							<button id="btnDel" style="display:none;" type="button" class="btn btn-info"  onclick="upload()">
+            						<i class="bigger-100"></i>确认
+            						</button>
+            						</div>
+							
+						</span>
+						
+						<span style="display:none" id="name"></span>
+						
+                        
+						
+					</div>
+				</div>
+			</div>	
+	</div>
+</div>
+

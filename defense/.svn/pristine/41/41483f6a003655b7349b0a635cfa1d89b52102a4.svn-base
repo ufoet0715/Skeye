@@ -1,0 +1,8 @@
+jdbc.username=root
+jdbc.psw=root
+jdbc.driverClassName=com.mysql.jdbc.Driver
+jdbc.url=jdbc:mysql://localhost:3306/defense?allowMultiQueries=true
+defaultPwd=123456
+nomalUserRole=2
+outPutPath=D:\\work\\tmp
+docTempPath=d:\\work\\tmp\\docTemp.docx
