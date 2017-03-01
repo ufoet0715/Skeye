@@ -1,0 +1,20 @@
+<meta charset="UTF-8">
+<link rel="stylesheet" href="${rc.contextPath}/resource/css/common/jquery.datetimepicker.css"/>
+<script type="text/javascript" src="${rc.contextPath}/resource/js/jquery/jquery-3.1.1.js"></script>
+<script type="text/javascript" src="${rc.contextPath}/resource/js/jquery/jquery.validate.js"></script>
+<script type="text/javascript" src="${rc.contextPath}/resource/js/jquery/messages_zh.js"></script>
+<script type="text/javascript" src="${rc.contextPath}/resource/js/common/spin.js"></script>
+<script type="text/javascript" src="${rc.contextPath}/resource/js/common/commonLoad.js"></script>
+<script type="text/javascript" src="${rc.contextPath}/resource/js/common/commonPage.js"></script>
+<script type="text/javascript" src="${rc.contextPath}/resource/js/common/jquery.datetimepicker.full.js"></script>
+<script type="text/javascript" src="${rc.contextPath}/resource/js/device/deviceList.js"></script>
+
+<div>
+   账号：<input type="text" id="accountNo" name="accountNo" required>
+   手机：<input type="text" id="telephone" name="telephone" required>
+   <input type="button" id="searchBtn" value="查询" onclick="searchDevice('${rc.contextPath}/deviceController/getDeviceListByMap.html')"/>
+</div>
+
+<div id="deviceListDiv"></div>
+<hr/>
+<div id="deviceStateListDiv"></div>

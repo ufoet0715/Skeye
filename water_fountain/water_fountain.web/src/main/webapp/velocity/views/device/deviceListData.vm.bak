@@ -1,0 +1,26 @@
+<div class="right-bottom-second">
+    <table width="98%" border="0" style="color:#626262;font-size:12px;">
+        <tr style="color:#626262;font-size:14px;">
+            <td style="font-weight:bold;width:86px;">设备编号</td>
+            <td style="font-weight:bold;width:86px;">设备名称</td>
+            <td style="font-weight:bold;width:86px;">生产商</td>
+            <td style="font-weight:bold;width:86px;">型号</td>
+            <td style="font-weight:bold;width:86px;">生产日期</td>
+            <td style="font-weight:bold;width:86px;">查看</td>
+        </tr>
+        #if($commonPage&&$commonPage.data)
+            #foreach($deviceTwo in $commonPage.data)
+                <tr>
+                    <td>$!{deviceTwo.deviceNo}</td>
+                    <td>$!{deviceTwo.deviceName}</td>
+                    <td>$!{deviceTwo.productName}</td>
+                    <td>$!{deviceTwo.model}</td>
+                    <td>$!{deviceTwo.productDate}</td>
+                    <td><a href="#" onclick="searchDeviceState('$!{deviceTwo.deviceNo}','${rc.contextPath}/deviceStateController/getDeviceStateListData')">查看</a>
+                    </td>
+                </tr>
+            #end
+        #end
+    </table>
+    #pagebar($commonPage "${rc.contextPath}/deviceController/getDeviceListByMap.html" "deviceListDiv")
+</div>

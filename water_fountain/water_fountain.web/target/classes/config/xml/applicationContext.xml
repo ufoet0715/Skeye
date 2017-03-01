@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans default-lazy-init="false"
+	xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:p="http://www.springframework.org/schema/p" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+	                       http://www.springframework.org/schema/beans/spring-beans.xsd 
+	                       http://www.springframework.org/schema/tx 
+	                       http://www.springframework.org/schema/tx/spring-tx-3.1.xsd 
+	                       http://www.springframework.org/schema/context 
+	                       http://www.springframework.org/schema/context/spring-context.xsd 
+	                       http://www.springframework.org/schema/aop 
+	                       http://www.springframework.org/schema/aop/spring-aop-3.1.xsd 
+	                       http://www.springframework.org/schema/mvc 
+	                       http://www.springframework.org/schema/mvc/spring-mvc-3.1.xsd">
+
+
+	<bean id="propertyConfigurer"
+		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="location" value="classpath:config/pro/database.properties"></property>
+	</bean>
+
+	<context:component-scan base-package="com.skeye.water_fountain.dal.**"></context:component-scan>
+	<context:component-scan base-package="com.skeye.water_fountain.dao.**"></context:component-scan>
+	<context:component-scan base-package="com.skeye.water_fountain.service.**"></context:component-scan>
+	<context:component-scan base-package="com.skeye.water_fountain.biz.**"></context:component-scan>
+
+	<bean id="dataSource" class="org.apache.commons.dbcp2.BasicDataSource"
+		destroy-method="close">
+		<property name="driverClassName" value="${driver}"></property>
+		<property name="url" value="${url}"></property>
+		<property name="username" value="${username}"></property>
+		<property name="password" value="${password}"></property>
+	</bean>
+
+	<bean id="sqlSessionFatory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSource"></property>
+		<property name="mapperLocations"
+			value="classpath*:com/skeye/water_fountain/dal/sqlmap/*.xml"></property>
+		<property name="plugins">
+			<array>
+				<bean class="com.skeye.water_fountain.interceptor.PageInterceptor">
+				</bean>
+			</array>
+		</property>
+	</bean>
+
+	<bean id="mapperScannerConfig" class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="basePackage" value="com.skeye.water_fountain.dal.service.**"></property>
+		<property name="sqlSessionFactoryBeanName" value="sqlSessionFatory"></property>
+	</bean>
+
+	<bean id="transactionManager"
+		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource"></property>
+	</bean>
+
+	<bean
+		class="org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor" />
+
+	<tx:advice id="adv" transaction-manager="transactionManager">
+		<tx:attributes>
+			<tx:method name="*" />
+		</tx:attributes>
+	</tx:advice>
+
+	<aop:config>
+		<aop:pointcut expression="execution(* com.skeye.water_fountain.service..*.*(..))"
+			id="all" />
+		<aop:advisor advice-ref="adv" pointcut-ref="all" />
+	</aop:config>
+
+</beans> 
+
+
+
+ 

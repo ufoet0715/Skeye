@@ -1,0 +1,23 @@
+<div class="right-bottom-second">
+    <table width="98%" border="0" style="color:#626262;font-size:12px;">
+        <tr style="color:#626262;font-size:14px;">
+            <td style="font-weight:bold;width:86px;">用户账号</td>
+            <td style="font-weight:bold;width:86px;">用户昵称</td>
+            <td style="font-weight:bold;width:86px;">密码</td>
+            <td style="font-weight:bold;width:86px;">手机号</td>
+            <td style="font-weight:bold;width:86px;">使用时间</td>
+        </tr>
+        #if($commonPage&&$commonPage.data)
+            #foreach($accountToDeviceTwo in $commonPage.data)
+                <tr>
+                    <td>$!{accountToDeviceTwo.account.accountNo}</td>
+                    <td>$!{accountToDeviceTwo.account.accountName}</td>
+                    <td>$!{accountToDeviceTwo.account.password}</td>
+                    <td>$!{accountToDeviceTwo.account.telephone}</td>
+                    <td>$!{accountToDeviceTwo.time}</td>
+                </tr>
+            #end
+        #end
+    </table>
+    #pagebar($commonPage "${rc.contextPath}/accountToDeviceController/getAccountListByMap.html" "accountListDiv")
+</div>

@@ -1,0 +1,17 @@
+<meta charset="UTF-8">
+<script type="text/javascript" src="${rc.contextPath}/resource/js/jquery/jquery-3.1.1.js"></script>
+<script type="text/javascript" src="${rc.contextPath}/resource/js/jquery/jquery.validate.js"></script>
+<script type="text/javascript" src="${rc.contextPath}/resource/js/jquery/messages_zh.js"></script>
+<script type="text/javascript" src="${rc.contextPath}/resource/js/common/spin.js"></script>
+<script type="text/javascript" src="${rc.contextPath}/resource/js/common/commonLoad.js"></script>
+<script type="text/javascript" src="${rc.contextPath}/resource/js/common/commonPage.js"></script>
+<script type="text/javascript" src="${rc.contextPath}/resource/js/deviceState/deviceStateList.js"></script>
+
+<div>
+  <form id="deviceStateForm" action="${rc.contextPath}/deviceStateController/getDeviceStateListData" method="post">
+   设备编号：<input type="text" id="deviceNo" name="deviceNo">
+   <input type="submit" id="searchBtn" value="查询" onclick="searchDeviceState()"/>
+  </form>
+</div>
+
+<div id="deviceStateListDiv"></div>

@@ -1,0 +1,17 @@
+<div>
+  <h1>logo</h1>
+  <span>系统</span>
+</div>
+<div class="logo_bottom">
+  <ul class="bottom_list">
+    <a href="${rc.contextPath}/deviceStateController/insertDeviceState">
+     <li>保存设备信息</li>
+    </a>
+    <a href="${rc.contextPath}/accountToDeviceController/getDeviceList">
+     <li>设备列表查询</li>
+    </a>   
+    <a href="${rc.contextPath}/accountToDeviceController/getAccountList">
+     <li>用户列表查询</li>
+    </a>   
+  </ul>
+</div>

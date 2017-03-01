@@ -1,0 +1,20 @@
+<meta charset="UTF-8">
+<link rel="stylesheet" href="${rc.contextPath}/resource/css/common/jquery.datetimepicker.css" />
+<script type="text/javascript" src="${rc.contextPath}/resource/js/jquery/jquery-3.1.1.js"></script>
+<script type="text/javascript" src="${rc.contextPath}/resource/js/jquery/jquery.validate.js"></script>
+<script type="text/javascript" src="${rc.contextPath}/resource/js/jquery/messages_zh.js"></script>
+<script type="text/javascript" src="${rc.contextPath}/resource/js/common/spin.js"></script>
+<script type="text/javascript" src="${rc.contextPath}/resource/js/common/commonLoad.js"></script>
+<script type="text/javascript" src="${rc.contextPath}/resource/js/common/jquery.datetimepicker.full.js"></script>
+<script type="text/javascript" src="${rc.contextPath}/resource/js/device/insertDevice.js"></script>
+
+<div>
+    <form id="deviceForm" action="${rc.contextPath}/deviceController/insertDevice" method="post" >
+        设备编号：<input type="text" id="deviceNo" name="deviceNo" required>
+        设备名称：<input type="text" id="deviceName" name="deviceName" required>
+        生产商：<input type="text" id="productName" name="productName" required>
+        型号：<input type="text" id="model" name="model" required>
+	生产日期：<input type="text" id="productDate" name="productDate" required>
+        <input type="submit" id="registBtn" value="添加"/>
+    </form>
+</div>

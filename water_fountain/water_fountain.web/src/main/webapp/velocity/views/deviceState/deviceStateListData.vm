@@ -1,0 +1,21 @@
+<div class="right-bottom-second">
+    <table width="98%" border="0" style="color:#626262;font-size:12px;">
+        <tr style="color:#626262;font-size:14px;">
+            <td style="font-weight:bold;width:86px;">设备编号</td>
+            <td style="font-weight:bold;width:86px;">设备状态</td>
+            <td style="font-weight:bold;width:86px;">水温度</td>
+            <td style="font-weight:bold;width:86px;">使用时间</td>
+        </tr>
+        #if($commonPage&&$commonPage.data)
+            #foreach($deviceStateTwo in $commonPage.data)
+                <tr>
+                    <td>$!{deviceStateTwo.deviceNo}</td>
+                    <td>$!{deviceStateTwo.deviceState}</td>
+                    <td>$!{deviceStateTwo.waterTemperature}</td>
+                    <td>$!{deviceStateTwo.time}</td>
+                </tr>
+            #end
+        #end
+    </table>
+    #pagebar($commonPage "${rc.contextPath}/deviceStateController/getDeviceStateListData" "deviceStateListDiv")
+</div>

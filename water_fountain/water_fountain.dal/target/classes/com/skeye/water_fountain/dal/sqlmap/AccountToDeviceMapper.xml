@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.skeye.water_fountain.dal.service.AccountToDeviceMapper">
+	<resultMap type="com.skeye.water_fountain.dal.model.AccountToDevice"
+		id="BaseResultMap">
+		<id property="id" column="id" jdbcType="VARCHAR" />
+		<result property="time" column="time" jdbcType="TIMESTAMP" />
+		<association property="account"
+			javaType="com.skeye.water_fountain.dal.model.Account">
+			<id column="account_no" property="accountNo" jdbcType="VARCHAR" />
+			<result column="account_name" property="accountName" jdbcType="VARCHAR" />
+			<result column="password" property="password" jdbcType="VARCHAR" />
+			<result column="telephone" property="telephone" jdbcType="VARCHAR" />
+		</association>
+		<association property="device"
+			javaType="com.skeye.water_fountain.dal.model.Device">
+			<id column="device_no" property="deviceNo" jdbcType="VARCHAR" />
+			<result column="device_name" property="deviceName" jdbcType="VARCHAR" />
+			<result column="product_name" property="productName" jdbcType="VARCHAR" />
+			<result column="model" property="model" jdbcType="VARCHAR" />
+			<result column="product_date" property="productDate" jdbcType="TIMESTAMP" />
+		</association>
+	</resultMap>
+
+	<select id="getAccountListByMap" parameterType="map" resultMap="BaseResultMap">
+		SELECT ad.row_id,a.*,ad.time
+		FROM account_device ad LEFT JOIN account a
+		ON (ad.account_no=a.account_no)
+		LEFT JOIN device d ON
+		(ad.device_no=d.device_no)
+		WHERE 1=1
+		<if test="accountName!=null">
+			AND a.account_name=#{accountName,jdbcType=VARCHAR}
+		</if>
+		<if test="telephone!=null">
+			AND a.telephone=#{telephone,jdbcType=VARCHAR}
+		</if>
+		<if test="deviceName!=null">
+			AND d.device_name=#{deviceName,jdbcType=VARCHAR}
+		</if>
+		ORDER BY ad.row_id,a.account_no
+	</select>
+
+	<select id="getDeviceListByMap" parameterType="map" resultMap="BaseResultMap">
+		SELECT DISTINCT ad.row_id,d.*,ad.time
+		FROM device_state ds LEFT JOIN device d ON (ds.device_no=d.device_no)
+		LEFT JOIN account_device ad ON (ds.device_no=ad.device_no)
+		WHERE 1=1
+		<if test="deviceNo!=null">
+			AND ds.device_no=#{deviceNo,jdbcType=VARCHAR}
+		</if>
+		<if test="deviceState!=null">
+			AND ds.device_state=#{deviceState,jdbcType=VARCHAR}
+		</if>
+		<if test="waterTemperature!=null">
+			AND
+			ds.water_temperature=#{waterTemperature,jdbcType=DOUBLE}
+		</if>
+		ORDER BY ad.row_id
+	</select>
+</mapper>

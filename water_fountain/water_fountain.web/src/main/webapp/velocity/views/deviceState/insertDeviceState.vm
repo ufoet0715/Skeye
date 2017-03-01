@@ -1,0 +1,19 @@
+<meta charset="UTF-8">
+<link rel="stylesheet" href="${rc.contextPath}/resource/css/common/jquery.datetimepicker.css" />
+<script type="text/javascript" src="${rc.contextPath}/resource/js/jquery/jquery-3.1.1.js"></script>
+<script type="text/javascript" src="${rc.contextPath}/resource/js/jquery/jquery.validate.js"></script>
+<script type="text/javascript" src="${rc.contextPath}/resource/js/jquery/messages_zh.js"></script>
+<script type="text/javascript" src="${rc.contextPath}/resource/js/common/spin.js"></script>
+<script type="text/javascript" src="${rc.contextPath}/resource/js/common/commonLoad.js"></script>
+<script type="text/javascript" src="${rc.contextPath}/resource/js/common/jquery.datetimepicker.full.js"></script>
+<script type="text/javascript" src="${rc.contextPath}/resource/js/deviceState/insertDeviceState.js"></script>
+
+<div>
+    <form id="stateForm" action="${rc.contextPath}/deviceStateController/insertDeviceStateData">
+        设备编号：<input type="text" id="deviceNo" name="deviceNo" required>
+        设备状态：<input type="text" id="deviceState" name="deviceState" required>
+	水温度：<input type="text" id="waterTemperature" name="waterTemperature" required>
+	发生时间：<input type="text" id="time" name="time" required>
+        <input type="submit" id="addBtn" value="提交" />
+    </form>
+</div>

@@ -1,0 +1,15 @@
+<meta charset="UTF-8">
+<script type="text/javascript" src="${rc.contextPath}/resource/js/jquery/jquery-3.1.1.js"></script>
+<script type="text/javascript" src="${rc.contextPath}/resource/js/common/spin.js"></script>
+<script type="text/javascript" src="${rc.contextPath}/resource/js/common/commonLoad.js"></script>
+<script type="text/javascript" src="${rc.contextPath}/resource/js/common/commonPage.js"></script>
+<script type="text/javascript" src="${rc.contextPath}/resource/js/accountToDevice/accountList.js"></script>
+
+<div>
+        昵称：<input type="text" id="accountName" name="accountName">
+        手机：<input type="text" id="telephone" name="telephone">
+	饮水机名称：<input type="text" id="deviceName" name="deviceName">
+        <input type="button" id="searchBtn" value="查询" onclick="searchAccount('${rc.contextPath}/accountToDeviceController/getAccountListByMap.html')"/>
+</div>
+
+<div id="accountListDiv"></div>

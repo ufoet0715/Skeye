@@ -1,0 +1,20 @@
+<meta charset="UTF-8">
+<script type="text/javascript" src="${rc.contextPath}/resource/js/jquery/jquery-3.1.1.js"></script>
+<script type="text/javascript" src="${rc.contextPath}/resource/js/jquery/jquery.validate.js"></script>
+<script type="text/javascript" src="${rc.contextPath}/resource/js/jquery/messages_zh.js"></script>
+<script type="text/javascript" src="${rc.contextPath}/resource/js/common/spin.js"></script>
+<script type="text/javascript" src="${rc.contextPath}/resource/js/common/commonLoad.js"></script>
+<script type="text/javascript" src="${rc.contextPath}/resource/js/account/regist.js"></script>
+
+<div>
+     <form id="registForm" action="${rc.contextPath}/accountController/insertAccount" method="post">
+        账号：<input type="text" id="accountNo" name="accountNo" onchange="checkAccountNo('${rc.contextPath}/accountController/checkAccount')" required>
+	<label id="accountMessage"></label>
+        昵称：<input type="text" id="accountName" name="accountName" required>
+        密码：<input type="password" id="password" name="password" class="password" required>
+	确认密码：<input type="password" id="passwordAgain" name="passwordAgain" onblur="checkPasswordAgain()" required>
+        <label id="passwordMessage"></label>
+        手机：<input type="text" id="telephone" name="telephone" required>
+        <input type="submit" id="registBtn" value="注册" />
+     </form>
+</div>

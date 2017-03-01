@@ -1,0 +1,14 @@
+<div>
+  <h1>logo</h1>
+  <span>系统</span>
+</div>
+<div class="logo_bottom">
+  <ul class="bottom_list">
+    <a href="${rc.contextPath}/deviceController/deviceList">
+     <li>饮水机查看</li>
+    </a>
+    <a href="${rc.contextPath}/deviceController/countDevice">
+     <li>用户关联设备</li>
+    </a>   
+  </ul>
+</div>

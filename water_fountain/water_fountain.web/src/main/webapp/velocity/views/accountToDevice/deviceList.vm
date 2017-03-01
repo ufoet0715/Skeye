@@ -1,0 +1,14 @@
+<meta charset="UTF-8">
+<script type="text/javascript" src="${rc.contextPath}/resource/js/jquery/jquery-3.1.1.js"></script>
+<script type="text/javascript" src="${rc.contextPath}/resource/js/common/spin.js"></script>
+<script type="text/javascript" src="${rc.contextPath}/resource/js/common/commonLoad.js"></script>
+<script type="text/javascript" src="${rc.contextPath}/resource/js/common/commonPage.js"></script>
+<script type="text/javascript" src="${rc.contextPath}/resource/js/accountToDevice/deviceList.js"></script>
+<div>
+        设备编号：<input type="text" id="deviceNo" name="accountName">
+	设备状态：<input type="text" id="deviceState" name="deviceState">
+        设备的水温度：<input type="text" id="waterTemperature" name="waterTemperature">
+        <input type="button" id="searchBtn" value="查询" onclick="searchDevice('${rc.contextPath}/accountToDeviceController/getDeviceListByMap.html')"/>
+</div>
+
+<div id="deviceListDiv"></div>

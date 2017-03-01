@@ -1,0 +1,17 @@
+﻿<meta charset="UTF-8">
+<script type="text/javascript" src="${rc.contextPath}/resource/js/jquery/jquery-3.1.1.js"></script>
+<script type="text/javascript" src="${rc.contextPath}/resource/js/jquery/jquery.validate.js"></script>
+<script type="text/javascript" src="${rc.contextPath}/resource/js/jquery/messages_zh.js"></script>
+<script type="text/javascript" src="${rc.contextPath}/resource/js/common/spin.js"></script>
+<script type="text/javascript" src="${rc.contextPath}/resource/js/common/commonLoad.js"></script>
+<script type="text/javascript" src="${rc.contextPath}/resource/js/account/login.js"></script>
+
+
+<div>
+    <form id="loginForm" action="${rc.contextPath}/accountController/getAccount" method="post">
+        账号：<input type="text" id="accountNo" name="accountNo" required>
+        密码：<input type="password" id="password" name="password" required>
+        <input type="submit" id="loginBtn" value="登录"/>
+    </form>
+    <a href="${rc.contextPath}/accountController/registAccount">注册</a>
+</div>
