@@ -1,0 +1,128 @@
+<script>
+    if(window.top!= window){
+        window.top.location.reload();
+    }
+</script>
+<link href="${link.contextPath}/resources/css/loginstyle.css" rel="stylesheet" type="text/css"/>
+<link rel="stylesheet" type="text/css" href="${link.contextPath}/resources/css/lanrenzhijia.css">
+<link rel="stylesheet" href="${link.contextPath}/resources/css/bootstrap.min.css">
+<script src="${link.contextPath}/resources/js/jquery.min.js"></script>
+<style>
+    
+</style>
+
+<body onkeydown='onEnterDown();'></body>
+<div class="loginMain">
+    <div class="logintext">
+        <form id="loginForm" action="${link.contextPath}/toLogin.html" method="post">
+            <div class="title"><strong>账户登录</strong></div>
+            <div class="control-group">
+                <div class="controls">
+                    <input type="text" id="userName" name="userName" onblur="errorChange('userName','')"
+                           required placeholder="请输入账号"/>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <div class="controls">
+                    <input type="password" id="password" name="password" placeholder="请输入密码" required/>
+                </div>
+            </div>
+
+            <div id="vc">验证码
+                <input name="code" id="mcode" type="text" onblur="checkCode()"
+                      placeholder="请输入验证码" required/>
+            </div>
+
+            <img id="vcp"
+                 onclick="this.src='${link.contextPath}/kaptcha/getKaptchaImage.html?codeType=login&e='+new Date()"
+                 src="${link.contextPath}/kaptcha/getKaptchaImage.htm?codeType=login">
+            
+            <div class="form-group" style="margin-bottom: 0px;">
+                <div class="col-lg- col-sm-5 control-label">
+                    <input type="hidden" class="form-control" name="rePeatPassword"/>
+                </div>
+            </div>
+            <input  type="submit" id="loginBtn" style="display: none;" :/>
+            <div class="logint" onclick=" $('#loginBtn').click();" style="cursor:pointer"> 登录</div>
+        </form>
+      
+    </div>
+</div>
+
+
+<script>
+
+    function onEnterDown(){
+        if(window.event.keyCode == 13){
+            $('#loginBtn').click();
+        }
+    }
+
+    $('#loginForm').submit(function() {
+        var checkResult=checkCode();
+        if(checkResult){
+            var form = $('#loginForm');
+            $.
+            ajax({
+                url: '${link.contextPath}/toLogin.html', data: form.serialize(), success: function (data) {
+                    var reslut=eval("("+data+")");
+                    if(reslut.isSuccess){
+                        window.location.href="${link.contextPath}/index.html";
+                    }else{
+                        if(reslut.data&&reslut.data.objectName&&reslut.data.defaultMessage){
+                            errorChange(reslut.data.objectName,reslut.data.defaultMessage)
+                        }else {
+                            errorChange("userName", "登录异常！")
+                        }
+                        $('#loginBtn').click();
+                    }
+                }, error: function () {
+
+                }
+            });
+        }
+        return false;
+    })
+    function errorChange(id, str) {
+        var element = document.getElementById(id);
+        if(element)
+        element.setCustomValidity(str);
+    }
+
+    function checkCode() {
+        var checkResult=true;
+        var mcode = $("#mcode").val();
+        if (!mcode || mcode == '') {
+            return false;
+        }
+        $.ajax({
+            async: false,
+            cache: false,
+            type: 'POST',
+            url: '${link.contextPath}/kaptcha/checkmCode.htm?codeType=login',// 请求的action路径
+            data: {"mcode": mcode},//参数
+            error: function () {// 请求失败处理函数
+                errorChange("mcode", "验证码验证异常！")
+            },
+            success: function (data) {
+                var reslut = eval("(" + data + ")");
+                var mcodeElement = document.getElementById("mcode");
+                if (!reslut.isSuccess) {
+                    errorChange("mcode", "验证码不正确！")
+                    checkResult=false;
+                } else {
+                    errorChange("mcode", "");
+                }
+
+            }
+        });
+        return checkResult;
+
+    }
+
+
+
+
+
+</script>

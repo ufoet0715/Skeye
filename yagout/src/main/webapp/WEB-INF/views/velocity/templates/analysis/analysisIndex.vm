@@ -1,0 +1,163 @@
+<script src="${link.contextPath}/resources/js/jquery.min.js"></script>
+<script src="${link.contextPath}/resources/js/echarts.common.min.js"></script>
+<link rel="stylesheet" href="${link.contextPath}/resources/css/vrstyle.css">
+<script src="${link.contextPath}/resources/js/jquery.datetimepicker.full.min.js"></script>
+<link rel="stylesheet" type="text/css" href="${link.contextPath}/resources/css/lanrenzhijia.css">
+<link rel="stylesheet" href="${link.contextPath}/resources/css/bootstrap.min2.css">
+<div class="right-bottom-first">
+    <div class="one"><img
+                          src="${link.contextPath}/resources/imgs/ABSU_content_.png.png"/><span
+            style="color:#5fbdff;border-bottom:6px solid #62bafd;">账户数据分析</span></div>
+    <div style="float:left;margin-left:0px;margin-right:16px;margin-top:24px;margin-bottom:27px;"><span
+            style="margin-right:0px;">分析类型</span>
+        <select id="selectType">
+            <option value="0">
+                账户类型分析
+            </option>
+            <option value="1">
+                ADSL分析
+            </option>
+            <!--  <option value="2">
+                  ip分析
+              </option>-->
+            <option value="3">
+                mac分析
+            </option>
+        </select>
+    </div>
+    <div style="float:left;margin-right:16px;margin-left:0px;margin-top:24px;margin-bottom:27px;"><span
+            style="margin-right:0px;">起始时间</span>
+        <input type="text" id="starttime" value="$date.get('yyyy-M-d ')00:00">
+    </div>
+    <div style="float:left;margin-top:24px;margin-left:0px;margin-bottom:27px;"><span
+            style="margin-right:0px;">结束时间</span>
+        <input id="endtime" type="text" value="$date.get('yyyy-M-d ')23:59">
+    </div>
+    <div style="float:left;margin-top:24px;margin-left:100px;margin-bottom:27px;">
+       <input type="button" id="cx" value="分析" style="cursor:pointer;color:#FFF;
+font-family:'微软雅黑';font-size:12px;float:left;" onclick="analys()"/>
+    </div>
+</div>
+</div>
+
+<div class="right-bottom-second">
+    <div id="myChart" style="width:600px;height:400px;margin-top:10px;"></div>
+
+</div>
+<script>
+
+    var myChart = echarts.init(document.getElementById('myChart'));
+
+    var typeOption = {
+
+        tooltip: {
+            trigger: 'item',
+            formatter: "{a} <br/>{b} : {c} ({d}%)"
+        },
+
+        series: []
+    };
+
+
+    $('#starttime').datetimepicker({
+        format: 'Y-m-d H:i',
+        timepicker: true     //关闭时间选项
+    });
+
+
+    $('#endtime').datetimepicker({
+        format: 'Y-m-d H:i',
+        timepicker: true  //关闭时间选项
+    });
+    myChart.setOption(typeOption, true);
+    myChart.on('click', function (params) {
+        if (params.componentType === 'series') {
+            var starttime = $("#starttime").val();
+            var endtime = $("#endtime").val();
+            var param = {};
+            var targetUrl;
+            param.beginTime = starttime;
+            param.endTime = endtime;
+            param[params.data.analysisType] = params.data.id;
+            if (params.data.analysisType =='accountType'
+            ) {
+                targetUrl = '${link.contextPath}/account/accountListData.html';
+            }
+            else {
+                param.popUp=true;
+                targetUrl = '${link.contextPath}/rawaccountHandled/rawaccountHandledListData.html';
+            }
+            var dataparams = {pageNo: 1, rows: 10, params: JSON.stringify(param)};
+            var spinner;
+            $.ajax({
+                url: targetUrl, data: dataparams,
+                beforeSend: function () {
+                    spinner= commonLoad("myChart");
+                },
+
+
+                success: function (data) {
+                editDataCommon(data,800,460,params.name);
+                }, error: function () {
+                },
+                complete: function () {
+                    spinner.spin();//移除加载
+                }
+            });
+        }
+    });
+    function analys() {
+        var selectType = $("#selectType").val();
+        var starttime = $("#starttime").val();
+        var endtime = $("#endtime").val();
+        var options = myChart.getOption();
+        $("#analysisListDiv").html("");
+        var spinner;
+        $.ajax({
+            url: '${link.contextPath}/analysis.html',
+            data: {type: selectType, beginTime: starttime, endTime: endtime},
+            beforeSend: function () {
+                spinner= commonLoad("myChart");
+            },
+            success: function (data) {
+                var reslut = eval("(" + data + ")");
+                if (reslut.isSuccess) {
+                    if($.isEmptyObject(reslut.data.series)||reslut.data.series.length==0){
+
+                    }
+                    options.legend = {
+                        orient: 'vertical',
+                        left: 'left',
+                        data: reslut.data.legend
+                    }
+                    options.series = {
+                        name: '访问来源',
+                        type: 'pie',
+                        radius: '45%',
+                        center: ['50%', '30%'],
+                        data: reslut.data.series,
+                        itemStyle: {
+                            emphasis: {
+                                shadowBlur: 10,
+                                shadowOffsetX: 0,
+                                shadowColor: 'rgba(0, 0, 0, 0.5)'
+                            }
+                        }
+                    };
+                    myChart.hideLoading();
+                    myChart.setOption(options, true);
+                }
+            },
+            error: function () {
+
+            },
+            complete: function () {
+                spinner.spin();//移除加载
+            }
+        });
+
+    }
+    $.datetimepicker.setLocale('ch');//设置中文
+    analys();
+</script>
+#parse("common/commonEdit.vm")

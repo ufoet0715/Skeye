@@ -1,0 +1,8 @@
+<script src="${link.contextPath}/resources/js/jquery.min.js"></script>
+<script src="${link.contextPath}/resources/js/jquery.datetimepicker.full.min.js"></script>
+<script  src="${link.contextPath}/resources/js/commonPage.js"></script>
+
+
+<script>
+    $.datetimepicker.setLocale('ch');//设置中文
+</script>

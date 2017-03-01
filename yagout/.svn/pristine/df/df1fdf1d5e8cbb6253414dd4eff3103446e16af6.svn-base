@@ -1,0 +1,23 @@
+log4j.rootLogger= Info,file
+
+#应用于文件
+#每天产生一个新的文件
+log4j.appender.file=org.apache.log4j.DailyRollingFileAppender
+log4j.appender.file.File=${catalina.home}/skyeyetomcatlogs/log_error/_file.log
+log4j.appender.file.Append=true
+log4j.appender.file.layout=org.apache.log4j.PatternLayout
+log4j.appender.file.layout.ConversionPattern=[error]%d %p %t %c - %m%n
+log4j.appender.file.Threshold=Info
+#设置每天生成一个文件名后添加的名称
+log4j.appender.file.DatePattern='.'yyyy-MM-dd
+
+log4j.logger.com.ibatis=Info
+log4j.logger.com.ibatis.common.jdbc.SimpleDataSource=Info
+log4j.logger.com.ibatis.common.jdbc.ScriptRunner=Info
+log4j.logger.com.ibatis.sqlmap.engine.impl.SqlMapClientDelegate=Info
+log4j.logger.java.sql.Connection=Info
+log4j.logger.java.sql.Statement=Info
+log4j.logger.java.sql.PreparedStatement=Info
+log4j.logger.com.skeye.yagout.dal.service=Info
+log4j.logger.org.mybatis=Info
+

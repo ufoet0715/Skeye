@@ -1,0 +1,101 @@
+﻿
+<script src="${link.contextPath}/resources/js/commonSearchAutoComplete.js"></script>
+<link rel="stylesheet" href="${link.contextPath}/resources/css/vrstyle.css">
+<script src="${link.contextPath}/resources/js/commonDelete.js"></script>
+<script type="text/javascript">
+    function searchRawaccountHandled() {
+        var param = {};
+        var accountName = $("#accountName").val();
+        var likeInput = $("#likeInput").is(':checked')
+        if (accountName && accountName != "") {
+            if (likeInput) {
+                param.accountName = accountName;
+            } else {
+                param.accountNameEq = accountName;
+            }
+        }
+        var adslAccount = $("#adslAccount").val();
+        if (adslAccount && adslAccount != "") {
+
+            if (likeInput) {
+                param.adslAccount = adslAccount;
+            } else {
+                param.adslAccountEq = adslAccount;
+            }
+        }
+        var beginTime = $("#beginTime").val();
+        if (beginTime && beginTime != "") {
+            param.beginTime = beginTime;
+        }
+        var endTime = $("#endTime").val();
+        if (endTime && endTime != "") {
+            param.endTime = endTime;
+        }
+        searchPage(1, 10, '${link.contextPath}/rawaccountHandled/rawaccountHandledListData.html', JSON.stringify(param), "rawaccountHandledListDiv");
+    }
+
+    function clearSearch() {
+        $("input[name='rawaccountHandledSearch']").val('');
+        $("#likeInput").prop("checked", false);
+    }
+
+    function deleteRawaccountHandled() {
+        deleteCommon('rawaccountHandledCheckBox', '${link.contextPath}/rawaccountHandled/deleteRawaccountHandledList.json', 'searchRawaccountHandled');
+    }
+
+
+</script>
+
+<div class="right-bottom-first">
+    <div style="float:left;margin-left:0px;margin-right:16px;"><span
+            style="margin-right:0px;">账户名称</span>
+        <input style="width: 150px;" id="accountName" name="rawaccountHandledSearch" type="text"/>
+    </div>
+    <div style="float:left;margin-left:0px;margin-right:16px;"><span
+            style="margin-right:0px;">ADSL账户名称</span>
+        <input style="width: 150px;" id="adslAccount" name="rawaccountHandledSearch" type="text"/>
+    </div>
+    
+</div>
+<div class="four" >
+    <div class="mbsearch">
+      <div style="float:left;margin-right:16px;margin-left:0px;margin-top:10px;"><span
+            style="margin-right:0px;">起始时间</span>
+        <input style="width: 150px;" id="beginTime" name="rawaccountHandledSearch" value="$date.get('yyyy-M-d ')00:00"  type="text"/>
+    </div>
+    <div style="float:left;margin-left:36px;margin-top:10px;"><span
+            style="margin-right:0px;margin-top:10px;">结束时间</span>
+        <input style="width: 150px;" id="endTime" name="rawaccountHandledSearch" value="$date.get('yyyy-M-d ')23:59"  type="text"/>
+    </div>
+    
+      <span style="float:left;margin-right:10px;margin-left:72px;margin-top:10px;">模糊查询<input
+            type="checkbox" id="likeInput"/></span>
+        <input type="button" id="cx" value="查询" style="cursor:pointer;color:#FFF;
+font-family:'微软雅黑';font-size:12px;float:left;margin-top:10px;margin-bottom:20px;" onclick="searchRawaccountHandled()"/>
+        <input type="button" onclick="clearSearch()" id="cz" value="重置" style="cursor:pointer;color:#69bdfe;
+font-family:'微软雅黑';font-size:12px;background:#FFF;float:left;margin-left:20px;margin-top:10px;margin-bottom:10px;"/>
+       #if($shiro.hasRole("1"))
+        <input type="button" id="cx" value="删除" style="cursor:pointer;color:#FFF;
+font-family:'微软雅黑';font-size:12px;float:left;margin-left:20px;margin-top:10px;margin-bottom:20px;" onclick="deleteRawaccountHandled()"/>
+        #end
+        <input type="button" id="cx" value="导出" style="cursor:pointer;color:#FFF;
+font-family:'微软雅黑';font-size:12px;float:left;margin-left:60px;margin-top:10px;margin-bottom:20px;" onclick="window.location.href='${link.contextPath}/poi/rawaccountHandled.html'"/>
+    </div>
+</div>
+
+<div id="rawaccountHandledListDiv" style="clear: both;position:relative;min-height:250px;overflow-y:auto;max-height:350px;"></div>
+<script>
+    $('#beginTime').datetimepicker({
+        format: 'Y-m-d H:i',
+        timepicker: true     //关闭时间选项
+    });
+
+
+    $('#endTime').datetimepicker({
+        format: 'Y-m-d H:i',
+        timepicker: true  //关闭时间选项
+    });
+    searchAutoComplete('adslAccount','${link.contextPath}/rawaccountHandled/searchAutoComplete.json','adslAccount','ADSLAccount');
+    searchAutoComplete('accountName','${link.contextPath}/rawaccountHandled/searchAutoComplete.json','accountName','AccountName');
+    searchRawaccountHandled();
+</script>

@@ -1,0 +1,115 @@
+
+<link rel="stylesheet" href="${link.contextPath}/resources/css/vrstyle.css">
+<link rel="stylesheet" href="${link.contextPath}/resources/css/formEdit.css">
+<div class="right-bottom-first">
+
+</div>
+<div class="wrap" style="margin-left: 80px;">
+    <form class=" form-horizontal" id="userEditInfo"  style="width:300px;" >
+            <div class="control-group">
+                <label class="control-label">
+                    登录名</label>
+                <div class="controls">
+                    <input id="newUserName" onchange="checkUserName()"  name="userName" type="text" placeholder="必填项" class="input-xlarge"
+                           required  >
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label">
+                    密码</label>
+                <div class="controls">
+                    <input id="pwd" name="password" type="password" placeholder="必填项" class="input-xlarge"
+                           required onchange="checkPasswords()">
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label">
+                    确认密码</label>
+                <div class="controls">
+                    <input id="pwd1" name="rePeatPassword" type="password" placeholder="必填项" class="input-xlarge"
+                           required onchange="checkPasswords()">
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label">
+                </label>
+                <div class="controls">
+                    <input  type="submit" id="userBtn" style="display: none;" :/>
+
+                    <a href="javascript:void(0)" onclick=" $('#userBtn').click();" ><input type="button" id="cx"  value="保存" style="cursor:pointer;color:#FFF;
+font-family:'微软雅黑';font-size:12px;float:left;"/></a>
+                </div>
+            </div>
+    </form>
+</div>
+
+
+
+<script>
+
+    function checkUserName() {
+        var newUserName = document.getElementById("newUserName");
+        var res = true;
+        var value=newUserName.value;
+        if (value&&value!="") {
+            $.ajax({
+                url: '${link.contextPath}/checkUserName',
+                type: 'post',
+                async: false,
+                data: {userName: value},
+                success: function (data) {
+
+                    var reslut=eval("("+data+")");
+                    if(!reslut.isSuccess){
+                        res = false;
+                        newUserName.setCustomValidity("登录名已占用！");
+                    }else {
+                        newUserName.setCustomValidity('');
+                    }
+                }
+            });
+        }
+        return res;
+    }
+
+    function checkPasswords() {
+        var passl = document.getElementById("pwd");
+        var pass2 = document.getElementById("pwd1");
+        if (passl.value != pass2.value)
+            passl.setCustomValidity("两次密码必须输入一致！");
+        else
+            passl.setCustomValidity('');
+    }
+
+    $('#userEditInfo').submit(function() {
+        var form = $('#userEditInfo')
+        var spinner;
+        $.ajax({
+            url: '${link.contextPath}/admin/saveUser.html', data: form.serialize(),
+            beforeSend: function () {
+                spinner= commonLoad("userEditInfo");
+            },
+            success: function (data) {
+                var reslut=eval("("+data+")");
+                if(reslut.isSuccess){
+                    alert("添加成功");
+                    hideCommon();
+                    searchUser();
+                }else {
+                    var newUserName = document.getElementById("newUserName");
+                    newUserName.setCustomValidity(reslut.resultMsg);
+                    $('#userBtn').click();
+                }
+            }, error: function () {
+
+            },
+            complete: function () {
+                spinner.spin();//移除加载
+            }
+        });
+
+        return false;
+    })
+
+
+</script>

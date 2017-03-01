@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.skeye.yagout.dal.service.RawaccountHandledTwoMapper">
+    <resultMap id="BaseResultMap" type="com.skeye.yagout.dal.model.RawaccountHandledTwo">
+        <id column="ID" property="id" jdbcType="INTEGER"/>
+        <result column="AccountName" property="accountname" jdbcType="VARCHAR"/>
+        <result column="Password" property="password" jdbcType="VARCHAR"/>
+        <result column="TypeName" property="typename" jdbcType="VARCHAR" />
+        <result column="ADSLAccount" property="adslaccount" jdbcType="VARCHAR"/>
+        <result column="MacAddr" property="macaddr" jdbcType="VARCHAR"/>
+        <result column="IPAddr" property="ipaddr" jdbcType="VARCHAR"/>
+        <result column="CapTime" property="captime" jdbcType="INTEGER"/>
+        <result column="CapPort" property="capport" jdbcType="INTEGER"/>
+    </resultMap>
+    
+    <select id="selectAll" resultMap="BaseResultMap">
+        select rh.*, aty.TypeName TypeName
+        from rawaccount_handled rh LEFT JOIN accounttype aty ON rh.accountType=aty.id
+    </select>
+</mapper>

@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper
+	namespace="com.skeye.yagout.dal.service.RawaccountHandledAndAccountTypeMapper">
+	<resultMap id="BaseResultMap"
+		type="com.skeye.yagout.dal.model.RawaccountHandledAndAccountType">
+		<result column="AccountName" property="accountName" jdbcType="VARCHAR" />
+		<result column="Password" property="password" jdbcType="VARCHAR" />
+		<result column="AccountType" property="accountType" jdbcType="INTEGER" />
+		<result column="TypeName" property="typeName" jdbcType="VARCHAR" />
+		<result column="ADSLAccount" property="adslAccount" jdbcType="VARCHAR" />
+		<result column="IPAddr" property="ipAddr" jdbcType="VARCHAR" />
+		<result column="MacAddr" property="macAddr" jdbcType="VARCHAR" />
+		<result column="Count" property="count" jdbcType="INTEGER" />
+		<result column="timeShow" property="timeShow" jdbcType="VARCHAR" />
+
+	</resultMap>
+
+	<select id="countByNameAndType" parameterType="map" resultMap="BaseResultMap">
+       SELECT
+		COUNT(rh.AccountName) Count,rh.AccountType AccountType,
+		aty.TypeName   TypeName
+		FROM
+        account rh
+		LEFT JOIN accounttype aty ON rh.AccountType = aty.ID
+
+			where  1=1
+			<if test="beginTime!= null">
+
+			  and	rh.LastCapTime>=#{beginTime,jdbcType=INTEGER}
+			</if>
+			<if test="endTime!= null">
+				<![CDATA[  and	rh.LastCapTime<=#{endTime,jdbcType=INTEGER}  ]]>
+			</if>
+		GROUP BY   		aty.ID
+
+	</select>
+
+	<select id="countByNameAndADSL" parameterType="map" resultMap="BaseResultMap">
+	    SELECT COUNT(rh.ADSLAccount)Count,rh.ADSLAccount ADSLAccount
+        FROM  rawaccount_handled  rh
+			where  1=1
+			<if test="beginTime!= null">
+
+				and rh.CapTime>=#{beginTime,jdbcType=INTEGER}
+			</if>
+			<if test="endTime!= null">
+
+				<![CDATA[ and rh.CapTime<=#{endTime,jdbcType=INTEGER}]]>
+			</if>
+
+        GROUP BY 	rh.ADSLAccount
+	</select>
+
+	<select id="countByNameAndIP" parameterType="map" resultMap="BaseResultMap">
+		SELECT COUNT(rh.IPAddr)Count,rh.IPAddr IPAddr
+        FROM  rawaccount_handled  rh
+			where  1=1
+			<if test="beginTime!= null">
+
+				and	rh.CapTime>=#{beginTime,jdbcType=INTEGER}
+			</if>
+			<if test="endTime!= null">
+
+			<![CDATA[ and	rh.CapTime<=#{endTime,jdbcType=INTEGER}]]>
+			</if>
+
+        GROUP BY rh.IPAddr
+	</select>
+
+	<select id="countByNameAndMAC" parameterType="map" resultMap="BaseResultMap">
+		SELECT COUNT(rh.MacAddr)Count,rh.MacAddr MacAddr
+        FROM  rawaccount_handled  rh
+		where  1=1
+			<if test="beginTime!= null">
+				and
+				rh.CapTime>=#{beginTime,jdbcType=INTEGER}
+			</if>
+			<if test="endTime!= null">
+
+			<![CDATA[ and	rh.CapTime<=#{endTime,jdbcType=INTEGER}]]>
+			</if>
+
+        GROUP BY rh.MacAddr
+	</select>
+
+
+	<select id="countByTime" parameterType="map" resultMap="BaseResultMap">
+		SELECT COUNT(rh.ID) count,
+		FROM_UNIXTIME(rh.CapTime,
+		<choose>
+			<when test="timeFmort!=null">
+				#{timeFmort}
+			</when>
+			<otherwise>
+				'%Y-%m-%d'
+			</otherwise>
+		</choose>
+
+		)as timeShow
+		FROM  rawaccount_handled  rh
+		where  1=1
+
+		<if test="beginTime!= null and beginTime!=''">
+			and rh.CapTime>=UNIX_TIMESTAMP( #{beginTime})
+		</if>
+		<if test="accountNameEq != null and accountNameEq!=''">
+			and rh.AccountName=#{accountNameEq,jdbcType=VARCHAR}
+		</if>
+		<if test="adslAccountEq != null and adslAccountEq!=''">
+			and rh.ADSLAccount=#{adslAccountEq,jdbcType=VARCHAR}
+		</if>
+
+		<if test="endTime!= null and  endTime!=''">
+			<![CDATA[    and rh.CapTime<=UNIX_TIMESTAMP( #{endTime} )]]>
+		</if>
+
+		GROUP BY timeShow
+	</select>
+
+
+</mapper>

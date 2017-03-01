@@ -1,0 +1,44 @@
+<script> jQuery(function () {
+    $("#CheckedAll").click(function () {
+        if
+        ($(this).is(":checked")) {
+            $("[name=dailinfoHandledCheckBox]:checkbox").prop("checked", true);
+        } else {
+            $("[name=dailinfoHandledCheckBox]:checkbox").prop("checked", false);
+        }
+    });
+})
+
+</script>
+
+<div class="right-bottom-second">
+    <table width="98%" border="0" style="color:#626262;font-size:12px;">
+        <tr style="color:#626262;font-size:14px;">
+            #if($shiro.hasRole("1"))
+                <td style="font-weight:bold;width:36px;"><input type="checkbox" id="CheckedAll"/></td>
+            #end
+            <td style="font-weight:bold;width:86px;">ADSL账号名称</td>
+            <td style="font-weight:bold;width:86px;">ADSL账号密码</td>
+            <td style="font-weight:bold;width:86px;">获取到的时间(秒)</td>
+            <td style="font-weight:bold;width:86px;">IPV4地址</td>
+            <td style="font-weight:bold;width:86px;">上线/下线</td>
+            <td style="font-weight:bold;width:86px;">MAC地址</td>
+        </tr>
+        #if($commonPage&&$commonPage.pageData)
+            #foreach($dailinfoHandled in $commonPage.pageData)
+                <tr>
+                    #if($shiro.hasRole("1"))
+                        <td><input type="checkbox" name="dailinfoHandledCheckBox" value="$!dailinfoHandled.ID"/></td>
+                    #end
+                    <td>$!{dailinfoHandled.AdslAccount}</td>
+                    <td>$!{dailinfoHandled.Passwd}</td>
+                    <td>$!{dailinfoHandled.DailTime}</td>
+                    <td>$!{dailinfoHandled.DailIp}</td>
+                    <td>$!{dailinfoHandled.DailType}</td>
+                    <td>$!{dailinfoHandled.DailMac}</td>
+                </tr>
+            #end
+        #end
+    </table>
+    #pagebar($commonPage "${link.contextPath}/dailinfoHandled/dailinfoHandledListData.html" "dailinfoHandledListDiv")
+</div>

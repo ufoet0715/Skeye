@@ -1,0 +1,89 @@
+
+<link rel="stylesheet" href="${link.contextPath}/resources/css/vrstyle.css">
+<link rel="stylesheet" type="text/css" href="${link.contextPath}/resources/css/lanrenzhijia.css">
+<script>
+    jQuery(function () {
+        $("#CheckedAll").click(function () {
+            if ($(this).is(":checked")) {
+                $("[name=accountCheckBox]:checkbox").prop("checked", true);
+            } else {
+                $("[name=accountCheckBox]:checkbox").prop("checked", false);
+            }
+        });
+    })
+
+    function dailinDetail(accountName) {
+        var param = getSearchParam();
+        param.accountNameEq = accountName;
+        param.popUp = true;
+        var dataparams = {pageNo: 1, rows: 10, params: JSON.stringify(param)};
+        var spinner;
+        $.ajax({
+            url: '${link.contextPath}/rawaccountHandled/rawaccountHandledListData.html',
+            data: dataparams,
+            beforeSend: function () {
+                spinner= commonLoad("accountListDiv");
+            },
+
+            success: function (data) {
+                editDataCommon(data, 800, 460, accountName + "的轨迹");
+            },
+            error: function () {
+            },
+            complete: function () {
+                spinner.spin();//移除加载
+            }
+        });
+    }
+
+</script>
+
+<div class="right-bottom-second">
+    <table width="98%" border="0" style="color:#626262;font-size:12px;">
+        <tr style="color:#626262;font-size:14px;">
+            #if($shiro.hasRole("1"))
+                <td style="font-weight:bold;width:36px;"><input type="checkbox" id="CheckedAll"/></td>
+            #end
+            <td style="font-weight:bold;width:86px;">账号名称</td>
+            <td style="font-weight:bold;width:50px;">密码</td>
+            <td title="账号类型" style="font-weight:bold;width:50px;">类型</td>
+            <td style="font-weight:bold;width:86px;">ADSL账户</td>
+            <td style="font-weight:bold;width:30px;">登陆次数</td>
+            <td style="font-weight:bold;width:86px;">登陆的时间</td>
+            <td style="font-weight:bold;width:86px;">最后登陆的IP</td>
+            <td title="最后登陆的端口" style="font-weight:bold;width:50px;">登陆端口</td>
+            <td title="最后登陆的MAC地址" style="font-weight:bold;width:86px;">MAC地址</td>
+            <td style="font-weight:bold;width:50px;">操作</td>
+        </tr>
+
+        #if($commonPage&&$commonPage.pageData)
+            #foreach($account  in $commonPage.pageData)
+                <tr>
+                    #if($shiro.hasRole("1"))
+                        <td><input type="checkbox" name="accountCheckBox" value="$!account.ID"/></td>
+                    #end
+                    <td>$!{account.AccountName}</td>
+                    <td>$!{account.Password}</td>
+                    <td>$!{account.TypeName}</td>
+                    <td>$!{account.LastCapADSL}</td>
+                    <td>$!{account.History}</td>
+                    #set($accountDate=$!account.LastCapTime * 1000)
+                    <td> $!date.format('yyyy-MM-dd HH:mm ',$accountDate)</td>
+                    <td>$!{account.LastCapIP}</td>
+                    <td>$!{account.LastCapPort}</td>
+                    <td>$!{account.LastCapMac}</td>
+                    <td><a href="javascript:void(0)" onclick="dailinDetail('$!account.AccountName')">轨迹</a></td>
+                </tr>
+            #end
+        #end
+
+
+    </table>
+    #pagebar($commonPage "${link.contextPath}/account/accountListData.html" "accountListDiv")
+</div>
+
+
+#parse("common/commonEdit.vm")
+
+
+

@@ -1,0 +1,111 @@
+﻿<script src="${link.contextPath}/resources/js/jquery.datetimepicker.full.min.js"></script>
+<meta charset="UTF-8">
+<script type="text/javascript">
+    $.datetimepicker.setLocale('ch');//设置中文
+    function searchLog() {
+        var param = {};
+        var userName = $("#userName").val();
+        var likeInput = $("#likeInput").is(':checked')
+        if (userName && userName != "") {
+            if (likeInput) {
+                param.userName = userName;
+            } else {
+                param.userNameEq = userName;
+            }
+        }
+        var isSuccess = $("#isSuccess").val();
+        if (isSuccess && isSuccess != "") {
+            param.isSuccess = isSuccess;
+        }
+        var logType = $("#logType").val();
+        if (logType && logType != "") {
+            param.logTypeEq = logType;
+        }
+        var beginTime = $("#beginTime").val();
+        if (beginTime && beginTime != "") {
+            param.beginTime = beginTime;
+        }
+        var endTime = $("#endTime").val();
+        if (endTime && endTime != "") {
+            param.endTime = endTime;
+        }
+        searchPage(1, 10, '${link.contextPath}/admin/logListData.html', JSON.stringify(param), "logListDiv");
+    }
+
+    function clearSearch() {
+        $("input[name='userName']").val('');
+        $("input[name='beginTime']").val('');
+        $("input[name='endTime']").val('');
+        $("#likeInput").prop("checked", false);
+    }
+
+</script>
+
+<div class="right-bottom-first">
+
+    <div style="float:left;margin-left:0px;margin-right:16px;"><span
+            style="margin-right:0px;">账号名称</span>
+        <input type="text" id="userName" name="userName" style="width: 150px;"/>
+        <span style="margin-left:10px;">是否成功</span>
+        <select id="isSuccess" name="isSuccess" style="width: 100px;">
+            <option value="">全部</option>
+            <option value="1">成功</option>
+            <option value="2">失败</option>
+        </select>
+        <span style="margin-left:10px;">日志类型</span>
+        <select id="logType" name="logType" style="width: 100px;">
+            <option value="">全部</option>
+            <option value="0">登录</option>
+            <option value="1">登出</option>
+            <option value="2">添加登录用户</option>
+            <option value="3">删除登录用户</option>
+            <option value="4">修改密码</option>
+            <option value="5">删除账户信息</option>
+            <option value="6">删除ADSL帐号</option>
+            <option value="7">删除账户轨迹</option>
+            <option value="8">excel导出</option>
+        </select>
+    </div>
+</div>
+
+<div class="four">
+    <div style="float:left;margin-left:0px;margin-right:16px;margin-top:10px;"><span
+            style="margin-right:0px;">起始时间</span>
+        <input type="text" id="beginTime" name="beginTime" value="$date.get('yyyy-M-d ')00:00" style="width: 150px;"/>
+    </div>
+    <div style="float:left;margin-left:0px;margin-right:16px;margin-top:10px;"><span
+            style="margin-right:0px;">结束时间</span>
+        <input type="text" id="endTime" name="endTime" value="$date.get('yyyy-M-d ')23:59" style="width: 150px;"/>
+    </div>
+    <div style="float:left;margin-top:10px;margin-right:16px;margin-left:314px;margin-bottom:14px;"><span
+        <div class="mbsearch"><span style="float:left;">模糊查询<input
+                type="checkbox" id="likeInput"/></span>
+            <input type="button" id="cx" value="查询" style="cursor:pointer;color:#FFF;
+font-family:'微软雅黑';font-size:12px;float:left;margin-left:10px;" onclick="searchLog()"/>
+            <input type="button" id="cz" value="重置" style="cursor:pointer;color:#69bdfe;
+font-family:'微软雅黑';font-size:12px;background:#FFF;float:left;margin-left: 20px;" onclick="clearSearch()"/>
+        </div>
+    </div>
+
+</div>
+</div>
+
+
+<div id="logListDiv" style="clear: both;position:relative;min-height:250px;overflow-y:auto;max-height:350px;"></div>
+
+#parse("common/commonEdit.vm")
+
+<script>
+
+    $('#beginTime').datetimepicker({
+        format: 'Y-m-d H:i',
+        timepicker: true     //关闭时间选项
+    });
+
+
+    $('#endTime').datetimepicker({
+        format: 'Y-m-d H:i',
+        timepicker: true  //关闭时间选项
+    });
+    searchLog();
+</script>

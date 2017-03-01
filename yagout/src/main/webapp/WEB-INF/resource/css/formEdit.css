@@ -1,0 +1,24 @@
+.form-horizontal .control-group
+{
+    margin-bottom: 16px;
+}
+.wrap
+{
+    height: 100%;
+    display: -webkit-box;
+    overflow: auto;
+    margin-left: 30px;
+}
+.main
+{
+    width: 400px;
+}
+.info
+{
+    margin-bottom: 20px;
+    font-size: 21px;
+    line-height: 40px;
+    color: #333;
+    border: 0;
+    border-bottom: 1px solid #e5e5e5;
+}

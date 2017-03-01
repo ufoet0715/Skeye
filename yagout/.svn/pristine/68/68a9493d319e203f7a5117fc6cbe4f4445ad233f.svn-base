@@ -1,0 +1,76 @@
+<script src="${link.contextPath}/resources/js/jquery.min.js"></script>
+<script  src="${link.contextPath}/resources/js/commonPage.js"></script>
+<script src="${link.contextPath}/resources/js/commonSearchAutoComplete.js"></script>
+<link rel="stylesheet" href="${link.contextPath}/resources/css/vrstyle.css">
+<script src="${link.contextPath}/resources/js/commonDelete.js"></script>
+<link rel="stylesheet" type="text/css" href="${link.contextPath}/resources/css/lanrenzhijia.css">
+<script type="text/javascript">
+    function searchUser() {
+        var param = {};
+        var userName = $("#userName").val();
+        var likeInput=$("#likeInput").is(':checked')
+        if (userName && userName != "") {
+            if(likeInput){
+                param.userName = userName;
+            }else {
+                param.userNameEq = userName;
+            }
+
+        }
+        searchPage(1, 10, '${link.contextPath}/admin/userListData.html', JSON.stringify(param), "userListDiv");
+    }
+    function editUsers(userId) {
+        var title="修改用户";
+        if(!userId){
+            title="新增用户";
+        }
+        $.ajax({
+            url: '${link.contextPath}/admin/userEdit.html', data: {userId:userId}, success: function (data) {
+                editDataCommon(data,450,350,title);
+            }, error: function () {
+                alert("查询异常");
+            }
+        });
+    }
+
+    function deleteUsers() {
+        deleteCommon('userCheckBox','${link.contextPath}/admin/deleteUsers.json','searchUser');
+    }
+
+
+</script>
+
+<div class="right-bottom-first">
+    <div class="one">
+        <img style="margin-top:0px;" src="${link.contextPath}/resources/imgs/Settings_pre_.png.png"/>
+	<span style="color:#5fbdff;border-bottom:6px solid #62bafd;">登录用户管理</span>
+    </div>
+    <div style="float:left;margin-left:0px;margin-right:100px;margin-top:27px;margin-bottom:27px;">
+	 <span style="margin-right:0px;">登录名称</span>
+         <input type="text" id="userName" name="userNameSearch" style="width: 150px;"/>
+    </div>
+    <div style="margin-top:27px;margin-left:595px;">
+       <span style="float:left;margin-right:10px">模糊查询  
+          <input type="checkbox" id="likeInput"/>
+       </span>
+                <input type="button" id="cx" value="查询" style="cursor:pointer;color:#FFF;
+font-family:'微软雅黑';font-size:12px;float:left;" onclick="searchUser()" style="margin-left: 10px;"/>
+                <input type="button" onclick="$('#userName').val('');" id="cz" value="重置" style="cursor:pointer;color:#69bdfe;
+font-family:'微软雅黑';font-size:12px;background:#FFF;float:left;margin-left: 20px;"/>
+                <input type="button" id="cx"  value="新增用户" style="cursor:pointer;color:#FFF;
+font-family:'微软雅黑';font-size:12px;float:left;margin-left: 40px;"  onclick="editUsers()"/>
+                <input type="button" id="cz"  value="删除用户" style="cursor:pointer;color:#69bdfe;
+font-family:'微软雅黑';font-size:12px;background:#FFF;float:left;margin-left: 20px;" onclick="deleteUsers()"/>
+    </div>
+ </div>
+<div id="userListDiv" style="clear: both;position:relative;min-height:250px;overflow-y:auto;max-height:400px;"></div>
+
+#parse("common/commonEdit.vm")
+
+<script>
+    jQuery(function(){
+        searchUser();
+    })
+
+
+</script>

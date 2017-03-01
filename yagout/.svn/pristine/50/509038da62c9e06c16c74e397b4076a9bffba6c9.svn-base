@@ -1,0 +1,31 @@
+﻿
+
+<div class="right-bottom-second">
+    <table width="98%" border="0" style="color:#626262;font-size:12px;">
+        <tr style="color:#626262;font-size:14px;">
+            <td style="font-weight:bold;width:86px;">账号名称</td>
+            <td style="font-weight:bold;width:86px;">是否成功</td>
+            <td style="font-weight:bold;width:86px;">日志时间</td>
+	    <td style="font-weight:bold;width:86px;">日志信息</td>
+	    <td style="font-weight:bold;width:86px;">日志类型</td>
+        </tr>
+
+        #if($commonPage&&$commonPage.pageData)
+            #foreach($yagout_log in $commonPage.pageData)
+                <tr>
+                    <td>$!{yagout_log.yagout_user_name}</td>
+		    <td>$!{yagout_log.is_success}</td>
+                    <td>$!{yagout_log.log_time}</td>
+		    <td>$!{yagout_log.log_msg}</td>
+                    <td>$!{yagout_log.log_type}</td>
+                </tr>
+            #end
+        #end
+
+
+    </table>
+    #pagebar($commonPage "${link.contextPath}/admin/logListData.html" "logListDiv")
+</div>
+
+
+

@@ -1,0 +1,51 @@
+<script>
+    jQuery(function () {
+        $("#CheckedAll").click(function () {
+            if ($(this).is(":checked")) {
+                $("[name=rawaccountHandledCheckBox]:checkbox").prop("checked", true);
+            } else {
+                $("[name=rawaccountHandledCheckBox]:checkbox").prop("checked", false);
+            }
+        });
+    })
+
+</script>
+
+
+    <div class="right-bottom-second">
+    <table width="98%" border="0" style="color:#626262;font-size:12px;">
+        <tr style="color:#626262;font-size:14px;">
+            #if(!$popUp&&$shiro.hasRole("1"))
+                <td style="font-weight:bold;width:36px;"><input type="checkbox" id="CheckedAll"/></td>  #end
+            <td style="font-weight:bold;width:86px;">账号名称</td>
+            <td style="font-weight:bold;width:50px;">密码</td>
+            <td style="font-weight:bold;width:50px;">账号类型</td>
+            <td style="font-weight:bold;width:86px;">ADSL账户</td>
+            <td style="font-weight:bold;width:86px;">登陆的IP</td>
+            <td style="font-weight:bold;width:50px;">登陆的端口</td>
+            <td style="font-weight:bold;width:86px;">登陆的时间</td>
+        </tr>
+        #if($commonPage&&$commonPage.pageData)
+            #foreach($rawaccountHandled in $commonPage.pageData)
+                <tr>
+                    #if(!$popUp&&$shiro.hasRole("1"))
+                        <td><input type="checkbox" name="rawaccountHandledCheckBox" value="$!rawaccountHandled.ID"/>
+                        </td> #end
+                    <td>$!{rawaccountHandled.AccountName}</td>
+                    <td>$!{rawaccountHandled.Password}</td>
+                    <td>$!{rawaccountHandled.TypeName}</td>
+                    <td>$!{rawaccountHandled.ADSLAccount}</td>
+                    <td>$!{rawaccountHandled.IPAddr}</td>
+                    <td>$!{rawaccountHandled.CapPort}</td>
+                    #set($capTime=$!rawaccountHandled.CapTime * 1000)
+                    <td>$!date.format('yyyy-MM-dd HH:mm ',$capTime)</td>
+                </tr>
+            #end
+        #end
+    </table>
+    #if(!$popUp)
+        #pagebar($commonPage "${link.contextPath}/rawaccountHandled/rawaccountHandledListData.html" "rawaccountHandledListDiv" )
+    #else
+        #pagebar($commonPage "${link.contextPath}/rawaccountHandled/rawaccountHandledListData.html" "editDataDiv"  "pageIn")
+    #end
+</div>

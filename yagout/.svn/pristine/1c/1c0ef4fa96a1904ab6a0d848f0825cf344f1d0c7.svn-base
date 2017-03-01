@@ -1,0 +1,134 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+        http://www.springframework.org/schema/beans/spring-beans.xsd  
+        http://www.springframework.org/schema/context 
+        http://www.springframework.org/schema/context/spring-context-4.2.xsd  
+        http://www.springframework.org/schema/mvc 
+        http://www.springframework.org/schema/mvc/spring-mvc-4.2.xsd">
+	<!-- 将配置文件加载到spring中 -->
+	<bean id="propertyConfigurer"
+		  class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="locations">
+			<list>
+				<value>/WEB-INF/conf/pro/collection.properties</value>
+				<!-- <value>classpath*:contract.properties</value> -->
+			</list>
+		</property>
+	</bean>
+
+	<!-- 启动注解，注册服务，如验证框架、全局类型转换器 -->
+
+
+	<!-- 启动自动扫描 -->
+	<context:component-scan base-package="com.skeye.yagout.controller,com.skeye.yagout.controller.*">
+		<!-- 制定扫包规则 ,只扫描使用@Controller注解的JAVA类 -->
+		<context:include-filter type="annotation"
+			expression="org.springframework.stereotype.Controller" />
+		<context:exclude-filter type="annotation"
+			expression="org.springframework.stereotype.Service" />
+	</context:component-scan>
+
+
+	<mvc:annotation-driven>
+	</mvc:annotation-driven>
+	<bean
+		class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
+		<property name="messageConverters">
+			<list>
+				<bean
+					class="org.springframework.http.converter.StringHttpMessageConverter">
+					<property name="supportedMediaTypes">
+						<list>
+							<value>
+								text/html;charset=UTF-8
+							</value>
+						</list>
+					</property>
+				</bean>
+				<!-- 启动JSON格式的配置 -->
+				<bean id="jacksonMessageConverter"
+					class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
+					<!-- 解决 HttpMediaTypeNotAcceptableException: Could not find acceptable 
+						representation -->
+					<property name="supportedMediaTypes">
+						<list>
+							<value>application/json;charset=UTF-8</value>
+						</list>
+					</property>
+				</bean>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="velocityConfig"
+		class="org.springframework.web.servlet.view.velocity.VelocityConfigurer">
+		<property name="resourceLoaderPath" value="/WEB-INF/views/velocity/templates" />
+		<property name="configLocation"
+			value="/WEB-INF/conf/pro/velocity.properties" />
+	</bean>
+
+	<bean id="VelocityUtil"
+		  class="com.skeye.yagout.util.VelocityUtil">
+		<property name="velocityConfigurer"  ref="velocityConfig" />
+
+	</bean>
+
+
+
+
+	<!-- 配置后缀 -->
+	<bean id="velocityViewResolver"
+		class="org.springframework.web.servlet.view.velocity.VelocityLayoutViewResolver">
+		<property name="suffix" value=".vm" />
+		<property name="contentType">
+			<value>text/html;charset=UTF-8</value>
+		</property>
+		<property name="layoutUrl" value="common/layout.vm" /><!--指定layout文件 -->
+		<property name="toolboxConfigLocation" value="/WEB-INF/conf/pro/toolbox.xml" />
+		<property name="viewClass" value="com.skeye.yagout.util.VelocityToolboxView2"></property>
+	</bean>
+	<mvc:resources mapping="/resources/**" location="/WEB-INF/resource/" />
+
+
+	<bean id="captchaProducer" class="com.google.code.kaptcha.impl.DefaultKaptcha">
+		<property name="config">
+			<bean class="com.google.code.kaptcha.util.Config">
+				<constructor-arg>
+					<props>
+						<prop key="kaptcha.border">yes</prop>
+						<prop key="kaptcha.border.color">black</prop>
+						<prop key="kaptcha.textproducer.font.color">blue</prop>
+						<prop key="kaptcha.textproducer.font.size">30</prop>
+						<!--<prop key="kaptcha.textproducer.char.string">拉三等奖水电费和煽风点火收到货付款</prop> 默认为abcde2345678gfynmnpwx-->
+						<prop key="kaptcha.textproducer.char.length">4</prop>
+						<prop key="kaptcha.image.width">110</prop>
+						<prop key="kaptcha.image.height">35</prop>
+						<prop key="kaptcha.session.key">valicode</prop>
+						<prop key="kaptcha.noise.impl">com.google.code.kaptcha.impl.NoNoise</prop>
+						  <prop key="kaptcha.obscurificator.impl">com.google.code.kaptcha.impl.WaterRipple</prop>
+					</props>
+				</constructor-arg>
+			</bean>
+		</property>
+	</bean>
+
+
+	<bean
+			class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
+		<property name="exceptionMappings">
+			<props>
+				<prop key="org.apache.shiro.authz.UnauthorizedException">  //表示捕获的异常//捕获该异常时跳转的路径
+					/unauthorized
+				</prop>
+				<prop key="org.apache.shiro.authz.UnauthenticatedException">  //表示捕获的异常//捕获该异常时跳转的路径
+					/unauthenticated
+				</prop>
+			</props>
+		</property>
+	</bean>
+	<bean class="org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator" depends-on="lifecycleBeanPostProcessor" />
+	<bean class="org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor">
+		<property name="securityManager" ref="securityManager" /> </bean>
+</beans>

@@ -1,0 +1,112 @@
+<link rel="stylesheet" href="${link.contextPath}/resources/css/vrstyle.css">
+<script src="${link.contextPath}/resources/js/jquery.min.js"></script>
+<script>
+    var selectCss;
+    var selectId;
+    function selectLi(id,css,url) {
+        if(selectId){
+            $("#"+selectId).removeClass(selectCss+"select");
+            $("#"+selectId).addClass(selectCss);
+        }
+        selectCss=css;
+        selectId=id;
+        $("#"+selectId).addClass(selectCss+"select");
+        $("#"+selectId).removeClass(selectCss);
+        if(url){
+           var  content = '<iframe scrolling="auto" frameborder="0"  src="'+url+'" style="width:100%;height:100%;"></iframe>';
+            $("#tableShowDiv").html(content);
+        }else {
+            $("#tableShowDiv").html('');
+        }
+    }
+
+    function checkTime(i){
+	if (i<10){
+		i="0" + i;
+	}
+	return i;
+    }
+
+    jQuery(
+       function()
+       { 
+          var weekday=new Array(7);
+	      weekday[0]="日";
+	      weekday[1]="一";
+	      weekday[2]="二";
+	      weekday[3]="三";
+	      weekday[4]="四";
+	      weekday[5]="五";
+	      weekday[6]="六";
+
+	 setInterval(function(){   
+	     var date=new Date();
+	     var year=date.getFullYear();
+	     var month=date.getMonth()+1;
+	     var day=date.getDate();
+             var hour=date.getHours();
+	     var minute=date.getMinutes();
+             var second=date.getSeconds();
+
+	     month=checkTime(month);
+	     day=checkTime(day);
+             hour=checkTime(hour);
+             minute=checkTime(minute);
+	     second=checkTime(second);
+
+	     var content=year+"-"+month+"-"+day+" "+hour+":"+minute+":"+second+" 星期"+weekday[date.getDay()];
+
+             $("#dateTime").html(content);
+        },1000);   
+       }
+    )
+</script>
+
+
+<div class="left">
+    <div class="logo">
+        <h1>logo</h1>
+        <span>虚拟现实采集系统</span></div>
+    <div class="logo_bottom">
+        <ul class="bottom_list">
+            <a href="javascript:void(0)" onclick="selectLi('zhxx','zhll','${link.contextPath}/account/accountList.html')">
+                <li class="zhll" id="zhxx">账户信息</li>
+            </a>
+            <a href="javascript:void(0)" onclick="selectLi('zhgj','zhgj','${link.contextPath}/rawaccountHandled/rawaccountHandledSelect.html')">
+                <li class="zhgj" id="zhgj">账户轨迹</li>
+            </a>
+            <a href="javascript:void(0)" onclick="selectLi('adslzhxx','zhxx','${link.contextPath}/dailinfoHandled/dailinfoHandledList.html')">
+                <li class="zhxx" id="adslzhxx">ADSL账户信息</li>
+            </a>
+            <a href="javascript:void(0)" onclick="selectLi('zhfx','zhll','${link.contextPath}/analysisIndex.html')">
+                <li class="zhll" id="zhfx">账户分析</li>
+            </a>
+             #if($shiro.hasRole("1"))
+            <a href="javascript:void(0)" onclick="selectLi('yhgl','zhxx','${link.contextPath}/admin/userList.html')">
+                <li class="zhxx" id="yhgl">登录用户管理</li>
+            </a>
+             #end
+            <a href="javascript:void(0)" onclick="selectLi('mmxg','aqcs','${link.contextPath}/setings.html')">
+                <li class="aqcs" id="mmxg">设置</li>
+            </a>
+
+        </ul>
+    </div>
+</div>
+<div class="right">
+    <div class="right-top">
+        <div class="top">
+            <div style="float:left;margin-top:16px;font-size:14px;"><span id="dateTime"></span>
+                $shiro.getPrincipal()&nbsp;&nbsp;<a href="loginout.html">退出</a>
+            </div>
+        </div>
+    </div>
+    <div class="right-bottom" style="height: 580px;background: #fff" id="tableShowDiv">
+
+
+    </div>
+</div>
+
+<script>
+    selectLi('zhxx','zhll','${link.contextPath}/account/accountList.html');
+</script>

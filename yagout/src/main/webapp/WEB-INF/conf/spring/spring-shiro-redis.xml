@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:p="http://www.springframework.org/schema/p" xmlns:c="http://www.springframework.org/schema/c"
+       xmlns:util="http://www.springframework.org/schema/util" xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:tx="http://www.springframework.org/schema/tx" xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.1.xsd
+        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.1.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd
+        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.1.xsd">
+
+    <bean id="lifecycleBeanPostProcessor" class="org.apache.shiro.spring.LifecycleBeanPostProcessor" />
+
+
+    <bean id="securityManager" class="org.apache.shiro.web.mgt.DefaultWebSecurityManager">
+        <property name="authenticator" ref="authenticator" />
+        <property name="sessionManager" ref="sessionManager" />
+        <!-- <property name="sessionMode" value="http"/> -->
+        <property name="cacheManager" ref="redisCacheManager" />
+        <property name="realms">
+            <list>
+                <ref local="customRealm" />
+            </list>
+        </property>
+    </bean>
+    <bean class="com.skeye.yagout.shiro.realm.CustomRealm" id="customRealm">
+        <property name="credentialsMatcher" ref="hashedCredentialsMatcher" />
+    </bean>
+    <bean id="redisCacheManager" class="com.skeye.yagout.shiro.RedisCacheManager"><!-- 自定义cacheManager -->
+        <property name="redisManager" ref="redisManager" />
+    </bean>
+    <bean id="redisCache" class="com.skeye.yagout.shiro.RedisCache"><!-- 自定义cacheManager -->
+        <constructor-arg ref="redisManager"></constructor-arg>
+    </bean>
+    <bean id="logout" class="org.apache.shiro.web.filter.authc.LogoutFilter">
+        <property name="redirectUrl" value="/login.html" />
+    </bean>
+
+    <bean id="shiroFilter" class="org.apache.shiro.spring.web.ShiroFilterFactoryBean">
+        <!-- 调用我们配置的权限管理器 -->
+        <property name="securityManager" ref="securityManager" />
+        <property name="loginUrl" value="/login.html" />
+        <property name="successUrl" value="/index.html"/>
+        <property name="unauthorizedUrl" value="/permNo.html"/>
+        <property name="filterChainDefinitions">
+        <value>
+
+         /loginout =logout
+         /toLogin*=anon
+           /admin/*=authc,roles[1]
+         /kaptcha/**=anon
+         /resources/** = anon
+         /** = authc
+     </value>
+     </property>
+
+ </bean>
+ <bean id="authenticator" class="org.apache.shiro.authc.pam.ModularRealmAuthenticator" />
+
+ <bean id="sessionManager" class="org.apache.shiro.web.session.mgt.DefaultWebSessionManager">
+     <property name="sessionDAO" ref="redisShiroSessionDAO" />
+     <property name="globalSessionTimeout" value="300000" /><!-- 会话过期时间，在配置文件里面配置 -->
+        <property name="sessionValidationInterval" value="300000" />
+        <property name="sessionValidationSchedulerEnabled" value="true" />
+    </bean>
+
+    <bean id="redisShiroSessionDAO" class="com.skeye.yagout.shiro.RedisSessionDAO">
+        <property name="redisManager" ref="redisManager" />
+    </bean>
+    <bean id="redisManager" class="com.skeye.yagout.shiro.RedisManager"></bean>
+    <bean id="hashedCredentialsMatcher" class="org.apache.shiro.authc.credential.HashedCredentialsMatcher"><!-- 密钥的算法 -->
+        <property name="hashAlgorithmName" value="MD5" />
+        <property name="storedCredentialsHexEncoded" value="true" />
+        <property name="hashIterations" value="2" />
+    </bean>
+    <bean
+            class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+        <property name="staticMethod"
+                  value="org.apache.shiro.SecurityUtils.setSecurityManager" />
+        <property name="arguments" ref="securityManager" />
+
+
+    </bean>
+    <!-- copy to 'spring-mvc.xml' -->
+
+
+</beans>

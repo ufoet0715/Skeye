@@ -1,0 +1,62 @@
+<script>
+    jQuery(function(){
+        $("#CheckedAll").click(function () {
+            if ($(this).is(":checked")) {
+                $("[name=userCheckBox]:checkbox").prop("checked", true);
+            } else {
+                $("[name=userCheckBox]:checkbox").prop("checked", false);
+            }
+        });
+    })
+
+  function resetPWD(id) {
+      var spinner;
+      $.ajax({
+          url: '${link.contextPath}/admin/resetPwd.html', data: {id:id},
+          beforeSend: function () {
+              spinner= commonLoad("userListDiv");
+          },
+          success: function (data) {
+              var reslut=eval("("+data+")");
+              if(reslut.isSuccess){
+                 alert(reslut.data+"的密码重置成功");
+              }else {
+                  alert(reslut.resultMsg);
+              }
+          }, error: function () {
+              alert("查询异常");
+          },
+          complete: function () {
+              spinner.spin();//移除加载
+          }
+      });
+  }
+</script>
+
+<div class="right-bottom-second">
+    <table width="98%" border="0" style="color:#626262;font-size:12px;">
+        <tr style="color:#626262;font-size:14px;">
+            <td style="font-weight:bold;width:36px;"><input type="checkbox" id="CheckedAll" /></td>
+            <td style="font-weight:bold;width:86px;">账号名称</td>
+            <td style="font-weight:bold;width:86px;">账户角色</td>
+            <td style="font-weight:bold;width:86px;">操作</td>
+        </tr>
+
+        #if($commonPage&&$commonPage.pageData)
+            #foreach($user  in $commonPage.pageData)
+                <tr>
+                    <td><input type="checkbox" name="userCheckBox" value="$user.id"/></td>
+                    <td>$!{user.userName}</td>
+                    <td>$!{user.roleName}</td>
+                    <td><a href="javascript:void(0)" onclick="resetPWD($user.id)">重置密码</a></td>
+                </tr>
+            #end
+        #end
+
+
+    </table>
+    #pagebar($commonPage "${link.contextPath}/admin/userListData.html" "userListDiv")
+</div>
+
+
+

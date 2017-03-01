@@ -1,0 +1,222 @@
+<script src="${link.contextPath}/resources/js/echarts.common.min.js"></script>
+<script src="${link.contextPath}/resources/js/commonSearchAutoComplete.js"></script>
+<link rel="stylesheet" href="${link.contextPath}/resources/css/vrstyle.css">
+<link rel="stylesheet" type="text/css" href="${link.contextPath}/resources/css/lanrenzhijia.css">
+<div class="right-bottom-first">
+    <div style="float:left;margin-left:0px;margin-right:16px;margin-top:10px;"><span>账户类型</span>
+        <select id="selectAccountType" style="width:100px;margin-left:0px;" onchange="changeAccountType()">
+            <option value="account">
+                account
+            </option>
+            <option value="ADSL">
+                ADSL
+            </option>
+        </select>
+    </div>
+    <div style="float:left;margin-right:16px;margin-left:73px;margin-top:10px;"><span
+            style="margin-right:0px;">账户名称</span>
+        <input type="text" id="selectAccountName" >
+        <input type="text" id="selectADSLAccountName" >
+    </div>
+    <div style="float:left;margin-right:16px;margin-top:10px;">
+      <span style="margin-right:0px;">时间单位</span>
+        <select id="selectTimeType" style="width:50px;">
+            <option value="%Y-%m-%d">
+                天
+            </option>
+            <option value="%Y-%m">
+                月
+            </option>
+        </select>
+    </div>
+   </div>
+    <br/>
+<div style="float:left;">
+   
+    <div style="float:left;margin-top:10px;margin-right:16px;margin-left:20px;margin-bottom:14px;"><span
+            style="margin-right:0px;">起始时间</span>
+        <input type="text" id="starttime" value="$date.get('yyyy-M-')01 00:00">
+    </div>
+    <div style="float:left;margin-top:10px;margin-left:0px;margin-bottom:14px;"><span
+            style="margin-right:0px;">结束时间</span>
+        <input id="endtime" type="text"  value="$date.get('yyyy-M-d ')00:00">
+    </div>
+    <div style="float:left;margin-top:10px;margin-left:56px;margin-bottom:14px;"><span
+            style="margin-right:10px;">
+       <input type="button" id="cx" value="分析" style="cursor:pointer;color:#FFF;
+font-family:'微软雅黑';font-size:12px;float:left;" onclick="analys()"/>
+    </span>
+
+    </div>
+</div>
+</div>
+
+<div class="right-bottom-second">
+    <div id="myChart" style="width:600px;height:400px;margin-top:20px;"></div>
+</div>
+<script>
+    var myChart = echarts.init(document.getElementById('myChart'));
+    var typeOption = {
+        tooltip : {
+            trigger: 'axis'
+        },
+        legend: {
+            data:[]
+        },
+        calculable : true,
+        xAxis : [
+            {
+                type : 'category',
+                data : []
+            }
+        ],
+        yAxis : [
+            {
+                type : 'value'
+            }
+        ],
+        series : [
+            {
+                name:'',
+                type:'bar',
+                data:[],
+                markPoint : {
+                    data : [
+                        {type : 'max', name: '最大值'},
+                        {type : 'min', name: '最小值'}
+                    ]
+                },
+                markLine : {
+                    data : [
+                        {type : 'average', name: '平均值'}
+                    ]
+                }
+            }
+        ]
+    };
+
+    myChart.setOption(typeOption, true);
+    myChart.on('click', function (params) {
+        if (params.componentType === 'series') {
+            var timeFmort= $("#selectTimeType").val();
+            var accountName = $("#selectAccountName").val();
+            var adslAccount = $("#selectADSLAccountName").val();
+            var param = {};
+            param.accountNameEq=accountName;
+            param.adslAccountEq=adslAccount;
+            param.timeFmort=timeFmort;
+            param.timeData=params.name;
+            param.popUp=true;
+            var spinner;
+            var dataparams = {pageNo: 1, rows: 10, params: JSON.stringify(param)};
+            $.ajax({
+                url: '${link.contextPath}/rawaccountHandled/rawaccountHandledListData.html', data: dataparams,
+                beforeSend: function () {
+                    spinner= commonLoad("myChart");
+                },
+
+                success: function (data) {
+                    editDataCommon(data,800,460,params.name);
+                }, error: function () {
+                },
+                complete: function () {
+                    spinner.spin();//移除加载
+                }
+            });
+        }
+    });
+
+
+    $('#starttime').datetimepicker({
+        format: 'Y-m-d H:i',
+        timepicker: true     //关闭时间选项
+    });
+
+
+    $('#endtime').datetimepicker({
+        format: 'Y-m-d H:i',
+        timepicker: true  //关闭时间选项
+    });
+    searchAutoComplete('selectADSLAccountName','${link.contextPath}/rawaccountHandled/searchAutoComplete.json','adslAccount','ADSLAccount');
+    searchAutoComplete('selectAccountName','${link.contextPath}/rawaccountHandled/searchAutoComplete.json','accountName','AccountName');
+    $("#selectADSLAccountName").hide();
+    function changeAccountType() {
+        var type=$("#selectAccountType").val();
+        if(type=='ADSL'){
+            $("#selectAccountName").hide();
+            $("#selectAccountName").val('');
+            $("#selectADSLAccountName").show();
+        }else {
+            $("#selectADSLAccountName").hide();
+            $("#selectADSLAccountName").val('');
+            $("#selectAccountName").show();
+        }
+    }
+
+    function analys() {
+        var timeFmort= $("#selectTimeType").val();
+        var accountName = $("#selectAccountName").val();
+        var adslAccount = $("#selectADSLAccountName").val();
+        var starttime = $("#starttime").val();
+        var endtime = $("#endtime").val();
+        var options = myChart.getOption();
+        var spinner;
+        $.ajax({
+            url: '${link.contextPath}/rawaccountHandled/rawaccountHistogramData.html',
+            data: {timeFmort: timeFmort,accountName:accountName,adslAccount:adslAccount, beginTime: starttime, endTime: endtime},
+            beforeSend: function () {
+                spinner= commonLoad("myChart");
+            },
+            success: function (data) {
+                var reslut = eval("(" + data + ")");
+                if (reslut.isSuccess) {
+                    if($.isEmptyObject(reslut.data.series.data)||reslut.data.series.data.length==0){
+
+
+                    }
+                    options.legend = {
+                        data: reslut.data.legend
+                    }
+
+                    options.xAxis=[
+                        {
+                            type : 'category',
+                            data : reslut.data.xAxis
+                        }
+                    ],
+
+                            options.series= [
+                                {
+                                    name:"轨迹次数统计",
+                                    type:'bar',
+                                    data:reslut.data.series.data,
+                                    markPoint : {
+                                        data : [
+                                            {type : 'max', name: '最大值'},
+                                            {type : 'min', name: '最小值'}
+                                        ]
+                                    },
+                                    markLine : {
+                                        data : [
+                                            {type : 'average', name: '平均值'}
+                                        ]
+                                    }
+                                }
+                            ]
+
+                    myChart.hideLoading();
+                    myChart.setOption(options, true);
+                }
+            },
+            error: function () {
+
+            },
+            complete: function () {
+                spinner.spin();//移除加载
+            }
+        });
+
+    }
+    analys();
+</script>
+#parse("common/commonEdit.vm")

@@ -1,0 +1,24 @@
+<link rel="stylesheet" href="${link.contextPath}/resources/css/bootstrap.min2.css">
+#parse("common/commonList.vm")
+<script src="${link.contextPath}/resources/js/jquery.min.js"></script>
+<script src="${link.contextPath}/resources/js/commonSelect.js"></script>
+<script src="${link.contextPath}/resources/js/bootstrap.min.js"></script>
+
+<ul   class="nav nav-tabs">
+    <li class="active">
+        <a href="#showList" onclick="selectChange('showList','${link.contextPath}/changePassword.html')" data-toggle="tab">密码修改
+        </a>
+    </li>
+    <li><a href="#showHistogram" onclick="selectChange('showHistogram','${link.contextPath}/admin/logList.html')"  data-toggle="tab">日志查看</a></li>
+</ul>
+
+<div   class="tab-content">
+    <div class="tab-pane fade in active"  id="showList"></div>
+    <div class="tab-pane fade" id="showHistogram"></div>
+
+</div>
+<script>
+
+        selectChange('showList','${link.contextPath}/changePassword.html');
+
+</script>
