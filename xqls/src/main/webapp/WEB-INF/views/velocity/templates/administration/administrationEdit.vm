@@ -1,0 +1,172 @@
+#parse("common/baseEdit.vm")
+
+<div class="widget-box">
+    <div class="widget-header widget-header-blue widget-header-flat">
+        <h4 class="lighter">
+            新增数据列
+
+        </h4>
+    </div>
+    <div class="widget-body">
+        <div class="widget-main">
+            <form class="form-horizontal  " action="index.html" id="validation-form" method="post">
+                 <input type="hidden" name="tableno" value="$!administration.tableno" />
+                 <input type="hidden" name="tablename" value="$!administration.tablename" />
+                  <input type="hidden" name="hiddenfield" value="$!administration.hiddenfield" />
+                  <input type="hidden" name="displayfield" value="$!administration.displayfield" />
+                <div class="form-group">
+                    <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="filed">字段名:</label>
+                    <div class="col-xs-12 col-sm-9">
+                        <div class="clearfix">
+                            <input type="text" name="filed" id="filed" value=""/>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="fieldalias">字段别名:</label>
+                    <div class="col-xs-12 col-sm-9">
+                        <div class="clearfix">
+                            <input type="text" name="fieldalias" id="fieldalias" value=""/>
+                        </div>
+                    </div>
+                </div>
+				
+				
+				
+                    <div class="form-group">
+                    <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="type">字段类型:</label>
+                    <div class="col-xs-12 col-sm-9">
+                        <select   id="type" name="type">
+                            <option value="">请选择</option>
+                                <option value="int">数字类型</option>
+                                <option value="varchar(50)">字符串类型</option>
+                                
+                        </select>
+                    </div>
+                </div>
+               
+                
+                 <div class="form-group">
+                    <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="type">是否显示:</label>
+                    <div class="col-xs-12 col-sm-9">
+                       <input type="radio" name="isdisplay" value="1" />显示
+    					<input 	type="radio" name="isdisplay" value="0" />隐藏
+                    </div>
+                </div>
+               
+                
+
+
+
+                <div class="hr hr-dotted"></div>
+
+                <div class="form-group">
+                    <div class="col-xs-12 col-sm-4 col-sm-offset-3">
+                        <a href="javascript:void(0)" onclick="$('#validation-form').submit()"><span
+                                class="label label-xlg label-primary arrowed arrowed-right">
+          保存
+
+
+            </span></a>
+                    </div>
+                </div>
+                </table>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    //$('#immediateSupervisor1').change(function(){
+    //$('#immediateSupervisor').val($('#immediateSupervisor1.value').map(function(){return this.value}).get().join(','))
+    //})
+    jQuery(function ($) {
+
+        $('#validation-form').validate({
+            errorElement: 'div',
+            errorClass: 'help-block',
+            focusInvalid: false,
+            rules: {
+                filed: {
+                    required: true
+                } ,
+                type: {
+                    required: true,
+                },
+                fieldalias: {
+                    required: true,
+                },
+                isdisplay: {
+                    required: true,
+                },
+            },
+
+            messages: {
+                filed: {
+                    required: "请填写企业名称"
+                },
+                type: {
+                    required:"请选择区块"
+                } ,
+                 fieldalias: {
+                    required:"请选择区块"
+                } ,
+                isdisplay: {
+                    required:"请选择区块"
+                } ,
+            },
+
+            invalidHandler: function (event, validator) { //display error alert on form submit
+                $('.alert-danger', $('.login-form')).show();
+            },
+
+            highlight: function (e) {
+                $(e).closest('.form-group').removeClass('has-info').addClass('has-error');
+            },
+
+            success: function (e) {
+                $(e).closest('.form-group').removeClass('has-error').addClass('has-info');
+                $(e).remove();
+            },
+
+            errorPlacement: function (error, element) {
+                if (element.is(':checkbox') || element.is(':radio')) {
+                    var controls = element.closest('div[class*="col-"]');
+                    if (controls.find(':checkbox,:radio').length > 1) controls.append(error);
+                    else error.insertAfter(element.nextAll('.lbl:eq(0)').eq(0));
+                }
+                else if (element.is('.select2')) {
+                    error.insertAfter(element.siblings('[class*="select2-container"]:eq(0)'));
+                }
+                else if (element.is('.chosen-select')) {
+                    error.insertAfter(element.siblings('[class*="chosen-container"]:eq(0)'));
+                }
+                else error.insertAfter(element.parent());
+            },
+
+            submitHandler: function (form) {
+                $.ajax({
+                    url : "${link.contextPath}/administration/saveFiled.json",//这个就是请求地址对应sAjaxSource
+                    data :$(form).serialize(),
+                    type : 'post',
+                    dataType : 'json',
+                    async : false,
+                    success : function(result) {
+                        if(result.isSuccess){
+                            $(".bootbox-close-button").click();
+                            bootBoxAlert("操作成功");
+                            queryRealdataList();
+                        }
+                    },
+                    error : function(msg) {
+                    }
+                });
+                return false;
+            }
+        });
+       
+
+    })
+</script>

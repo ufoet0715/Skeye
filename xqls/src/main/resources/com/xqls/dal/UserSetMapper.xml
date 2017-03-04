@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xqls.dal.service.UserSetMapper">
+	<resultMap id="BaseResultMap" type="com.xqls.dal.model.UserSet">
+		<id column="user_id" jdbcType="VARCHAR" property="userId" />
+		<result column="user_name" jdbcType="VARCHAR" property="userName" />
+		<result column="password" jdbcType="VARCHAR" property="password" />
+		<result column="name" jdbcType="VARCHAR" property="name" />
+		<result column="telephone" jdbcType="VARCHAR" property="telephone" />
+		<result column="tenant_no" jdbcType="VARCHAR" property="tenantNo" />
+		<result column="msg_alert_level" jdbcType="INTEGER" property="msgAlertLevel" />
+		<result column="role_id" jdbcType="VARCHAR" property="roleId" />
+		<result column="role_name" jdbcType="VARCHAR" property="roleName" />
+		<result column="block_id" property="blockId" jdbcType="INTEGER" />
+		<result column="block_name" property="blockName" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<select id="getListByMap" parameterType="java.util.Map"
+		resultMap="BaseResultMap">
+		SELECT u.user_id user_id,
+		u.user_name user_name,
+		u.password password,
+		u.`name` name,
+		u.telephone telephone,
+		u.tenant_no tenant_no,
+		u.msg_alert_level msg_alert_level,
+		r.role_id role_id
+		r.role_name role_name,
+		b.block_id block_id
+		b.block_nam block_name
+		FROM user_role ur
+		LEFT JOIN user u ON ur.user_id=u.user_id
+		LEFT JOIN role r ON ur.role_id=r.role_id
+		LEFT JOIN block b ON u.tenant_no=b.tenant_no
+		WHERE 1=1
+		<if test="userName!=null">
+			AND user_name=#{userName,jdbcType=VARCHAR}
+		</if>
+		<if test="roleId!=null">
+			AND role_id=#{roleId,jdbcType=VARCHAR}
+		</if>
+		<if test="blockId!=null">
+			AND block_id=#{blockId,jdbcType=INTEGER}
+		</if>
+	</select>
+</mapper>

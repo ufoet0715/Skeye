@@ -1,0 +1,30 @@
+<div class="right-bottom-second">
+ <table width="98%" border="0" style="color:#626262;font-size:12px;">
+        <tr style="color:#626262;font-size:14px;">
+            <td style="font-weight:bold;width:86px;">账户编号</td>
+            <td style="font-weight:bold;width:86px;">账户名称</td>
+            <td style="font-weight:bold;width:86px;">姓名</td>
+            <td style="font-weight:bold;width:86px;">角色</td>
+            <td style="font-weight:bold;width:86px;">管理区块</td>
+	    <td style="font-weight:bold;width:86px;">手机号码</td>
+            <td style="font-weight:bold;width:86px;">短信级别</td>
+            <td colspan=2 style="font-weight:bold;width:86px;">操作</td>
+        </tr>
+        #if($commonPage&&$commonPage.pageData)
+            #foreach($userSet in $commonPage.pageData)
+                <tr>
+                    <td>$!{userSet.userId}</td>
+                    <td>$!{userSet.userName}</td>
+                    <td>$!{userSet.Name}</td>
+                    <td>$!{userSet.roleName}</td>
+                    <td>$!{userSet.blockName}</td>
+		    <td>$!{userSet.telephone}</td>
+                    <td>$!{userSet.msgAlertLevel}</td>
+                    <td><input type="button" value="修改" onClick="updateData('$!{userSet.userId}')"/ ></td>
+                    <td><input type="button" value="删除" onClick="deleteData('$!{userSet.userId},$!{userSet.roleId}')"/ ></td>
+		</tr>
+            #end
+        #end
+    </table>
+    #pagebar($commonPage "${link.contextPath}/rolePermissionDetailController/getList" "userSetListDiv")
+</div>

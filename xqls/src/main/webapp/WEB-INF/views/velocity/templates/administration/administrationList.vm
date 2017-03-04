@@ -1,0 +1,156 @@
+#parse("common/baseList.vm")
+#parse("common/bootBox.vm")
+<div class="page-content">
+    <div class="row">
+        <div class="col-xs-12">
+            <h3 class="header smaller lighter blue">企业污水排放口</h3>
+
+
+            <form class=" dataTables_filter">
+
+                
+            	
+                <button type="button" class="btn btn-info btn-sm" onclick="queryRealdataList()">
+                    <i class="icon-search  bigger-110"></i>
+                    查询
+                </button>
+                <button type="button" class="btn  btn-sm" onclick="clearSearch()">
+                    <i class="icon-reply-all  bigger-110"></i>
+                    重置
+                </button>
+                <button type="button" class="btn btn-sm btn-success" onclick="editRealdata()">
+                    <i class="icon-zoom-in align-top "></i>添加
+                </button>
+                
+                
+
+            </form>
+            <div class="table-responsive">
+                <table id="sample-table-2" class="table table-striped table-bordered table-hover">
+                    <thead>
+                    <tr>
+                        <th class="center">
+                            <label>
+                                <input type="checkbox" class="ace"/>
+                                <span class="lbl"></span>
+                            </label>
+                        </th>
+                        <th>数据库表名</th>
+                        <th>显示字段</th>
+                        <th>全部字段</th>
+                       
+                        
+                        <th >操作</th>
+                    </tr>
+                    </thead>
+
+
+                    <tbody>
+
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+    function clearSearch() {
+        $("#block").val('');
+    }
+    var realdataTable;
+    function queryRealdataList() {
+        var params = {};
+        params.block = $("#block").val();
+        var colums = [
+            {
+                "mData": "tableno",
+                "sClass": "center",
+                "mRender": function (data, type, full, meta) {
+                    return '<label><input type="checkbox" name="realdata" value="' + data + '" class="ace"> <span class="lbl"></span></label>';
+                }
+
+            },
+            {
+                "mData": "tablename",
+                "sClass": "center"
+            }
+            ,
+            {
+                "mData": "displayfield",
+                "sClass": "center"
+            },
+            {
+                "mData": "hiddenfield",
+                "sClass": "center"
+            },
+            
+            
+            
+            {
+                "mData": "tableno",
+                "sClass": "center",
+                "mRender": function (data, type, full, meta) {
+                    return '<button onclick="maintainAdministration(' + data + ')" class="btn btn-xs btn-info"><i class="icon-edit bigger-100">维护</i></button> <button onclick="Addfield(' + data + ')" class="btn btn-xs btn-info"><i class="icon-edit bigger-100">增加</i></button> ';
+                }
+            }
+
+            ];
+        if (realdataTable) {
+            realdataTable.fnClearTable();
+            realdataTable.fnDestroy();
+        }
+        realdataTable = getTableData("sample-table-2", "${link.contextPath}/administration/administrationListData.json", colums, JSON.stringify(params));
+
+
+    }
+
+    
+    function maintainAdministration(tableno) {
+        $.ajax({
+            url: "${link.contextPath}/administration/maintainAdministration.html",//这个就是请求地址对应sAjaxSource
+            data: {tableno:tableno},//这个是把datatable的一些基本数据传给后台,比如起始位置,每页显示的行数
+            type: 'post',
+            success: function (result) {
+                bootBoxShow(result,"新增课程");
+            },
+            error: function (msg) {
+                bootBoxAlert("查询异常");
+            }
+        });
+
+
+    }
+    
+    function Addfield(tableno) {
+        $.ajax({
+            url: "${link.contextPath}/administration/administrationEdit.html",//这个就是请求地址对应sAjaxSource
+            data: {tableno:tableno},//这个是把datatable的一些基本数据传给后台,比如起始位置,每页显示的行数
+            type: 'post',
+            success: function (result) {
+                bootBoxShow(result,"新增数据列");
+            },
+            error: function (msg) {
+                bootBoxAlert("查询异常");
+            }
+        });
+
+
+    }
+
+     queryRealdataList();
+
+
+</script>
+
+
+
+
+
+
+
+
+
+

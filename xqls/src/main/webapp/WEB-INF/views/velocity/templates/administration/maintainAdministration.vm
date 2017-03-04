@@ -1,0 +1,135 @@
+#parse("common/baseEdit.vm")
+
+<div class="widget-box">
+    <div class="widget-header widget-header-blue widget-header-flat">
+        <h4 class="lighter">
+            数据维护
+              
+
+        </h4>
+    </div>
+    <div class="widget-body">
+        <div class="widget-main">
+            <form class="form-horizontal  " action="index.html" id="validation-form" method="post">
+                <input type="hidden" name="tableno" value="$!administration.tableno" />
+                 <input type="hidden" name="tablename" value="$!administration.tablename" />
+                  <input type="hidden" name="hiddenfield" value="$!administration.hiddenfield" />
+               <div class="form-group">
+                    <label   class="control-label col-xs-12 col-sm-3 no-padding-right" for="display">所有字段:</label>
+                    <div class="col-xs-12 col-sm-9">
+                        <div class="clearfix">
+                					 #foreach($fields in $allfields)
+                                   <input name="displayfield" type="checkbox"   
+                                   #foreach($display in $alldisplay)  
+                                    #if($fields&&$fields==$display)
+                                    checked="checked"
+                                #end
+                                #end
+                                   
+                                     value="${fields}"/>${fields}<br />
+                                #end
+                 			
+                 			
+                        </div>
+                    </div>
+                </div>
+
+
+                
+
+
+
+                <div class="hr hr-dotted"></div>
+
+                <div class="form-group">
+                    <div class="col-xs-12 col-sm-4 col-sm-offset-3">
+                        <a href="javascript:void(0)" onclick="$('#validation-form').submit()"><span
+                                class="label label-xlg label-primary arrowed arrowed-right">
+          保存
+
+
+            </span></a>
+                    </div>
+                </div>
+                </table>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    //$('#immediateSupervisor1').change(function(){
+    //$('#immediateSupervisor').val($('#immediateSupervisor1.value').map(function(){return this.value}).get().join(','))
+    //})
+    jQuery(function ($) {
+
+        $('#validation-form').validate({
+            errorElement: 'div',
+            errorClass: 'help-block',
+            focusInvalid: false,
+            rules: {
+                display: {
+                    required: true
+                } ,
+               
+            },
+
+            messages: {
+                display: {
+                    required: "请填写企业名称"
+                },
+                
+            },
+
+            invalidHandler: function (event, validator) { //display error alert on form submit
+                $('.alert-danger', $('.login-form')).show();
+            },
+
+            highlight: function (e) {
+                $(e).closest('.form-group').removeClass('has-info').addClass('has-error');
+            },
+
+            success: function (e) {
+                $(e).closest('.form-group').removeClass('has-error').addClass('has-info');
+                $(e).remove();
+            },
+
+            errorPlacement: function (error, element) {
+                if (element.is(':checkbox') || element.is(':radio')) {
+                    var controls = element.closest('div[class*="col-"]');
+                    if (controls.find(':checkbox,:radio').length > 1) controls.append(error);
+                    else error.insertAfter(element.nextAll('.lbl:eq(0)').eq(0));
+                }
+                else if (element.is('.select2')) {
+                    error.insertAfter(element.siblings('[class*="select2-container"]:eq(0)'));
+                }
+                else if (element.is('.chosen-select')) {
+                    error.insertAfter(element.siblings('[class*="chosen-container"]:eq(0)'));
+                }
+                else error.insertAfter(element.parent());
+            },
+
+            submitHandler: function (form) {
+                $.ajax({
+                    url : "${link.contextPath}/administration/save.json",//这个就是请求地址对应sAjaxSource
+                    data :$(form).serialize(),
+                    type : 'post',
+                    dataType : 'json',
+                    async : false,
+                    success : function(result) {
+                        if(result.isSuccess){
+                            $(".bootbox-close-button").click();
+                            bootBoxAlert("操作成功");
+                            queryRealdataList();
+                        }
+                    },
+                    error : function(msg) {
+                    }
+                });
+                return false;
+            }
+        });
+        
+    })
+</script>

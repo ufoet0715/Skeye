@@ -1,0 +1,140 @@
+<meta charset="UTF-8">
+#parse("common/commonList.vm")
+
+<link rel="stylesheet" href="${link.contextPath}/resources/css/bootstrap.min2.css">
+<link rel="stylesheet" href="${link.contextPath}/resources/css/vrstyle.css">
+
+<script src="${link.contextPath}/resources/js/commonDelete.js"></script>
+<script src="${link.contextPath}/resources/js/bootstrap.autocomplete.js"></script>
+<script src="${link.contextPath}/resources/js/commonSearchAutoComplete.js"></script>
+
+<script type="text/javascript">
+    function searchUserSet() {
+        var param = {};
+
+        var userName = $("#userName").val();
+        if (userName && userName != "") {
+           param.userName=userName;
+        }
+	
+	var roleId = $("#roleSelect").val();
+        if (roleId && roleId != "") {
+           param.roleId=roleId;
+        }
+
+        var blockId = $("#blockSelect").val();
+        if (blockId && blockId != "") {
+           param.blockId=blockId;
+        }
+
+        searchPage(1, 10, '${link.contextPath}/userSetController/getList.html', JSON.stringify(param), "rolePermissionListDiv");
+    }
+
+    function clearSearch() {
+        $("#userId").val("");
+	$("#userName").val("");
+	$("#password").val("");
+	$("#roleSelect").val("");
+	$("#blockSelect").val("");
+	$("#name").val("");
+	$("#telephone").val("");
+        $("#levelSelect").val("");
+    }
+
+    function insertData(){
+        $.ajax({
+	       url:"${link.contextPath}/userSetController/insertUserSet",
+	       type: 'post',
+	       data: $("#userSetForm").serialize(),
+	       dataType: 'json',
+	       success:function(result){
+		 if(result.isResult)
+		 {
+                    alert("添加成功");
+		 }
+		 else
+		 {
+                     alert("添加失败");
+		 }
+	       },
+	       error: function () {
+                  alert("添加异常");
+               }
+	});
+    }
+
+    function updateData(userId){
+        $.ajax({
+	       url:"${link.contextPath}/userSetController/updateUserSetPage",
+	       type: 'post',
+	       data: JSON.stringify(userId),
+	       dataType: 'json'
+	 });
+    }
+
+    function deleteData(userId, roleId){
+      var param={};
+      param.userId=userId;
+      param.roleId=roleId;
+
+        $.ajax({
+	       url:"${link.contextPath}/userSetController/deleteUserSet",
+	       type: 'post',
+	       data: JSON.stringify(param),
+	       dataType: 'json',
+	       success:function(result){
+		 if(result.isResult)
+		 {
+                    alert("删除成功");
+		 }
+		 else
+		 {
+                    alert("删除失败");
+		 }
+	       },
+	       error: function () {
+                  alert("删除异常");
+               }
+	});
+    }
+</script>
+
+
+<div>
+ <form id="userSetForm">
+   账户编号：<input type="text" id="userId" name="userId"/>
+   账户名：<input type="text" id="userName" name="userName"/>
+   密码：<input type="text" id="password" name="password"/>
+   角色： 
+   <select id="roleSelect">
+     <option value="">请选择</option>
+     #foreach($role in $roleList)
+       <option value="${role.roleId}">${role.roleName}</option>
+     #end
+    </select>
+
+   管理区块：
+    <select id="blockSelect">
+     <option value="">请选择</option>
+     #foreach($block in $blockList)
+       <option value="${block.blockId}">${block.blockName}</option>
+     #end
+    </select>
+
+   姓名：<input type="text" id="name" name="name"/>
+   手机号码：<input type="text" id="telephone" name="telephone"/>
+   短信级别：
+    <select id="levelSelect">
+     <option value="">请选择</option>
+     #foreach($level in $levelList)
+       <option value="${level.levelId}">${level.levelName}</option>
+     #end
+    </select>
+
+    <input type="button" value="添加" onclick="insertData()" />
+    <input type="button" value="查询" onclick="searchUserSet()" />
+    <input type="button" value="重置" onclick="clearSearch()" />
+  </form>
+</div>
+
+<div id="userSetListDiv"></div>

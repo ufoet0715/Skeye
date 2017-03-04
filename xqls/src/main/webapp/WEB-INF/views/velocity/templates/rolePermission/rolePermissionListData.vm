@@ -1,0 +1,29 @@
+<div class="right-bottom-second">
+ <table width="98%" border="0" style="color:#626262;font-size:12px;">
+        <tr style="color:#626262;font-size:14px;">
+            <td style="font-weight:bold;width:86px;">选择</td>
+            <td style="font-weight:bold;width:86px;">角色编号</td>
+            <td style="font-weight:bold;width:86px;">角色名称</td>
+            <td style="font-weight:bold;width:86px;">功能编号</td>
+            <td style="font-weight:bold;width:86px;">功能名称</td>
+            <td style="font-weight:bold;width:86px;">权限编号</td>
+            <td style="font-weight:bold;width:86px;">权限名称</td>
+            <td style="font-weight:bold;width:86px;">操作</td>
+        </tr>
+        #if($commonPage&&$commonPage.pageData)
+            #foreach($rolePermission in $commonPage.pageData)
+                <tr>
+                    <td><input type="checkBox" name="rowId"/ ></td>
+                    <td>$!{rolePermission.roleId}</td>
+                    <td>$!{rolePermission.roleName}</td>
+                    <td>$!{rolePermission.parentId}</td>
+                    <td>$!{rolePermission.parentName}</td>
+                    <td>$!{rolePermission.permId}</td>
+                    <td>$!{rolePermission.permName}</td>
+                    <td><input type="button" value="修改" onClick="updateData('$!{rolePermission.roleId}','$!{rolePermission.permId}')"/ ></td>
+                </tr>
+            #end
+        #end
+    </table>
+    #pagebar($commonPage "${link.contextPath}/rolePermissionDetailController/getList" "rolePermissionListDiv")
+</div>
