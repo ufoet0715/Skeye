@@ -1,13 +1,16 @@
-package com.xqls.dal.model;
+package com.xqls.bean;
 
-public class RolePermissionOut {
+import java.io.Serializable;
+
+@SuppressWarnings("serial")
+public class RolePermissionDetailBean implements Serializable{
 	private String rowId;
 	private String roleId;
 	private String roleName;
-	private String parentId;
-	private String parentName;
 	private String permId;
 	private String permName;
+	private String permBlock;
+	private String parentId;
 	private String url;
 	private String imgClass;
 
@@ -35,22 +38,6 @@ public class RolePermissionOut {
 		this.roleName = roleName;
 	}
 
-	public String getParentId() {
-		return parentId;
-	}
-
-	public void setParentId(String parentId) {
-		this.parentId = parentId;
-	}
-
-	public String getParentName() {
-		return parentName;
-	}
-
-	public void setParentName(String parentName) {
-		this.parentName = parentName;
-	}
-
 	public String getPermId() {
 		return permId;
 	}
@@ -65,6 +52,22 @@ public class RolePermissionOut {
 
 	public void setPermName(String permName) {
 		this.permName = permName;
+	}
+
+	public String getPermBlock() {
+		return permBlock;
+	}
+
+	public void setPermBlock(String permBlock) {
+		this.permBlock = permBlock;
+	}
+
+	public String getParentId() {
+		return parentId;
+	}
+
+	public void setParentId(String parentId) {
+		this.parentId = parentId;
 	}
 
 	public String getUrl() {
@@ -82,5 +85,4 @@ public class RolePermissionOut {
 	public void setImgClass(String imgClass) {
 		this.imgClass = imgClass;
 	}
-
 }

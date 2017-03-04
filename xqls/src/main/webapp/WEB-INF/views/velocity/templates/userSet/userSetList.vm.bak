@@ -64,7 +64,12 @@
     }
 
     function updateData(userId){
-	window.locatio.href="${link.contextPath}/userSetController/updateUserSetPage";
+        $.ajax({
+	       url:"${link.contextPath}/userSetController/updateUserSetPage",
+	       type: 'post',
+	       data: JSON.stringify(userId),
+	       dataType: 'json'
+	 });
     }
 
     function deleteData(userId, roleId){

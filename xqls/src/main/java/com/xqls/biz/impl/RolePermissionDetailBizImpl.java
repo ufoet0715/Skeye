@@ -1,6 +1,5 @@
 package com.xqls.biz.impl;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -8,13 +7,13 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.xqls.bean.RolePermissionDetailBean;
+import com.xqls.bean.RolePermissionKeyBean;
 import com.xqls.biz.RolePermissionDetailBiz;
-import com.xqls.dal.model.Permission;
-import com.xqls.dal.model.Role;
 import com.xqls.dal.model.RolePermissionDetail;
-import com.xqls.dal.model.RolePermissionOut;
 import com.xqls.service.RolePermissionDetailService;
 import com.xqls.util.CommonPage;
+import com.xqls.util.ObjectUtil;
 
 @Service
 public class RolePermissionDetailBizImpl implements RolePermissionDetailBiz {
@@ -23,41 +22,38 @@ public class RolePermissionDetailBizImpl implements RolePermissionDetailBiz {
 	
 	@Override
 	public void getListByPage(CommonPage commonPage) {
-		String parentId=null;
-		String parentName=null;
-		
-		RolePermissionOut out=null;
-		
 		List<RolePermissionDetail> list =null;
-		List<RolePermissionOut> outList =new ArrayList<RolePermissionOut>();
-		
+	
 		try {
 			list = this.rolePermissionDetailService.getListByMap(commonPage.pageToMap());
-		    for (RolePermissionDetail record : list) {
-				if(!record.getParentId().equals(parentId))
-				{
-					parentId=record.getPermId();
-					parentName=record.getPermName();
-				}
-				else
-				{
-					out=new RolePermissionOut();
-					out.setRowId(record.getRowId());
-					out.setRoleId(record.getRoleId());
-					out.setRoleName(record.getRoleName());
-					out.setParentId(parentId);
-					out.setParentName(parentName);
-					out.setPermId(record.getPermId());
-					out.setPermName(record.getPermName());
-					outList.add(out);
-				}
-			}
-		    
-		    commonPage.setPageData(outList);
-			
+		    commonPage.setPageData(list);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 
+	@Override
+	public RolePermissionDetailBean getBeanByKey(RolePermissionKeyBean beanKey) {
+		
+		RolePermissionDetail detail=null;
+		RolePermissionDetailBean bean=null;
+		List<RolePermissionDetail> list =null;
+		
+		Map<String,Object> map=new HashMap<String, Object>();
+		map.put("roleId", beanKey.getRoleId());
+		map.put("permId", beanKey.getPermId());
+		
+		try {
+			list = this.rolePermissionDetailService.getListByMap(map);
+			if(!list.isEmpty())
+			{
+				detail=list.get(0);
+				bean=(RolePermissionDetailBean) ObjectUtil.transfer(detail, RolePermissionDetailBean.class);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		return bean;
+	}
 }

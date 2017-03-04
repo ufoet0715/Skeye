@@ -1,27 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.xqls.dal.service.RolePermissionDetailMapper">
-	<resultMap id="RoleResultMap" type="com.xqls.dal.model.RolePermissionDetail">
+	<resultMap id="BaseResultMap" type="com.xqls.dal.model.RolePermissionDetail">
 		<id column="row_id" property="rowId" jdbcType="VARCHAR" />
 		<result column="role_id" jdbcType="VARCHAR" property="roleId" />
 	    <result column="role_name" jdbcType="VARCHAR" property="roleName" />
 		<result column="perm_id" jdbcType="VARCHAR" property="permId" />
 		<result column="perm_name" jdbcType="VARCHAR" property="permName" />
+		<result column="perm_block" property="permBlock" jdbcType="VARCHAR" />
 		<result column="parent_id" jdbcType="VARCHAR" property="parentId" />
 		<result column="url" jdbcType="VARCHAR" property="url" />
 		<result column="img_class" jdbcType="VARCHAR" property="imgClass" />
+		<result column="tenant_no" jdbcType="VARCHAR" property="tenantNo" />
 	</resultMap>
 
 	<select id="getListByMap" parameterType="java.util.Map"
-		resultMap="RoleResultMap">
+		resultMap="BaseResultMap">
 		SELECT rp.perm_id row_id,
                r.role_id role_id,
                r.role_name role_name,
                p.perm_id perm_id,
                p.perm_name perm_name,
-               p.parent_id parentId,
+               p.perm_block perm_block,
+               p.parent_id parent_id,
                p.url url,
-               p.img_class img_class
+               p.img_class img_class,
+               rp.tenant_no tenant_no
        FROM role_permission rp
        LEFT JOIN permission p ON rp.perm_id=p.perm_id
        LEFT JOIN role r ON rp.role_id=r.role_id
@@ -29,15 +33,21 @@
        <if test="rowId!=null">
         AND row_id=#{rowId,jdbcType=VARCHAR}
        </if>
+       <if test="roleId!=null">
+        AND r.role_id=#{roleId,jdbcType=VARCHAR}
+       </if>
        <if test="roleName!=null">
         AND r.role_name=#{roleName,jdbcType=VARCHAR}
        </if>
-       <if test="parentId!=null">
-        AND p.parent_id=#{parentId,jdbcType=VARCHAR}
+       <if test="permId!=null">
+        AND p.perm_id=#{permId,jdbcType=VARCHAR}
        </if>
        <if test="permName!=null">
         AND p.perm_Name=#{permName,jdbcType=VARCHAR}
        </if>
-       ORDER BY p.parent_id,p.level
+       <if test="permBlock!=null">
+        AND p.perm_block=#{permBlock,jdbcType=VARCHAR}
+       </if>
+       ORDER BY p.level
 	</select>
 </mapper>

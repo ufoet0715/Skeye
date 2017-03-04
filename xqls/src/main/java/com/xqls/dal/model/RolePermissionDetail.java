@@ -6,9 +6,11 @@ public class RolePermissionDetail {
 	private String roleName;
 	private String permId;
 	private String permName;
+	private String permBlock;
 	private String parentId;
 	private String url;
 	private String imgClass;
+	private String tenantNo;
 
 	public String getRowId() {
 		return rowId;
@@ -50,6 +52,14 @@ public class RolePermissionDetail {
 		this.permName = permName;
 	}
 
+	public String getPermBlock() {
+		return permBlock;
+	}
+
+	public void setPermBlock(String permBlock) {
+		this.permBlock = permBlock;
+	}
+
 	public String getParentId() {
 		return parentId;
 	}
@@ -72,5 +82,13 @@ public class RolePermissionDetail {
 
 	public void setImgClass(String imgClass) {
 		this.imgClass = imgClass;
+	}
+
+	public String getTenantNo() {
+		return tenantNo;
+	}
+
+	public void setTenantNo(String tenantNo) {
+		this.tenantNo = tenantNo;
 	}
 }

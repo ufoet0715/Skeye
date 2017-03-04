@@ -93,6 +93,4 @@ public interface PermissionMapper {
      * @mbggenerated
      */
     int updateByPrimaryKey(Permission record);
-    
-    int insertByList(List<Permission> list);
 }

@@ -334,6 +334,76 @@ public class PermissionExample {
             return (Criteria) this;
         }
 
+        public Criteria andPermBlockIsNull() {
+            addCriterion("perm_block is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andPermBlockIsNotNull() {
+            addCriterion("perm_block is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andPermBlockEqualTo(String value) {
+            addCriterion("perm_block =", value, "permBlock");
+            return (Criteria) this;
+        }
+
+        public Criteria andPermBlockNotEqualTo(String value) {
+            addCriterion("perm_block <>", value, "permBlock");
+            return (Criteria) this;
+        }
+
+        public Criteria andPermBlockGreaterThan(String value) {
+            addCriterion("perm_block >", value, "permBlock");
+            return (Criteria) this;
+        }
+
+        public Criteria andPermBlockGreaterThanOrEqualTo(String value) {
+            addCriterion("perm_block >=", value, "permBlock");
+            return (Criteria) this;
+        }
+
+        public Criteria andPermBlockLessThan(String value) {
+            addCriterion("perm_block <", value, "permBlock");
+            return (Criteria) this;
+        }
+
+        public Criteria andPermBlockLessThanOrEqualTo(String value) {
+            addCriterion("perm_block <=", value, "permBlock");
+            return (Criteria) this;
+        }
+
+        public Criteria andPermBlockLike(String value) {
+            addCriterion("perm_block like", value, "permBlock");
+            return (Criteria) this;
+        }
+
+        public Criteria andPermBlockNotLike(String value) {
+            addCriterion("perm_block not like", value, "permBlock");
+            return (Criteria) this;
+        }
+
+        public Criteria andPermBlockIn(List<String> values) {
+            addCriterion("perm_block in", values, "permBlock");
+            return (Criteria) this;
+        }
+
+        public Criteria andPermBlockNotIn(List<String> values) {
+            addCriterion("perm_block not in", values, "permBlock");
+            return (Criteria) this;
+        }
+
+        public Criteria andPermBlockBetween(String value1, String value2) {
+            addCriterion("perm_block between", value1, value2, "permBlock");
+            return (Criteria) this;
+        }
+
+        public Criteria andPermBlockNotBetween(String value1, String value2) {
+            addCriterion("perm_block not between", value1, value2, "permBlock");
+            return (Criteria) this;
+        }
+
         public Criteria andParentIdIsNull() {
             addCriterion("parent_id is null");
             return (Criteria) this;

@@ -12,7 +12,6 @@ import com.alibaba.fastjson.JSONObject;
 
 import com.xqls.bean.RolePermissionBean;
 import com.xqls.bean.RolePermissionKeyBean;
-import com.xqls.bean.RolePermissionKeyBeanList;
 import com.xqls.biz.RolePermissionBiz;
 import com.xqls.util.CommonResult;
 
@@ -46,5 +45,4 @@ public class RolePermissionController {
 		CommonResult commonResult = this.rolePermissionBiz.deleteByList(beanList);
 		return JSONObject.toJSONString(commonResult);
 	}
-	
 }

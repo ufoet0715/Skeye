@@ -348,6 +348,7 @@
 				<version>2.12</version>
 				<configuration>
 					<skipTests>true</skipTests>
+					<argLine>-Dfile.encoding=UTF-8</argLine>
 				</configuration>
 			</plugin>
 			<plugin>

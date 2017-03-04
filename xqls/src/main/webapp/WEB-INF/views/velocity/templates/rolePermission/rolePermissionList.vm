@@ -9,43 +9,82 @@
 <script src="${link.contextPath}/resources/js/commonSearchAutoComplete.js"></script>
 
 <script type="text/javascript">
+ 
     function searchRolePermission() {
         var param = {};
         var roleName = $("#roleName").val();
         if (roleName && roleName != "") {
            param.roleName=roleName;
         }
-        searchPage(1, 10, '${link.contextPath}/rolePermissionDetailController/getList.html', JSON.stringify(param), "rolePermissionListDiv");
+        searchPage(1, 10, '${link.contextPath}/rolePermissionDetailController/getList.html',JSON.stringify(param),"rolePermissionListDiv");
     }
 
     function clearSearch() {
         $("#roleName").val("");
     }
 
-    function insertData(){
-       var obj=document.getElementsByName("perm");
-       var roleId=$("#roleSelect").val();
-       var param;
-       var list = [];
-       for(k in obj){
-        if(obj[k].checked)
-	{
-	    param = {};
-	    param.roleId=roleId;
-	    param.permId=obj[k].value;
-	    list.push(param);
-	}
-       }
+    function showInsert(){
+        $("#insertDiv").css('display','block');
+    }
 
-        $.ajax({
+    function hideInsert(){
+        $("#insertDiv").css('display','none');
+    }
+
+    function insertData(){
+          var isChecked=false;
+          var objs=document.getElementsByName("perm");
+          var roleId=$("#roleSelect").val();
+
+	  for(j in objs)
+	  {
+              if(objs[j].checked)
+	      {
+                 isChecked=true;
+	      }    
+          }
+
+          if(!roleId)
+          {
+             alert("请选择角色");
+          }
+          else if(!isChecked)
+          {
+             alert("请选择权限");
+          }
+          else
+          {
+	    if(confirm("确定添加数据吗？"))
+	    {
+             var param;
+             var list = [];
+             for(j in objs)
+	     {
+              if(objs[j].checked)
+	      {
+	        param = {};
+	        param.roleId=roleId;
+	        param.permId=objs[j].value;
+	        list.push(param);
+	      }    
+             }
+
+	     $.ajax({
+	       headers : {
+                'Accept' : 'application/json',
+                'Content-Type' : 'application/json'
+               },
+	       contentType : "application/x-www-form-urlencoded; charset=utf-8",
 	       url:"${link.contextPath}/rolePermissionController/insertList",
 	       type: 'post',
 	       data: JSON.stringify(list),
 	       dataType: 'json',
+	       traditional : true,
 	       success:function(result){
-		 if(result.isResult)
+		 if(result.isSuccess)
 		 {
-                    alert("添加成功");
+                     alert("添加成功");
+		     searchRolePermission();
 		 }
 		 else
 		 {
@@ -55,32 +94,46 @@
 	       error: function () {
                   alert("添加异常");
                }
-	});
+	      }); 
+          }
+	  $("#insertDiv").css('display','none');
+         }  
     }
 
     function deleteData(){
-      var cell = document.getElementsByName("rowId");
-      var param;
-      var list = [];
-      for(k in cell){
-        if(cell[k].checked)
-	{
-	    param = {};
-	    param.roleId=cell[k].parentNode.parentNode.cells[1].innerHTML;
-	    param.permId=cell[k].parentNode.parentNode.cells[5].innerHTML;
-	    list.push(param);
-	}
-       }
+     if(confirm("确定删除数据吗？"))
+     {
+        var rowIds = document.getElementsByName("rowId");
+	var permIds = document.getElementsByName("permId");
+        if(rowIds)
+        {
+          var param;
+          var list = [];
+          for(i in rowIds){
+           if(rowIds[i].checked)
+	   {
+	      param = {};
+	      param.roleId=rowIds[i].parentNode.parentNode.cells[1].innerHTML;
+	      param.permId=permIds[i].value;
+	      list.push(param);
+	   }
+        }
 
         $.ajax({
+	       headers : {
+                'Accept' : 'application/json',
+                'Content-Type' : 'application/json'
+               },
+	       contentType : "application/x-www-form-urlencoded; charset=utf-8",
 	       url:"${link.contextPath}/rolePermissionController/deleteList",
 	       type: 'post',
 	       data: JSON.stringify(list),
 	       dataType: 'json',
 	       success:function(result){
-		 if(result.isResult)
+		 if(result.isSuccess)
 		 {
                     alert("删除成功");
+		    searchRolePermission();
 		 }
 		 else
 		 {
@@ -91,59 +144,71 @@
                   alert("删除异常");
                }
 	});
+      }
+      else
+      {
+        alert("请选择记录");
+      }
+     }
+      
     }
+
+  searchRolePermission();
 </script>
 
 <div>
   <form id="rolePermissionForm">
-   角色名称：<input type="text" id="roleName" name="roleName"/>
-             <input type="button" value="添加" onclick="insertData()" />
-	     <input type="button" value="删除" onclick="deleteData()" />
-             <input type="button" value="查询" onclick="searchRolePermission()" />
-             <input type="button" value="重置" onclick="clearSearch()" />
+   角色：<input type="text" id="roleName"/>
+         <input type="button" value="添加" onclick="showInsert()" />
+	 <input type="button" value="删除" onclick="deleteData()" />
+         <input type="button" value="查询" onclick="searchRolePermission()" />
+         <input type="button" value="重置" onclick="clearSearch()" />
   </form>
-  <div>
+  
+</div>
+
+<div id="rolePermissionListDiv"></div>
+     
+<div width="40%" id="insertDiv" style="display:none">
    <form id="insertForm">
     <h4>添加角色权限</h4>
-    角色名称：
+    角色：
     <select id="roleSelect">
      <option value="">请选择</option>
      #foreach($role in $roleList)
        <option value="${role.roleId}">${role.roleName}</option>
      #end
     </select>
+    <br/>
 
-    权限名称：
-    <ul>
-  #foreach($permission in $permissionList)
-   #if($permission.parentId==0)
-    #set($parentId=$permission.permId)
-    #set($menuIndex=0)
-   <li>
-    <input type="hidden" value="$!{permission.permId}">
-    $!{permission.permName}
-
-    #foreach($subPermission in $permissionList)
-     #if($subPermission.parentId==$parentId)
-      #if($menuIndex==0)
-       <ul>
+    权限：
+     <table width="30%" border="0" style="color:#626262;font-size:12px;">
+      #set($permBlock="")
+      #set($index=0)
+      #foreach($permission in $permissionList)
+       #if(${permission.permBlock}==$permBlock)
+        <td> 
+	    <input type="checkBox" name="perm" value="${permission.permId}">
+             ${permission.permName}
+	</td>
+       #else
+        #if($index>0)
+         </tr>
+	#end
+        <tr>
+         <td>
+           ${permission.permBlock}
+         </td>
+         <td>
+	   <input type="checkBox" name="perm" value="${permission.permId}">
+           ${permission.permName}
+         </td>
+       #end        
+       #set($permBlock=${permission.permBlock})
+       #set($index=$index+1)
       #end
-        <li>
-           <input type="checkBox" name="perm" value="${subPermission.permId}"> ${subPermission.permName}
-        </li>
-       #set($menuIndex=$menuIndex+1)
-     #end
-    #end
-   #if($menuIndex>0)
-    </ul>
-   #end
-   </li>
-   #end
-  #end
- </ul>
-
-   </div>
-  </form>
+    </table>
+    <input type="button" value="确定" onclick="insertData()" />
+    <input type="button" value="取消" onclick="hideInsert()" />
+ </form>
 </div>
-<div id="rolePermissionListDiv"></div>
-     

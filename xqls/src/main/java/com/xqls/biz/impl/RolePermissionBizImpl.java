@@ -19,6 +19,7 @@ public class RolePermissionBizImpl implements RolePermissionBiz {
 
 	@Autowired private RolePermissionDao rolePermissionDao;
 	
+	@SuppressWarnings("unchecked")
 	@Override
 	public CommonResult insertByList(List<RolePermissionBean> beanList) {
 		CommonResult commonResult=new CommonResult();
@@ -47,6 +48,7 @@ public class RolePermissionBizImpl implements RolePermissionBiz {
 		return commonResult;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public CommonResult deleteByList(List<RolePermissionKeyBean> beanList) {
 		CommonResult commonResult=new CommonResult();

@@ -43,6 +43,10 @@
 
     function insertData(){
         $.ajax({
+	       headers : {
+                'Accept' : 'application/json',
+                'Content-Type' : 'application/json'
+               },
 	       url:"${link.contextPath}/userSetController/insertUserSet",
 	       type: 'post',
 	       data: $("#userSetForm").serialize(),
@@ -65,6 +69,10 @@
 
     function updateData(userId){
         $.ajax({
+	       headers : {
+                'Accept' : 'application/json',
+                'Content-Type' : 'application/json'
+               },
 	       url:"${link.contextPath}/userSetController/updateUserSetPage",
 	       type: 'post',
 	       data: JSON.stringify(userId),
@@ -78,6 +86,10 @@
       param.roleId=roleId;
 
         $.ajax({
+	       headers : {
+                'Accept' : 'application/json',
+                'Content-Type' : 'application/json'
+               },
 	       url:"${link.contextPath}/userSetController/deleteUserSet",
 	       type: 'post',
 	       data: JSON.stringify(param),
